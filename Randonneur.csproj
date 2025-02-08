@@ -4,8 +4,8 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net7.0</TargetFramework>
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'ios' ">net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-    </ItemGroup>
   </PropertyGroup>
+  <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+  </ItemGroup>
 </Project>
