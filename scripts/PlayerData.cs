@@ -1,15 +1,19 @@
 using Godot;
 using System;
 
-public partial class PlayerData : Node
-{
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-	}
+public class PlayerData {
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
+    public string saveFileVersion = GameMaster.gameVersion;
+    public int checkpoint = 0;
+    public int overworldCheckpoint = 0;
+    public string savedScene = default;
+
+    public Godot.Collections.Dictionary<string, int> sampleDictionary = new Godot.Collections.Dictionary<string, int>();
+
+    public void init() {
+        sampleDictionary.Add("zero", 0);
+        sampleDictionary.Add("one", 1);
+        sampleDictionary.Add("two", 2);
+    }
+
 }
