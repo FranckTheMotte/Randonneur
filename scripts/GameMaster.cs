@@ -10,6 +10,7 @@ public partial class GameMaster : Node {
     public static int currentSlotNum = 0;
 
     public static bool paused = false;
+    public static bool pauseAllowed = false;
     public static bool ignoreUserInput = false;
 
     //Base Player Data

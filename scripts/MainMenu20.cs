@@ -4,6 +4,7 @@ using System;
 public partial class MainMenu20 : Node2D
 {
 	[Export] public Label myLabel;
+	[Export] public eSceneNames mySceneName;
 
 	private int count = 0;
 
@@ -19,6 +20,7 @@ public partial class MainMenu20 : Node2D
 	}
 
 	public void _on_button_1_button_up() {
+		SceneManager.instance.ChangeScene(eSceneNames.Main);
 		count++;
 		myLabel.Text = "The button change the text. It has been clicked: " + count;
 	}
