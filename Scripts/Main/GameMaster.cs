@@ -3,8 +3,10 @@ using System;
 
 public partial class GameMaster : Node {
 
+    public static GameMaster instance;
+
     //Release.Features.Patch
-    public static string gameVersion = "0.1.1 Build Date: 2/24/2025";
+    public static string gameVersion = "0.1.1 Build Date: 9/24/2023";
 
     //The slot number that the game will save and load to by default
     public static int currentSlotNum = 0;
@@ -12,6 +14,8 @@ public partial class GameMaster : Node {
     public static bool paused = false;
     public static bool pauseAllowed = false;
     public static bool ignoreUserInput = false;
+
+    public static bool showDebuggingMessages = true;
 
     //Base Player Data
     public static PlayerData playerData = new PlayerData();
@@ -28,39 +32,40 @@ public partial class GameMaster : Node {
     public static PlayerData loadedPlayerDataSlot3 = new PlayerData();
 
     public override void _Ready() {
-        GD.Print("Gamemaster Ready");
+        instance = this;        
 
-        //Populate Dictionaries
-        playerData.init();
-        loadedPlayerDataSlot1.init();
-        loadedPlayerDataSlot2.init();
-        loadedPlayerDataSlot3.init();
+        //To recreate the save files, uncomment these three lines
+        //SaveGameData();
+        //SavePlayerData(1);
+        //SavePlayerData(2);
+        //SavePlayerData(3);
 
         //Load Game System Data
-        LoadGameData();
+        LoadGameData();      
 
         //Load saved Player Data into seperate fields so they can be displayed / manipulated on the save/load menu
         LoadPlayerDataSlot(1);
         LoadPlayerDataSlot(2);
         LoadPlayerDataSlot(3);
 
-        //Set full screen
-        //DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+        //This will tell us that GameMaster object was included in autoload.
+        GD.Print("(GameMaster) Gamemaster Ready");
     }
 
-
+    //Player Data Methods
     public static void SavePlayerData(int slotNum) { Save(SaveTypes.playerDat, slotNum); }
     public static void LoadPlayerData(int slotNum) { Load(SaveTypes.playerDat, slotNum, false); }
 
     public static void LoadPlayerDataSlot(int slotNum) { Load(SaveTypes.playerDat, slotNum, true); }
     public static void DeletePlayerData(int slotNum) { Delete(SaveTypes.playerDat, slotNum); }
 
-
+    //Game Data Methods
     public static void SaveGameData() { Save(SaveTypes.gameDat, 1); }
     public static void LoadGameData() { Load(SaveTypes.gameDat, 1); }
     public static void DeleteGameData() { Delete(SaveTypes.gameDat, 1); }
 
-
+    
+    //Saves the runtime gameData or playerData to the specified slot
     private static void Save(SaveTypes mySaveType, int slotNum) {
         //Don't save slot 0
         if (slotNum == 0) { return; }
@@ -70,16 +75,16 @@ public partial class GameMaster : Node {
         //Save File Object
         using var saveGame = FileAccess.Open(myFilePath, FileAccess.ModeFlags.Write);
 
+        //Empty String Object to hold the data
         string jsonString = string.Empty;
 
-        //Convert entire class to json string.
+        //Convert Entire Class to Json String using NewtonSoft.Json.
         if (mySaveType == SaveTypes.playerDat) {
             jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(playerData);
         }
         if (mySaveType == SaveTypes.gameDat) {
             jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(gameData);
         }
-
 
         //Write String to File
         saveGame.StoreLine(jsonString);
@@ -89,9 +94,9 @@ public partial class GameMaster : Node {
     private static void Load(SaveTypes mySaveType, int slotNum, bool loadToSlot = false) {
         string myFilePath = "user://" + mySaveType.ToString() + slotNum + ".sav";
 
-        //Can't open file
+        //Can't open file. Initialize the slot.
         if (FileAccess.FileExists(myFilePath) == false) {
-            GD.Print("File doesnt exist: " +  myFilePath);
+            if (showDebuggingMessages) { GD.Print("(GameMaster) File doesnt exist: " + myFilePath); }
             initializeSlot(mySaveType, slotNum);
             return;
         }
@@ -123,7 +128,7 @@ public partial class GameMaster : Node {
 
         //Overwrite Player Data for Specified Slot
         if (mySaveType == SaveTypes.playerDat) {
-            initializeSlot(SaveTypes.gameDat, slotNum);
+            initializeSlot(SaveTypes.playerDat, slotNum);
         }
 
         //Overwrite Default Game Data for Specified Slot
@@ -135,10 +140,10 @@ public partial class GameMaster : Node {
 
     private static void initializeSlot(SaveTypes mySaveType, int slotNum) {
         if (mySaveType == SaveTypes.playerDat) {
-            if (slotNum == 0) { playerData = new PlayerData(); playerData.init(); }
-            if (slotNum == 1) { loadedPlayerDataSlot1 = new PlayerData(); loadedPlayerDataSlot1.init(); SavePlayerData(slotNum); }
-            if (slotNum == 2) { loadedPlayerDataSlot2 = new PlayerData(); loadedPlayerDataSlot2.init(); SavePlayerData(slotNum); }
-            if (slotNum == 3) { loadedPlayerDataSlot3 = new PlayerData(); loadedPlayerDataSlot3.init(); SavePlayerData(slotNum); }
+            if (slotNum == 0) { playerData = new PlayerData(); }
+            if (slotNum == 1) { loadedPlayerDataSlot1 = new PlayerData(); SavePlayerData(slotNum); }
+            if (slotNum == 2) { loadedPlayerDataSlot2 = new PlayerData(); SavePlayerData(slotNum); }
+            if (slotNum == 3) { loadedPlayerDataSlot3 = new PlayerData(); SavePlayerData(slotNum); }
         }
         if (mySaveType == SaveTypes.gameDat) { gameData = new GameData(); SaveGameData(); }
     }
