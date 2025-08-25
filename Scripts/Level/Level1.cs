@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using static Godot.GD;
 
 public partial class Level1 : Node2D
 {
@@ -8,6 +9,11 @@ public partial class Level1 : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		/* Limit player area (only forward) to the parallax length */
+		Player player = GetNode<Player>("Player");
+		Parallax2D parallax2D = GetNode<Parallax2D>("Background");
+		Vector2 limit = new Vector2((parallax2D.RepeatTimes + 1) * parallax2D.RepeatSize.X, 0);
+		player.worldLimit = limit;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -15,5 +21,11 @@ public partial class Level1 : Node2D
 	{
 		// Vector2 inc = new Vector2(camera2d.Offset.X + (100 * (float) delta), camera2d.Offset.Y);
 		// camera2d.Offset = inc;
+		// Display the X,Y of the player in the label
+		CharacterBody2D player = GetNode<CharacterBody2D>("Player");
+		Label label = GetNode<Label>("CanvasLayer/Control/DebugLabel");
+		string txt;
+		txt = $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")}";
+		label.Text = txt;
 	}
 }	

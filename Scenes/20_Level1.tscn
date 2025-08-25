@@ -4,8 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
 [ext_resource type="PackedScene" uid="uid://reue2c77m55p" path="res://Scenes/player.tscn" id="3_c23mq"]
 [ext_resource type="Texture2D" uid="uid://cqag3u1am0jea" path="res://Art/Background/prairie.png" id="3_mgsr5"]
-
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_rxfqo"]
+[ext_resource type="Script" path="res://Scripts/Sol.cs" id="3_uowpc"]
 
 [node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d")]
 script = ExtResource("1_3wch0")
@@ -14,18 +13,26 @@ camera2d = NodePath("Player/Camera2D")
 [node name="Background" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.2, 0.2)
 repeat_size = Vector2(480, 0)
+repeat_times = 4
 
 [node name="Sprite2D" type="Sprite2D" parent="Background"]
 position = Vector2(240, 400)
 texture = ExtResource("2_vytwu")
 
-[node name="Ground" type="Parallax2D" parent="."]
-repeat_size = Vector2(480, 0)
+[node name="Ground" type="Node2D" parent="."]
 
-[node name="Sprite2D" type="Sprite2D" parent="Ground"]
-position = Vector2(239.967, 264)
-scale = Vector2(1.00014, 1)
+[node name="Sol" type="StaticBody2D" parent="Ground"]
+script = ExtResource("3_uowpc")
+
+[node name="Polygon2D" type="Polygon2D" parent="Ground/Sol"]
 texture = ExtResource("3_mgsr5")
+polygon = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
+uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Ground/Sol"]
+position = Vector2(105.502, 0)
+scale = Vector2(0.541295, 1)
+build_mode = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -38,21 +45,15 @@ offset_right = -3.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/Control"]
+[node name="DebugLabel" type="Label" parent="CanvasLayer/Control"]
 layout_mode = 0
 offset_right = 270.0
 offset_bottom = 270.0
 text = "Default Text"
 
 [node name="Player" parent="." instance=ExtResource("3_c23mq")]
-position = Vector2(67, 170)
+position = Vector2(100, 150)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1730, -340)
 scale = Vector2(10, 10)
-
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-position = Vector2(0, 193)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-shape = SubResource("WorldBoundaryShape2D_rxfqo")
