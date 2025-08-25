@@ -12,7 +12,7 @@ public partial class Level1 : Node2D
 		/* Limit player area (only forward) to the parallax length */
 		Player player = GetNode<Player>("Player");
 		Parallax2D parallax2D = GetNode<Parallax2D>("Background");
-		Vector2 limit = new Vector2((parallax2D.RepeatTimes + 1) * parallax2D.RepeatSize.X, 0);
+		Vector2 limit = new Vector2(10000, 0);
 		player.worldLimit = limit;
 	}
 

@@ -30,8 +30,6 @@ polygon = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242,
 uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Ground/Sol"]
-position = Vector2(105.502, 0)
-scale = Vector2(0.541295, 1)
 build_mode = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -52,7 +50,7 @@ offset_bottom = 270.0
 text = "Default Text"
 
 [node name="Player" parent="." instance=ExtResource("3_c23mq")]
-position = Vector2(100, 150)
+position = Vector2(0, 144)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1730, -340)

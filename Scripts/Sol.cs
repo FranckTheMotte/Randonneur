@@ -19,7 +19,7 @@ public partial class Sol : StaticBody2D
 			x += 10;
 			y += i % 2 == 0 ? 5 : -5;
 
-			Print($"X: {x} Y: {y}");
+			//Print($"X: {x} Y: {y}");
 		}
 		result[length - 2].X = x;
 		result[length - 2].Y = 300;
@@ -36,7 +36,21 @@ public partial class Sol : StaticBody2D
 		Print("Copie des points du polygon vers le collision polygon");
 		CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>("CollisionPolygon2D");
 		Polygon2D sol = GetNode<Polygon2D>("Polygon2D");
-		sol.Polygon = generateGround(400);
+
+
+		/* Generate a profil from a gpx file */
+		Gpx track = new Gpx();
+		track.Load("res://data/CCC.gpx");
+
+		/* Add 2 points in order to display a solid ground */
+		Vector2[] ground = new Vector2[track.Elevation.Length + 2];
+		track.Elevation.CopyTo(ground, 0);
+		ground[track.Elevation.Length].X = track.Elevation.Length;
+		ground[track.Elevation.Length].Y = 10000;
+		ground[track.Elevation.Length + 1].X = 0;
+		ground[track.Elevation.Length + 1].Y = 10000;
+
+		sol.Polygon = ground;
 		solCollision.Polygon = sol.Polygon;
 	}
 
