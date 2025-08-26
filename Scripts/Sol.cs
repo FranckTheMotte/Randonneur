@@ -4,6 +4,7 @@ using static Godot.GD;
 
 public partial class Sol : StaticBody2D
 {
+	[Export] Player player;
 
 	// Generate a 2D polygon (list of Vector2)
 	private Vector2[] generateGround(int length)
@@ -40,7 +41,7 @@ public partial class Sol : StaticBody2D
 
 		/* Generate a profil from a gpx file */
 		Gpx track = new Gpx();
-		track.Load("res://data/CCC.gpx");
+		track.Load("res://data/Test1.gpx");
 
 		/* Add 2 points in order to display a solid ground */
 		Vector2[] ground = new Vector2[track.Elevation.Length + 2];
@@ -52,6 +53,21 @@ public partial class Sol : StaticBody2D
 
 		sol.Polygon = ground;
 		solCollision.Polygon = sol.Polygon;
+
+		/* player start position */
+		Vector2 position = player.Position;
+		position.X = 0.00f;
+
+		CollisionShape2D playerCollisionShape = player.GetNode<CollisionShape2D>("PlayerCollisionShape2D");
+
+		GD.Print($"ground[0].Y : {ground[0].Y} shape height {playerCollisionShape.Shape.GetRect().Size.Y}");
+		position.Y = ground[0].Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * player.Scale.Y);
+		player.Position = position;
+
+
+		/* player limit */
+		Vector2 limit = new Vector2(track.Elevation.Length, 0);
+		player.worldLimit = limit;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

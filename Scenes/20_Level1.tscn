@@ -21,8 +21,9 @@ texture = ExtResource("2_vytwu")
 
 [node name="Ground" type="Node2D" parent="."]
 
-[node name="Sol" type="StaticBody2D" parent="Ground"]
+[node name="Sol" type="StaticBody2D" parent="Ground" node_paths=PackedStringArray("player")]
 script = ExtResource("3_uowpc")
+player = NodePath("../../Player")
 
 [node name="Polygon2D" type="Polygon2D" parent="Ground/Sol"]
 texture = ExtResource("3_mgsr5")

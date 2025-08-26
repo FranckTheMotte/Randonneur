@@ -4,6 +4,8 @@ using System.Numerics;
 
 public partial class Player : CharacterBody2D
 {
+	/* Coefficient of speed */
+	[Export] public int walk = 1;
 	public const float Speed = 100.0f;
 	public Godot.Vector2 worldLimit;
 
@@ -21,7 +23,7 @@ public partial class Player : CharacterBody2D
 			// Don't fall
 			else
 			{
-				velocity.X = 1 * Speed;
+				velocity.X = walk * Speed;
 			}
 
 

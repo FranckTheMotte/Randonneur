@@ -9,11 +9,6 @@ public partial class Level1 : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		/* Limit player area (only forward) to the parallax length */
-		Player player = GetNode<Player>("Player");
-		Parallax2D parallax2D = GetNode<Parallax2D>("Background");
-		Vector2 limit = new Vector2(10000, 0);
-		player.worldLimit = limit;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

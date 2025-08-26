@@ -49,7 +49,7 @@ public partial class Gpx
 			int i = 0;
 			foreach (XmlNode segment in segments)
 			{
-				Print($"Segment[{i}]: {segment["ele"].InnerText}");
+				//Print($"Segment[{i}]: {segment["ele"].InnerText}");
 				Elevation[i].X = i;
 				Elevation[i].Y = 2000.00f + (float.Parse(segment["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f);
 				i++;
