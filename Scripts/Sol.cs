@@ -2,11 +2,14 @@ using Godot;
 using System;
 using static Godot.GD;
 
+
 public partial class Sol : StaticBody2D
 {
+	const float ELEVATION_MAX = 10000.00f;
+
 	[Export] Player player;
 
-	// Generate a 2D polygon (list of Vector2)
+	// Generate a 2D polygon (list of Vector2) to test on a customize ground
 	private Vector2[] generateGround(int length)
 	{
 		Vector2[] result = new Vector2[length];
@@ -19,8 +22,6 @@ public partial class Sol : StaticBody2D
 			result[i].Y = y;
 			x += 10;
 			y += i % 2 == 0 ? 5 : -5;
-
-			//Print($"X: {x} Y: {y}");
 		}
 		result[length - 2].X = x;
 		result[length - 2].Y = 300;
@@ -34,22 +35,20 @@ public partial class Sol : StaticBody2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Print("Copie des points du polygon vers le collision polygon");
 		CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>("CollisionPolygon2D");
 		Polygon2D sol = GetNode<Polygon2D>("Polygon2D");
 
-
 		/* Generate a profil from a gpx file */
 		Gpx track = new Gpx();
-		track.Load("res://data/Test1.gpx");
+		track.Load("res://data/CCC.gpx");
 
 		/* Add 2 points in order to display a solid ground */
 		Vector2[] ground = new Vector2[track.Elevation.Length + 2];
 		track.Elevation.CopyTo(ground, 0);
 		ground[track.Elevation.Length].X = track.Elevation.Length;
-		ground[track.Elevation.Length].Y = 10000;
-		ground[track.Elevation.Length + 1].X = 0;
-		ground[track.Elevation.Length + 1].Y = 10000;
+		ground[track.Elevation.Length].Y = ELEVATION_MAX;
+		ground[track.Elevation.Length + 1].X = 0.00f;
+		ground[track.Elevation.Length + 1].Y = ELEVATION_MAX;
 
 		sol.Polygon = ground;
 		solCollision.Polygon = sol.Polygon;
@@ -63,7 +62,6 @@ public partial class Sol : StaticBody2D
 		GD.Print($"ground[0].Y : {ground[0].Y} shape height {playerCollisionShape.Shape.GetRect().Size.Y}");
 		position.Y = ground[0].Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * player.Scale.Y);
 		player.Position = position;
-
 
 		/* player limit */
 		Vector2 limit = new Vector2(track.Elevation.Length, 0);
