@@ -1,0 +1,74 @@
+{
+	"categories": [
+		{
+			"uuid": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"title": "Task",
+			"color": "70bafa"
+		}
+	],
+	"stages": [
+		{
+			"uuid": "78c31902-d05f-4260-9e61-aed1217bfe0a",
+			"title": "Todo",
+			"tasks": [
+				"40eb81b9-f024-48f0-b019-702be054b1d3",
+				"61e62606-0eb1-4be5-a9fd-8f07d2347021",
+				"4822ef5d-ef8a-4f69-89a2-b01bad0fe1bc",
+				"0f8f360c-2eb8-4e81-9b1a-6683d75a4c78"
+			]
+		},
+		{
+			"uuid": "09c497c4-3204-4db9-8b31-8906c68cdeeb",
+			"title": "Doing",
+			"tasks": []
+		},
+		{
+			"uuid": "7ef3ff33-bfc4-4628-aec0-8f4ce10154c9",
+			"title": "Done",
+			"tasks": []
+		}
+	],
+	"tasks": [
+		{
+			"uuid": "40eb81b9-f024-48f0-b019-702be054b1d3",
+			"title": "Définir changement de direction",
+			"description": "Idées:\nComment notifier un carrefour?\n\nData:\n- placer un tag dans le xml?\n - avec direction et xml pour définir le chemin de la nouvelle direction\n\nGraphiquement:\n- panneau qui affiche la liste des directions\n- fondu lors du changement de direction\n\n\n\n\n",
+			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"steps": []
+		},
+		{
+			"uuid": "61e62606-0eb1-4be5-a9fd-8f07d2347021",
+			"title": "Sauvegarder le résultat du parsing XML vers un fichier de coordonnées",
+			"description": "Goal:\n- ne pas relancer du parsing déjà effectué\n\n",
+			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"steps": []
+		},
+		{
+			"uuid": "4822ef5d-ef8a-4f69-89a2-b01bad0fe1bc",
+			"title": "Génération du décor",
+			"description": "",
+			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"steps": []
+		},
+		{
+			"uuid": "0f8f360c-2eb8-4e81-9b1a-6683d75a4c78",
+			"title": "Map du dessus",
+			"description": "",
+			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"steps": []
+		}
+	],
+	"layout": {
+		"columns": [
+			[
+				"78c31902-d05f-4260-9e61-aed1217bfe0a"
+			],
+			[
+				"09c497c4-3204-4db9-8b31-8906c68cdeeb"
+			],
+			[
+				"7ef3ff33-bfc4-4628-aec0-8f4ce10154c9"
+			]
+		]
+	}
+}
