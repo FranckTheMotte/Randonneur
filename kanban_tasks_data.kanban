@@ -14,7 +14,8 @@
 				"40eb81b9-f024-48f0-b019-702be054b1d3",
 				"61e62606-0eb1-4be5-a9fd-8f07d2347021",
 				"4822ef5d-ef8a-4f69-89a2-b01bad0fe1bc",
-				"0f8f360c-2eb8-4e81-9b1a-6683d75a4c78"
+				"0f8f360c-2eb8-4e81-9b1a-6683d75a4c78",
+				"866000ee-555f-4cbf-bd00-2c21890f26bb"
 			]
 		},
 		{
@@ -54,6 +55,13 @@
 			"uuid": "0f8f360c-2eb8-4e81-9b1a-6683d75a4c78",
 			"title": "Map du dessus",
 			"description": "",
+			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"steps": []
+		},
+		{
+			"uuid": "866000ee-555f-4cbf-bd00-2c21890f26bb",
+			"title": "[BUG] Temps de chargement étrangement haut (5s) quand je charge la scene avec un fichier gpx",
+			"description": "- Si le sol est défini dans l'éditeur 2d : moins d'une seconde pour se charger\n- Avec fichier GPX (même avec 100 points) : > 5s",
 			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
 			"steps": []
 		}
