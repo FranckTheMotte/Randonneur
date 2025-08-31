@@ -231,6 +231,7 @@
    </trkpt>
    <trkpt lat="45.7898140" lon="6.9720180">
     <ele>1215.8</ele>
+	<link>Test1.gpx</link>
    </trkpt>
    <trkpt lat="45.7897760" lon="6.9720030">
     <ele>1216.0</ele>
@@ -882,6 +883,7 @@
    </trkpt>
    <trkpt lat="45.7931900" lon="6.9732550">
     <ele>1245.4</ele>
+	<link>Test1.gpx</link>
    </trkpt>
    <trkpt lat="45.7932290" lon="6.9732800">
     <ele>1245.4</ele>

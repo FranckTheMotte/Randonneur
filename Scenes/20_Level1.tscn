@@ -22,13 +22,14 @@ texture = ExtResource("2_vytwu")
 
 [node name="Ground" type="Node2D" parent="."]
 
-[node name="Sol" type="StaticBody2D" parent="Ground" node_paths=PackedStringArray("player")]
+[node name="Sol" type="StaticBody2D" parent="Ground" node_paths=PackedStringArray("Player")]
 script = ExtResource("3_uowpc")
-player = NodePath("../../Player")
+Player = NodePath("../../Player")
+GpxFile = "res://data/CCC.gpx"
 
 [node name="Polygon2D" type="Polygon2D" parent="Ground/Sol"]
 texture = ExtResource("3_mgsr5")
-polygon = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
+polygon = PackedVector2Array(0, 193, 69, 185, 89, 170, 110, 167, 130, 159, 160, 147, 244, 102, 366, 94, 412, 69, 446, 80, 467, 87, 475, 95, 481, 100, 485, 224, 0, 222)
 uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Ground/Sol"]
@@ -51,8 +52,9 @@ offset_right = 270.0
 offset_bottom = 270.0
 text = "Default Text"
 
-[node name="Player" parent="." instance=ExtResource("3_c23mq")]
+[node name="Player" parent="." node_paths=PackedStringArray("sol") instance=ExtResource("3_c23mq")]
 position = Vector2(0, 144)
+sol = NodePath("../Ground/Sol")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1730, -340)

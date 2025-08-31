@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using static Godot.GD;
 
 
@@ -7,7 +8,13 @@ public partial class Sol : StaticBody2D
 {
 	const float ELEVATION_MAX = 10000.00f;
 
-	[Export] Player player;
+	private List<Vector2> Crossroads = new List<Vector2>();
+
+	public Gpx CurrentTrack;
+
+	[Export] Player Player;
+
+	[Export] private string GpxFile;
 
 	// Generate a 2D polygon (list of Vector2) to test on a customize ground
 	private Vector2[] generateGround(int length)
@@ -32,40 +39,67 @@ public partial class Sol : StaticBody2D
 		return result;
 	}
 
+
+    public override void _Draw()
+    {
+		foreach (Vector2 crossroad in Crossroads)
+		{
+			DrawCircle(crossroad, 10.0f, Colors.Blue);
+		}
+        base._Draw();
+    }
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>("CollisionPolygon2D");
-		Polygon2D sol = GetNode<Polygon2D>("Polygon2D");
+		var watch = new System.Diagnostics.Stopwatch();
+		watch.Start();
+		if (Godot.FileAccess.FileExists(GpxFile))
+		{
+			CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>("CollisionPolygon2D");
+			Polygon2D sol = GetNode<Polygon2D>("Polygon2D");
 
-		/* Generate a profil from a gpx file */
-		Gpx track = new Gpx();
-		track.Load("res://data/CCC.gpx");
+			/* Generate a profil from a gpx file */
+			CurrentTrack = new Gpx();
+			CurrentTrack.Load(GpxFile);
 
-		/* Add 2 points in order to display a solid ground */
-		Vector2[] ground = new Vector2[track.Elevation.Length + 2];
-		track.Elevation.CopyTo(ground, 0);
-		ground[track.Elevation.Length].X = track.Elevation.Length;
-		ground[track.Elevation.Length].Y = ELEVATION_MAX;
-		ground[track.Elevation.Length + 1].X = 0.00f;
-		ground[track.Elevation.Length + 1].Y = ELEVATION_MAX;
+			/* Add 2 points in order to display a solid ground */
+			Vector2[] ground = new Vector2[CurrentTrack.TrackPoints.Length + 2];
 
-		sol.Polygon = ground;
-		solCollision.Polygon = sol.Polygon;
+			int solLength = CurrentTrack.TrackPoints.Length;
+			for (int i = 0; i < solLength; i++)
+			{
+				ground[i] = CurrentTrack.TrackPoints[i].Elevation;
+				if (CurrentTrack.TrackPoints[i].crossroads)
+				{
+					Crossroads.Add(new Vector2(ground[i].X, ground[i].Y - 50));
+				}
+			}
 
-		/* player start position */
-		Vector2 position = player.Position;
-		position.X = 0.00f;
+			ground[solLength].X = solLength;
+			ground[solLength].Y = ELEVATION_MAX;
+			ground[solLength + 1].X = 0.00f;
+			ground[solLength + 1].Y = ELEVATION_MAX;
 
-		CollisionShape2D playerCollisionShape = player.GetNode<CollisionShape2D>("PlayerCollisionShape2D");
+			sol.Polygon = ground;
+			solCollision.Polygon = sol.Polygon;
 
-		GD.Print($"ground[0].Y : {ground[0].Y} shape height {playerCollisionShape.Shape.GetRect().Size.Y}");
-		position.Y = ground[0].Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * player.Scale.Y);
-		player.Position = position;
+			/* player start position */
+			Vector2 position = Player.Position;
+			CollisionShape2D playerCollisionShape = Player.GetNode<CollisionShape2D>("PlayerCollisionShape2D");
 
-		/* player limit */
-		Vector2 limit = new Vector2(track.Elevation.Length, 0);
-		player.worldLimit = limit;
+			position.X = 0.00f;
+			/* Align player position with half of the collision shape size (don't forget the player rescaling) */
+			position.Y = ground[0].Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Player.Scale.Y);
+			Player.Position = position;
+
+			/* player limit */
+			Vector2 limit = new Vector2(CurrentTrack.TrackPoints.Length, 0);
+			Player.worldLimit = limit;
+		}
+		/* TODO put default value if no Gpx is provided */
+		watch.Stop();
+		Print($"Ground creation Time: {watch.ElapsedMilliseconds} ms");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
