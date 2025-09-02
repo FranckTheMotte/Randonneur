@@ -10,7 +10,7 @@ public partial class Actions : CanvasLayer
 	public override void _Ready()
 	{
 		checkButton = GetNode<CheckButton>("Control/CheckButton");
-		player.walk = 0;
+		player.Walk = 0;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -23,11 +23,11 @@ public partial class Actions : CanvasLayer
 		/* Test to start or stop the auto-walk */
 		if (isToggled)
 		{
-			player.walk = 1;
+			player.Walk = 1;
 		}
 		else
 		{
-			player.walk = 0;
+			player.Walk = 0;
 		}
 	}
 
