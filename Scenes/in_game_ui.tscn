@@ -57,10 +57,11 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 15
 
-[node name="DestinationsList" type="VBoxContainer" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent" node_paths=PackedStringArray("Destination")]
+[node name="DestinationsList" type="VBoxContainer" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent" node_paths=PackedStringArray("Location", "Destination")]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_xy4x3")
+Location = NodePath("Title/Location")
 Destination = NodePath("Destination")
 
 [node name="Title" type="HBoxContainer" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList"]
@@ -101,7 +102,7 @@ size_flags_horizontal = 4
 texture = ExtResource("1_02v2q")
 region_rect = Rect2(556, 0, 45, 26)
 
-[node name="Type" type="Label" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination"]
+[node name="Trail" type="Label" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination"]
 custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 text = "GR 10"

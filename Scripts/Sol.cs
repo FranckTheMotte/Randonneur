@@ -70,7 +70,7 @@ public partial class Sol : StaticBody2D
 			for (int i = 0; i < solLength; i++)
 			{
 				ground[i] = CurrentTrack.TrackPoints[i].Elevation;
-				if (CurrentTrack.TrackPoints[i].crossroads)
+				if (CurrentTrack.TrackPoints[i].crossroadIndex != -1)
 				{
 					Crossroads.Add(new Vector2(ground[i].X, ground[i].Y - 50));
 				}

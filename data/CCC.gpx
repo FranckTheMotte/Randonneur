@@ -231,8 +231,23 @@
    </trkpt>
    <trkpt lat="45.7898140" lon="6.9720180">
     <ele>1215.8</ele>
-	<link>Test1.gpx</link>
-	<link>Test2.gpx</link>
+	<extensions>
+		<crossroad>
+			<name>Porteil du sanglier</name>
+			<destination name="Foix">
+				<gpx>Test1.gpx</gpx>
+				<distance>7.2</distance>
+				<direction>SE</direction>
+				<trail>PR</trail>
+			</destination>
+			<destination name="Mont Ventoux">
+				<gpx>Test2.gpx</gpx>
+				<distance>4.1</distance>
+				<direction>NE</direction>
+				<trail>GR 4</trail>
+			</destination>
+		</crossroad>
+	</extensions>
    </trkpt>
    <trkpt lat="45.7897760" lon="6.9720030">
     <ele>1216.0</ele>
@@ -884,7 +899,17 @@
    </trkpt>
    <trkpt lat="45.7931900" lon="6.9732550">
     <ele>1245.4</ele>
-	<link>Test1.gpx</link>
+	<extensions>
+		<crossroad>
+			<name>Col du bouzin</name>
+			<destination name="Caudry">
+				<gpx>Test1.gpx</gpx>
+				<distance>10.4</distance>
+				<direction>S</direction>
+				<trail>GR 777</trail>
+			</destination>
+		</crossroad>
+	</extensions>
    </trkpt>
    <trkpt lat="45.7932290" lon="6.9732800">
     <ele>1245.4</ele>

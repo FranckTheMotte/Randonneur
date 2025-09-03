@@ -3,19 +3,36 @@ using System;
 
 public partial class DestinationsList : VBoxContainer
 {
+	[Export] public Label Location;
+
 	[Export] public HBoxContainer Destination;
 
 	[Signal] public delegate void DestinationsUpdateEventHandler();
 
 	// Called when the node enters the scene tree for the first time.
-	public void populateDestination()
+	public void populateDestination(GpxCrossRoad crossRoad)
 	{
-		int nbDest = 4;
-		for (int i = 0; i < nbDest; i++)
+		// Sign title
+		Location.Text = crossRoad.name;
+
+		// Clean previous destinations
+		for (int i = 0; i < this.GetChildCount(); i++)
+		{
+			this.RemoveChild(this.GetChild(1));
+		}
+
+		// Populate with new ones
+		foreach (GpxDestination destination in crossRoad.destinations)
 		{
 			HBoxContainer newDest = (HBoxContainer)Destination.Duplicate();
 			Button destButton = (Button)newDest.GetChild(0);
-			destButton.Text = $"dest {i}";
+			destButton.Text = destination.name;
+			GD.Print($"dest button : {destButton.Text}");
+			Label distanceLabel = (Label)newDest.GetChild(1);
+			distanceLabel.Text = destination.distance.ToString() + " km";
+			Label trailLabel = (Label)newDest.GetChild(3);
+			trailLabel.Text = destination.trail;
+			newDest.Show();
 			this.AddChild(newDest);
 		}
 		// Hide the template
@@ -24,19 +41,18 @@ public partial class DestinationsList : VBoxContainer
 		// Adapt the sign size
 		NinePatchRect backgroundSign = (NinePatchRect)this.GetParent().GetParent();
 		HBoxContainer dest = (HBoxContainer)this.GetChild(1);
-		// margin H up + margin H low + title Height + nb dest * Height
-		float height = (15 * 2) + 32 + (nbDest + 1) * dest.CustomMinimumSize.Y;
+		// margin H up + margin H low + title Height + nb dest * Height TODO remove hardcoded values
+		float height = (15 * 2) + 32 + (crossRoad.destinations.Count + 1) * dest.CustomMinimumSize.Y;
 		backgroundSign.CustomMinimumSize = new Vector2(256, height);
 	}
 
 	private void _on_ready()
 	{
-		populateDestination();
 	}
 
-	private void _on_destinations_update()
+	private void _on_destinations_update(GpxCrossRoad crossRoad)
 	{
-		GD.Print("_on_destinations_update");
+		populateDestination(crossRoad);
 	}
 }
 

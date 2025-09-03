@@ -30,14 +30,18 @@ public partial class Player : CharacterBody2D
 		{
 			/* Does the player reach a crossroad ? */
 			int index = (int)this.Position.X;
-			if (index < sol.CurrentTrack.TrackPoints.Length && sol.CurrentTrack.TrackPoints[index].crossroads && Walk != 0)
+			int crossroadIndex = sol.CurrentTrack.TrackPoints[index].crossroadIndex;
+			if (index < sol.CurrentTrack.TrackPoints.Length &&
+				crossroadIndex != -1 &&
+				Walk != 0)
 			{
 				/* For the moment, just stop walking */
 				Walk = 0;
 
+				GD.Print($"crossroad index: {crossroadIndex}");
 				InGameUi gameUI = InGameUi.Instance;
 				DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
-				destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate);
+				destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate, sol.CurrentTrack.crossRoads[crossroadIndex]);
 				CrossroadSignVisible(true);
 			}
 
