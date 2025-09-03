@@ -232,6 +232,7 @@
    <trkpt lat="45.7898140" lon="6.9720180">
     <ele>1215.8</ele>
 	<link>Test1.gpx</link>
+	<link>Test2.gpx</link>
    </trkpt>
    <trkpt lat="45.7897760" lon="6.9720030">
     <ele>1216.0</ele>
