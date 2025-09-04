@@ -22,7 +22,8 @@
 			"uuid": "09c497c4-3204-4db9-8b31-8906c68cdeeb",
 			"title": "Doing",
 			"tasks": [
-				"40eb81b9-f024-48f0-b019-702be054b1d3"
+				"40eb81b9-f024-48f0-b019-702be054b1d3",
+				"74c56059-03c1-42d8-ab56-c510d29d68e8"
 			]
 		},
 		{
@@ -71,6 +72,13 @@
 			"uuid": "9c9dcc62-3c18-4b71-92b3-6b3868ad40b5",
 			"title": "[BUG] Rendu moisi",
 			"description": "- Police\n- Images\n\nTout est crenelé alors que dans l'éditeur ou dans les png, les images sont plus lisses.",
+			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"steps": []
+		},
+		{
+			"uuid": "74c56059-03c1-42d8-ab56-c510d29d68e8",
+			"title": "But du jeu",
+			"description": "Faire des randonnées avec des évènements et des lieux à valider.\nLe randonneur a un matériel à gérer ainsi que sa condition physique.\n\nPour valider une randonnée, il faut :\n- partir d'un point A et arriver au point B.\n- gérer les évènements\n- valider des lieux de passage (point de vue, village, cirque, ...)\n- optimiser son sac\n\nCe que je veux mettre en avant:\n- Lecture de carte (difficultés chemin)\n- Randonnée de nuit\n- gestion météo\n- comportements à tenir face à des animaux\n- bivouac\n- nuit en refuge\n\nEvènements\n- rencontre avec patous\n- ours\n- autres randonneurs\n- orage\n\n\nVrac\n- barre de râle\n- niveau de difficulté par chemin\n- jardinage\n\n",
 			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
 			"steps": []
 		}
