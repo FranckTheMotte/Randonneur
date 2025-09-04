@@ -49,19 +49,18 @@ public partial class Sol : StaticBody2D
         base._Draw();
     }
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+	public void generateGround(string gpxFile)
 	{
 		var watch = new System.Diagnostics.Stopwatch();
 		watch.Start();
-		if (Godot.FileAccess.FileExists(GpxFile))
+		if (Godot.FileAccess.FileExists(gpxFile))
 		{
 			CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>("CollisionPolygon2D");
 			Polygon2D sol = GetNode<Polygon2D>("Polygon2D");
 
 			/* Generate a profil from a gpx file */
 			CurrentTrack = new Gpx();
-			CurrentTrack.Load(GpxFile);
+			CurrentTrack.Load(gpxFile);
 
 			/* Add 2 points in order to display a solid ground */
 			Vector2[] ground = new Vector2[CurrentTrack.TrackPoints.Length + 2];
@@ -100,6 +99,11 @@ public partial class Sol : StaticBody2D
 		/* TODO put default value if no Gpx is provided */
 		watch.Stop();
 		Print($"Ground creation Time: {watch.ElapsedMilliseconds} ms");
+	}
+	// Called when the node enters the scene tree for the first time.
+	public override void _Ready()
+	{
+		generateGround(GpxFile);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

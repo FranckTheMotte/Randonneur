@@ -25,8 +25,9 @@ public partial class DestinationsList : VBoxContainer
 		foreach (GpxDestination destination in crossRoad.destinations)
 		{
 			HBoxContainer newDest = (HBoxContainer)Destination.Duplicate();
-			Button destButton = (Button)newDest.GetChild(0);
+			DestinationButton destButton = (DestinationButton)newDest.GetChild(0);
 			destButton.Text = destination.name;
+			destButton.GpxFile = destination.gpxFile;
 			GD.Print($"dest button : {destButton.Text}");
 			Label distanceLabel = (Label)newDest.GetChild(1);
 			distanceLabel.Text = destination.distance.ToString() + " km";

@@ -66,10 +66,12 @@ public partial class Player : CharacterBody2D
 		sign.Visible = Visible;
 	}
 
-	private void _on_crossroad_choice()
+	private void _on_crossroad_choice(string gpxFile)
 	{
 		this.Position = new Godot.Vector2(this.Position.X + 1, this.Position.Y);
 		Walk = 1;
 		CrossroadSignVisible(false);
+		GD.Print($"player will go to {gpxFile}");
+		sol.generateGround("res://data/" + gpxFile);
 	}
 }

@@ -35,6 +35,7 @@ public struct GpxProperties
 
 public struct GpxDestination
 {
+	public string gpxFile;
 	public string name;
 	public float distance;
 	public Direction direction;
@@ -123,6 +124,7 @@ public class Gpx
 			foreach (XmlNode segment in segments)
 			{
 				//Print($"Segment[{i}]: {segment["ele"].InnerText}");
+				// TODO: don't use 2000.00f
 				TrackPoints[i].Elevation = new Vector2(i, 2000.00f + (float.Parse(segment["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
 				TrackPoints[i].crossroadIndex = -1;
 				XmlNode xCrossroad = segment.SelectSingleNode("a:extensions/a:crossroad", namespaceManager);
@@ -147,6 +149,7 @@ public class Gpx
 						GpxDestination dest = new GpxDestination();
 
 						dest.name = destination.Attributes["name"].Value;
+						dest.gpxFile = destination["gpx"].InnerText;
 						dest.distance = float.Parse(destination["distance"].InnerText, CultureInfo.InvariantCulture.NumberFormat);
 						dest.direction = strToDirection(destination["direction"].InnerText);
 						dest.trail = destination["trail"].InnerText;
