@@ -8,7 +8,7 @@ public partial class Sol : StaticBody2D
 {
 	const float ELEVATION_MAX = 10000.00f;
 
-	private List<Vector2> Crossroads = new List<Vector2>();
+	private List<Vector2> TrailJunctions = new List<Vector2>();
 
 	public Gpx CurrentTrack;
 
@@ -42,9 +42,9 @@ public partial class Sol : StaticBody2D
 
     public override void _Draw()
     {
-		foreach (Vector2 crossroad in Crossroads)
+		foreach (Vector2 trailJunction in TrailJunctions)
 		{
-			DrawCircle(crossroad, 10.0f, Colors.Blue);
+			DrawCircle(trailJunction, 10.0f, Colors.Blue);
 		}
         base._Draw();
     }
@@ -69,9 +69,9 @@ public partial class Sol : StaticBody2D
 			for (int i = 0; i < solLength; i++)
 			{
 				ground[i] = CurrentTrack.TrackPoints[i].Elevation;
-				if (CurrentTrack.TrackPoints[i].crossroadIndex != -1)
+				if (CurrentTrack.TrackPoints[i].trailJunctionIndex != -1)
 				{
-					Crossroads.Add(new Vector2(ground[i].X, ground[i].Y - 50));
+					TrailJunctions.Add(new Vector2(ground[i].X, ground[i].Y - 50));
 				}
 			}
 

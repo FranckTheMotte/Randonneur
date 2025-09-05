@@ -232,7 +232,7 @@
    <trkpt lat="45.7898140" lon="6.9720180">
     <ele>1215.8</ele>
 	<extensions>
-		<crossroad>
+		<trailjunction>
 			<name>Porteil du sanglier</name>
 			<destination name="Foix">
 				<gpx>Test1.gpx</gpx>
@@ -246,7 +246,7 @@
 				<direction>NE</direction>
 				<trail>GR 4</trail>
 			</destination>
-		</crossroad>
+		</trailjunction>
 	</extensions>
    </trkpt>
    <trkpt lat="45.7897760" lon="6.9720030">
@@ -900,7 +900,7 @@
    <trkpt lat="45.7931900" lon="6.9732550">
     <ele>1245.4</ele>
 	<extensions>
-		<crossroad>
+		<trailjunction>
 			<name>Col du bouzin</name>
 			<destination name="Caudry">
 				<gpx>Test1.gpx</gpx>
@@ -908,7 +908,7 @@
 				<direction>S</direction>
 				<trail>GR 777</trail>
 			</destination>
-		</crossroad>
+		</trailjunction>
 	</extensions>
    </trkpt>
    <trkpt lat="45.7932290" lon="6.9732800">

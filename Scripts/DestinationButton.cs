@@ -10,6 +10,6 @@ public partial class DestinationButton : Button
 	{
 		GD.Print($"Button pressed {GpxFile}");
 		Player player = Player.Instance;
-		player.EmitSignal(Player.SignalName.CrossroadChoice, GpxFile);
+		player.EmitSignal(Player.SignalName.TrailJunctionChoice, GpxFile);
 	}
 }

@@ -10,10 +10,10 @@ public partial class DestinationsList : VBoxContainer
 	[Signal] public delegate void DestinationsUpdateEventHandler();
 
 	// Called when the node enters the scene tree for the first time.
-	public void populateDestination(GpxCrossRoad crossRoad)
+	public void populateDestination(GpxTrailJunction trailJunction)
 	{
 		// Sign title
-		Location.Text = crossRoad.name;
+		Location.Text = trailJunction.name;
 
 		// Clean previous destinations
 		for (int i = 0; i < this.GetChildCount(); i++)
@@ -22,7 +22,7 @@ public partial class DestinationsList : VBoxContainer
 		}
 
 		// Populate with new ones
-		foreach (GpxDestination destination in crossRoad.destinations)
+		foreach (GpxDestination destination in trailJunction.destinations)
 		{
 			HBoxContainer newDest = (HBoxContainer)Destination.Duplicate();
 			DestinationButton destButton = (DestinationButton)newDest.GetChild(0);
@@ -43,7 +43,7 @@ public partial class DestinationsList : VBoxContainer
 		NinePatchRect backgroundSign = (NinePatchRect)this.GetParent().GetParent();
 		HBoxContainer dest = (HBoxContainer)this.GetChild(1);
 		// margin H up + margin H low + title Height + nb dest * Height TODO remove hardcoded values
-		float height = (15 * 2) + 32 + (crossRoad.destinations.Count + 1) * dest.CustomMinimumSize.Y;
+		float height = (15 * 2) + 32 + (trailJunction.destinations.Count + 1) * dest.CustomMinimumSize.Y;
 		backgroundSign.CustomMinimumSize = new Vector2(256, height);
 	}
 
@@ -51,9 +51,9 @@ public partial class DestinationsList : VBoxContainer
 	{
 	}
 
-	private void _on_destinations_update(GpxCrossRoad crossRoad)
+	private void _on_destinations_update(GpxTrailJunction trailJunction)
 	{
-		populateDestination(crossRoad);
+		populateDestination(trailJunction);
 	}
 }
 

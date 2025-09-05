@@ -95,5 +95,5 @@ offset_top = 61.0
 offset_right = 68.0
 offset_bottom = 85.0
 
-[connection signal="CrossroadChoice" from="Player" to="Player" method="_on_crossroad_choice"]
+[connection signal="TrailJunctionChoice" from="Player" to="Player" method="_on_trail_junction_choice"]
 [connection signal="toggled" from="Actions/Control/CheckButton" to="Actions" method="_on_check_button_toggled"]

@@ -30,7 +30,7 @@ public enum Direction
 public struct GpxProperties
 {
 	public Vector2 Elevation { get; set; }
-	public int crossroadIndex;
+	public int trailJunctionIndex;
 }
 
 public struct GpxDestination
@@ -42,7 +42,7 @@ public struct GpxDestination
 	public string trail;
 }
 
-public partial class GpxCrossRoad : GodotObject
+public partial class GpxTrailJunction : GodotObject
 {
 	public string name;
 	public List<GpxDestination> destinations;
@@ -52,7 +52,7 @@ public class Gpx
 {
 	// x : index, y : value	
 	public GpxProperties[] TrackPoints { get; set; }
-	public List<GpxCrossRoad> crossRoads;
+	public List<GpxTrailJunction> trailJunctions;
 
 	private Direction strToDirection(string directionStr)
 	{
@@ -123,27 +123,26 @@ public class Gpx
 			int i = 0; // counter to store trackpoints
 			foreach (XmlNode segment in segments)
 			{
-				//Print($"Segment[{i}]: {segment["ele"].InnerText}");
 				// TODO: don't use 2000.00f
 				TrackPoints[i].Elevation = new Vector2(i, 2000.00f + (float.Parse(segment["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
-				TrackPoints[i].crossroadIndex = -1;
-				XmlNode xCrossroad = segment.SelectSingleNode("a:extensions/a:crossroad", namespaceManager);
+				TrackPoints[i].trailJunctionIndex = -1;
+				XmlNode xTrailJunction = segment.SelectSingleNode("a:extensions/a:trailjunction", namespaceManager);
 
-				if (xCrossroad != null)
+				if (xTrailJunction != null)
 				{
-					GD.Print($"Extensions-Crossroad");
-					if (crossRoads == null)
-						crossRoads = new List<GpxCrossRoad>();
+					GD.Print($"Extensions-Trailjunction");
+					if (trailJunctions == null)
+						trailJunctions = new List<GpxTrailJunction>();
 
-					GpxCrossRoad crossroad = new GpxCrossRoad();
+					GpxTrailJunction trailJunction = new GpxTrailJunction();
 
-					if (xCrossroad.SelectNodes("name") != null)
-						crossroad.name = xCrossroad["name"].InnerText;
+					if (xTrailJunction.SelectNodes("name") != null)
+						trailJunction.name = xTrailJunction["name"].InnerText;
 					else
-						crossroad.name = "Elsewhere";
-					GD.Print($"crossroad.name {crossroad.name}");
+						trailJunction.name = "Elsewhere";
+					GD.Print($"trailjunction.name {trailJunction.name}");
 
-					XmlNodeList destinations = segment.SelectNodes("a:extensions/a:crossroad/a:destination", namespaceManager);
+					XmlNodeList destinations = segment.SelectNodes("a:extensions/a:trailjunction/a:destination", namespaceManager);
 					foreach (XmlNode destination in destinations)
 					{
 						GpxDestination dest = new GpxDestination();
@@ -155,14 +154,14 @@ public class Gpx
 						dest.trail = destination["trail"].InnerText;
 
 						GD.Print($"dest gpx: {destination["gpx"].InnerText} name: {destination.Attributes["name"].Value}");
-						if (crossroad.destinations == null)
-							crossroad.destinations = new List<GpxDestination>();
-						crossroad.destinations.Add(dest);
+						if (trailJunction.destinations == null)
+							trailJunction.destinations = new List<GpxDestination>();
+						trailJunction.destinations.Add(dest);
 					}
 
-					int newIndex = crossRoads.Count;
-					TrackPoints[i].crossroadIndex = newIndex;
-					crossRoads.Add(crossroad);
+					int newIndex = trailJunctions.Count;
+					TrackPoints[i].trailJunctionIndex = newIndex;
+					trailJunctions.Add(trailJunction);
 				}
 				i++;
 			}

@@ -29,12 +29,12 @@ size_flags_horizontal = 4
 size_flags_vertical = 8
 theme_override_constants/separation = 40
 
-[node name="Crossroads" type="MarginContainer" parent="Popup/SignContainer"]
+[node name="TrailJunction" type="MarginContainer" parent="Popup/SignContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="BackgroundSign" type="NinePatchRect" parent="Popup/SignContainer/Crossroads"]
+[node name="BackgroundSign" type="NinePatchRect" parent="Popup/SignContainer/TrailJunction"]
 custom_minimum_size = Vector2(256, 128)
 layout_mode = 2
 texture = ExtResource("1_02v2q")
@@ -45,7 +45,7 @@ patch_margin_right = 2
 patch_margin_bottom = 2
 script = ExtResource("2_u0nry")
 
-[node name="SignContent" type="MarginContainer" parent="Popup/SignContainer/Crossroads/BackgroundSign"]
+[node name="SignContent" type="MarginContainer" parent="Popup/SignContainer/TrailJunction/BackgroundSign"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -57,32 +57,32 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 15
 
-[node name="DestinationsList" type="VBoxContainer" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent" node_paths=PackedStringArray("Location", "Destination")]
+[node name="DestinationsList" type="VBoxContainer" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent" node_paths=PackedStringArray("Location", "Destination")]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_xy4x3")
 Location = NodePath("Title/Location")
 Destination = NodePath("Destination")
 
-[node name="Title" type="HBoxContainer" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList"]
+[node name="Title" type="HBoxContainer" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList"]
 clip_contents = true
 custom_minimum_size = Vector2(128, 32)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
 
-[node name="Location" type="Label" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Title"]
+[node name="Location" type="Label" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList/Title"]
 custom_minimum_size = Vector2(64, 16)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Col du plop 1425m"
 
-[node name="Destination" type="HBoxContainer" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList"]
+[node name="Destination" type="HBoxContainer" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList"]
 custom_minimum_size = Vector2(128, 32)
 layout_mode = 2
 
-[node name="Name" type="Button" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination"]
+[node name="Name" type="Button" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList/Destination"]
 custom_minimum_size = Vector2(64, 16)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -90,19 +90,19 @@ size_flags_vertical = 4
 text = "Destination"
 script = ExtResource("5_jyvm2")
 
-[node name="Distance" type="Label" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination"]
+[node name="Distance" type="Label" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList/Destination"]
 custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 text = "1.2 km"
 
-[node name="Direction" type="NinePatchRect" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination"]
+[node name="Direction" type="NinePatchRect" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList/Destination"]
 custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 size_flags_horizontal = 4
 texture = ExtResource("1_02v2q")
 region_rect = Rect2(556, 0, 45, 26)
 
-[node name="Trail" type="Label" parent="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination"]
+[node name="Trail" type="Label" parent="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList/Destination"]
 custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 text = "GR 10"
@@ -110,6 +110,6 @@ text = "GR 10"
 [node name="Separator" type="Control" parent="Popup/SignContainer"]
 layout_mode = 2
 
-[connection signal="DestinationsUpdate" from="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList" to="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList" method="_on_destinations_update"]
-[connection signal="ready" from="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList" to="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList" method="_on_ready"]
-[connection signal="pressed" from="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination/Name" to="Popup/SignContainer/Crossroads/BackgroundSign/SignContent/DestinationsList/Destination/Name" method="_on_pressed"]
+[connection signal="DestinationsUpdate" from="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList" to="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList" method="_on_destinations_update"]
+[connection signal="ready" from="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList" to="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList" method="_on_ready"]
+[connection signal="pressed" from="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList/Destination/Name" to="Popup/SignContainer/TrailJunction/BackgroundSign/SignContent/DestinationsList/Destination/Name" method="_on_pressed"]
