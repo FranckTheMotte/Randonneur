@@ -55,8 +55,8 @@ public partial class Sol : StaticBody2D
 		watch.Start();
 		if (Godot.FileAccess.FileExists(gpxFile))
 		{
-			CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>("CollisionPolygon2D");
-			Polygon2D sol = GetNode<Polygon2D>("Polygon2D");
+			CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>("CollisionProfilElevation");
+			Polygon2D sol = GetNode<Polygon2D>("ProfilElevation");
 
 			/* Generate a profil from a gpx file */
 			CurrentTrack = new Gpx();
@@ -85,7 +85,7 @@ public partial class Sol : StaticBody2D
 
 			/* player start position */
 			Vector2 position = Player.Position;
-			CollisionShape2D playerCollisionShape = Player.GetNode<CollisionShape2D>("PlayerCollisionShape2D");
+			CollisionShape2D playerCollisionShape = Player.GetNode<CollisionShape2D>("Collision");
 
 			position.X = 0.00f;
 			/* Align player position with half of the collision shape size (don't forget the player rescaling) */

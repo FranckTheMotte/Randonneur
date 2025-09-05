@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://be11snw13ct0b"]
+[gd_scene load_steps=9 format=3 uid="uid://be11snw13ct0b"]
 
 [ext_resource type="Script" path="res://Scripts/Level/Level1.cs" id="1_3wch0"]
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://Scripts/Sol.cs" id="3_uowpc"]
 [ext_resource type="Script" path="res://Scripts/Actions.cs" id="6_8bbqd"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
+[ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
 
 [node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d")]
 script = ExtResource("1_3wch0")
@@ -28,12 +29,12 @@ script = ExtResource("3_uowpc")
 Player = NodePath("../../Player")
 GpxFile = "res://data/CCC.gpx"
 
-[node name="Polygon2D" type="Polygon2D" parent="Ground/Sol"]
+[node name="ProfilElevation" type="Polygon2D" parent="Ground/Sol"]
 texture = ExtResource("3_mgsr5")
 polygon = PackedVector2Array(0, 193, 69, 185, 89, 170, 110, 167, 130, 159, 160, 147, 244, 102, 366, 94, 412, 69, 446, 80, 467, 87, 475, 95, 481, 100, 485, 224, 0, 222)
 uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Ground/Sol"]
+[node name="CollisionProfilElevation" type="CollisionPolygon2D" parent="Ground/Sol"]
 build_mode = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -57,16 +58,20 @@ text = "Default Text"
 position = Vector2(0, 144)
 sol = NodePath("../Ground/Sol")
 
+[node name="SceneTransitionAnimation" parent="Player" instance=ExtResource("8_bsps8")]
+position = Vector2(0, -1440)
+scale = Vector2(10, 10)
+
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(1730, -340)
 scale = Vector2(10, 10)
 
-[node name="TESTSign" type="CanvasLayer" parent="Player"]
+[node name="TrailSign" type="CanvasLayer" parent="Player"]
 visible = false
 scale = Vector2(0.1, 0.1)
 transform = Transform2D(0.1, 0, 0, 0.1, 0, 0)
 
-[node name="InGameUI" parent="Player/TESTSign" instance=ExtResource("7_fx2fa")]
+[node name="InGameUI" parent="Player/TrailSign" instance=ExtResource("7_fx2fa")]
 offset_left = -4030.0
 offset_top = -2140.0
 offset_right = -4030.0

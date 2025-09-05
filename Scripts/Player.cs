@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Numerics;
+using System.Threading.Tasks;
 
 public partial class Player : CharacterBody2D
 {
@@ -16,9 +17,17 @@ public partial class Player : CharacterBody2D
 
 	public static Player Instance { get; private set; }
 
+	private AnimationPlayer fadeAnimation;
+
 	public override void _Ready()
 	{
 		Instance = this;
+
+		if (FindChild("SceneTransitionAnimation") != null)
+		{
+			Node2D sceneTransition = GetNode<Node2D>("SceneTransitionAnimation");
+			fadeAnimation = sceneTransition.GetNode<AnimationPlayer>("FadeAnimation");
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -42,7 +51,7 @@ public partial class Player : CharacterBody2D
 				InGameUi gameUI = InGameUi.Instance;
 				DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
 				destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate, sol.CurrentTrack.crossRoads[crossroadIndex]);
-				CrossroadSignVisible(true);
+				TrailSignVisible(true);
 			}
 
 			// Add the gravity.
@@ -60,18 +69,28 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void CrossroadSignVisible(bool Visible)
+	private void TrailSignVisible(bool Visible)
 	{
-		CanvasLayer sign = GetNode<CanvasLayer>("TESTSign");
+		CanvasLayer sign = GetNode<CanvasLayer>("TrailSign");
 		sign.Visible = Visible;
+	}
+
+	private async void Sleep(double value)
+	{
+		await Task.Delay(TimeSpan.FromMilliseconds(value));
 	}
 
 	private void _on_crossroad_choice(string gpxFile)
 	{
 		this.Position = new Godot.Vector2(this.Position.X + 1, this.Position.Y);
 		Walk = 1;
-		CrossroadSignVisible(false);
+		TrailSignVisible(false);
 		GD.Print($"player will go to {gpxFile}");
 		sol.generateGround("res://data/" + gpxFile);
+		fadeAnimation.Play("fade_in");
+		Sleep(500);
+		/* TODO : try to put fade out in Level1 ready */
+		fadeAnimation.Play("fade_out");
+		Sleep(500);
 	}
 }
