@@ -41,27 +41,12 @@ uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158,
 [node name="CollisionProfilElevation" type="CollisionPolygon2D" parent="Ground/Sol"]
 build_mode = 1
 
-[node name="Player" parent="." node_paths=PackedStringArray("sol") instance=ExtResource("3_c23mq")]
+[node name="Player" parent="." node_paths=PackedStringArray("sol", "level") instance=ExtResource("3_c23mq")]
 position = Vector2(0, 144)
 sol = NodePath("../Ground/Sol")
-
-[node name="SceneTransitionAnimation" parent="Player" instance=ExtResource("8_bsps8")]
-position = Vector2(0, -1440)
-scale = Vector2(10, 10)
+level = NodePath("..")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
-
-[node name="TrailSign" type="CanvasLayer" parent="Player"]
-visible = false
-scale = Vector2(0.1, 0.1)
-transform = Transform2D(0.1, 0, 0, 0.1, 0, 0)
-
-[node name="InGameUI" parent="Player/TrailSign" instance=ExtResource("7_fx2fa")]
-offset_left = -4030.0
-offset_top = -2140.0
-offset_right = -4030.0
-offset_bottom = -2140.0
-scale = Vector2(10, 10)
 
 [node name="Debug" type="CanvasLayer" parent="."]
 
@@ -80,8 +65,25 @@ offset_right = 270.0
 offset_bottom = 50.0
 text = "Default Text"
 
+[node name="TrailSign" type="CanvasLayer" parent="."]
+layer = 2
+visible = false
+scale = Vector2(0.1, 0.1)
+transform = Transform2D(0.1, 0, 0, 0.1, 0, 0)
+
+[node name="InGameUI" parent="TrailSign" instance=ExtResource("7_fx2fa")]
+offset_left = -4030.0
+offset_top = -2140.0
+offset_right = -4030.0
+offset_bottom = -2140.0
+scale = Vector2(10, 10)
+
 [node name="WorldMap" parent="." instance=ExtResource("9_upnc5")]
 visible = false
+
+[node name="SceneTransitionAnimation" parent="." instance=ExtResource("8_bsps8")]
+position = Vector2(0, -1296)
+scale = Vector2(10, 10)
 
 [node name="MapArea" type="Area2D" parent="."]
 position = Vector2(50, 500)
@@ -107,6 +109,8 @@ offset_right = 68.0
 offset_bottom = 85.0
 text = "Walk"
 
+[connection signal="TrailJunctionChoice" from="." to="." method="_on_trail_junction_choice"]
+[connection signal="TrailJunctionChoiceDone" from="." to="." method="_on_trail_junction_choice_done"]
 [connection signal="TrailJunctionChoice" from="Player" to="Player" method="_on_trail_junction_choice"]
 [connection signal="TrailSelection" from="MapArea" to="." method="_on_map_area_trail_selection"]
 [connection signal="TrailSelection" from="MapArea" to="MapArea" method="_on_trail_selection"]

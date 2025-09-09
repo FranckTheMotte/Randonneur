@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Numerics;
-using System.Threading.Tasks;
 
 public partial class Player : CharacterBody2D
 {
@@ -12,23 +11,16 @@ public partial class Player : CharacterBody2D
 
 	[Signal] public delegate void TrailJunctionChoiceEventHandler();
 
+	[Export] public Level1 level;
+
 	public const float Speed = 100.0f;
 	public Godot.Vector2 worldLimit;
 
 	public static Player Instance { get; private set; }
 
-	/* TODO move this in level scene */
-	private AnimationPlayer fadeAnimation;
-
 	public override void _Ready()
 	{
 		Instance = this;
-
-		if (FindChild("SceneTransitionAnimation") != null)
-		{
-			Node2D sceneTransition = GetNode<Node2D>("SceneTransitionAnimation");
-			fadeAnimation = sceneTransition.GetNode<AnimationPlayer>("FadeAnimation");
-		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -48,12 +40,9 @@ public partial class Player : CharacterBody2D
 				/* For the moment, just stop walking */
 				Walk = 0;
 
-				/* TODO move this in level scene */
+				/* Update destinations list on sign */
 				GD.Print($"trail junction index: {trailJunctionIndex}");
-				InGameUi gameUI = InGameUi.Instance;
-				DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
-				destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate, sol.CurrentTrack.trailJunctions[trailJunctionIndex]);
-				TrailSignVisible(true);
+				level.EmitSignal(Level1.SignalName.TrailJunctionChoice, trailJunctionIndex);
 			}
 
 			// Add the gravity.
@@ -71,32 +60,10 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-
-	/* TODO move this in level scene */
-	private void TrailSignVisible(bool Visible)
-	{
-		CanvasLayer sign = GetNode<CanvasLayer>("TrailSign");
-		sign.Visible = Visible;
-	}
-
-	/* TODO move this in global tools class */
-	private async void Sleep(double value)
-	{
-		await Task.Delay(TimeSpan.FromMilliseconds(value));
-	}
-
-	/* TODO move this in level scene */
 	private void _on_trail_junction_choice(string gpxFile)
 	{
+		level.EmitSignal(Level1.SignalName.TrailJunctionChoiceDone, gpxFile);
 		this.Position = new Godot.Vector2(this.Position.X + 1, this.Position.Y);
 		Walk = 1;
-		TrailSignVisible(false);
-		GD.Print($"player will go to {gpxFile}");
-		sol.generateGround("res://data/" + gpxFile);
-		fadeAnimation.Play("fade_in");
-		Sleep(500);
-		/* TODO : try to put fade out in Level1 ready */
-		fadeAnimation.Play("fade_out");
-		Sleep(500);
 	}
 }

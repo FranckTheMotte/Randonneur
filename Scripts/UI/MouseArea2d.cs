@@ -1,8 +1,6 @@
 using Godot;
 using System;
 
-namespace MouseSelector;
-
 public partial class MouseArea2d : Area2D
 {
 
