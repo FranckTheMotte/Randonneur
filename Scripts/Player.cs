@@ -17,6 +17,7 @@ public partial class Player : CharacterBody2D
 
 	public static Player Instance { get; private set; }
 
+	/* TODO move this in level scene */
 	private AnimationPlayer fadeAnimation;
 
 	public override void _Ready()
@@ -47,6 +48,7 @@ public partial class Player : CharacterBody2D
 				/* For the moment, just stop walking */
 				Walk = 0;
 
+				/* TODO move this in level scene */
 				GD.Print($"trail junction index: {trailJunctionIndex}");
 				InGameUi gameUI = InGameUi.Instance;
 				DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
@@ -69,17 +71,21 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
+
+	/* TODO move this in level scene */
 	private void TrailSignVisible(bool Visible)
 	{
 		CanvasLayer sign = GetNode<CanvasLayer>("TrailSign");
 		sign.Visible = Visible;
 	}
 
+	/* TODO move this in global tools class */
 	private async void Sleep(double value)
 	{
 		await Task.Delay(TimeSpan.FromMilliseconds(value));
 	}
 
+	/* TODO move this in level scene */
 	private void _on_trail_junction_choice(string gpxFile)
 	{
 		this.Position = new Godot.Vector2(this.Position.X + 1, this.Position.Y);

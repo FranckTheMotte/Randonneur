@@ -27,9 +27,20 @@ public enum Direction
 	NOWHERE
 }
 
+
+public struct DMS
+{
+	public int degree;
+	public int min;
+	public float sec;
+}
+
 public struct GpxProperties
 {
-	public Vector2 Elevation { get; set; }
+	public Vector2 coord { get; set; }
+	public DMS longDMS;
+	public DMS latDMS;
+	public Vector2 elevation { get; set; }
 	public int trailJunctionIndex;
 }
 
@@ -92,6 +103,17 @@ public class Gpx
 		return result;
 	}
 
+	private (int degree, int min, float sec) getDMSFromDecimal(float coord)
+	{
+		float sec = (float)Math.Round(coord * 3600);
+		int deg = (int) sec / 3600;
+		sec = Math.Abs(sec % 3600);
+		int min = (int) sec / 60;
+		sec %= 60;
+
+		return (deg, min, sec);
+	}
+
 	public bool Load(string filePath)
 	{
 		XmlDocument xmlDoc = new XmlDocument();
@@ -124,8 +146,20 @@ public class Gpx
 			foreach (XmlNode segment in segments)
 			{
 				// TODO: don't use 2000.00f
-				TrackPoints[i].Elevation = new Vector2(i, 2000.00f + (float.Parse(segment["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
+				TrackPoints[i].elevation = new Vector2(i, 2000.00f + (float.Parse(segment["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
 				TrackPoints[i].trailJunctionIndex = -1;
+				float longitude = float.Parse(segment.Attributes["lon"].Value, CultureInfo.InvariantCulture.NumberFormat);
+				float latitude = float.Parse(segment.Attributes["lat"].Value, CultureInfo.InvariantCulture.NumberFormat);
+
+				var result = getDMSFromDecimal(longitude);
+				TrackPoints[i].longDMS.degree = result.degree;
+				TrackPoints[i].longDMS.min = result.min;
+				TrackPoints[i].longDMS.sec = result.sec;
+				result = getDMSFromDecimal(latitude);
+				TrackPoints[i].latDMS.degree = result.degree;
+				TrackPoints[i].latDMS.min = result.min;
+				TrackPoints[i].latDMS.sec = result.sec;
+				TrackPoints[i].coord = new Vector2(latitude, longitude);
 				XmlNode xTrailJunction = segment.SelectSingleNode("a:extensions/a:trailjunction", namespaceManager);
 
 				if (xTrailJunction != null)

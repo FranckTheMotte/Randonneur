@@ -96,15 +96,15 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wf6w2"]
-radius = 110.0
-height = 400.0
+radius = 8.0
+height = 38.0
 
 [node name="Player" type="CharacterBody2D"]
-scale = Vector2(0.1, 0.1)
 collision_layer = 3
 script = ExtResource("1_qw0uh")
 
 [node name="Animation" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
 sprite_frames = SubResource("SpriteFrames_5gk7y")
 animation = &"walk"
 autoplay = "walk"

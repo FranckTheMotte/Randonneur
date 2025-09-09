@@ -68,7 +68,7 @@ public partial class Sol : StaticBody2D
 			int solLength = CurrentTrack.TrackPoints.Length;
 			for (int i = 0; i < solLength; i++)
 			{
-				ground[i] = CurrentTrack.TrackPoints[i].Elevation;
+				ground[i] = CurrentTrack.TrackPoints[i].elevation;
 				if (CurrentTrack.TrackPoints[i].trailJunctionIndex != -1)
 				{
 					TrailJunctions.Add(new Vector2(ground[i].X, ground[i].Y - 50));

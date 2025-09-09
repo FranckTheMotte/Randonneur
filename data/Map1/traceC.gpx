@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="EditGPX">
+  <metadata>
+    <name>traceC</name>
+    <desc>C</desc>
+  </metadata>
+  <trk>
+    <trkseg>
+      <trkpt lat="42.766775" lon="1.483046">
+        <ele>729.4</ele>
+        <extensions>
+          <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
+            <visugpx:node>1</visugpx:node>
+          </visugpx:TrkExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="42.766770" lon="1.482900">
+        <ele>729.2</ele>
+      </trkpt>
+      <trkpt lat="42.766750" lon="1.482810">
+        <ele>729</ele>
+      </trkpt>
+      <trkpt lat="42.766730" lon="1.482730">
+        <ele>729</ele>
+      </trkpt>
+      <trkpt lat="42.766700" lon="1.482650">
+        <ele>729</ele>
+      </trkpt>
+      <trkpt lat="42.766680" lon="1.482610">
+        <ele>729</ele>
+      </trkpt>
+      <trkpt lat="42.766630" lon="1.482480">
+        <ele>729.1</ele>
+      </trkpt>
+      <trkpt lat="42.766560" lon="1.482270">
+        <ele>729.4</ele>
+      </trkpt>
+      <trkpt lat="42.766510" lon="1.482090">
+        <ele>729.8</ele>
+      </trkpt>
+      <trkpt lat="42.766460" lon="1.481890">
+        <ele>730.1</ele>
+      </trkpt>
+      <trkpt lat="42.766430" lon="1.481720">
+        <ele>730.7</ele>
+      </trkpt>
+      <trkpt lat="42.766410" lon="1.481570">
+        <ele>730.9</ele>
+      </trkpt>
+      <trkpt lat="42.766400" lon="1.481420">
+        <ele>731</ele>
+      </trkpt>
+      <trkpt lat="42.766380" lon="1.481400">
+        <ele>731</ele>
+      </trkpt>
+      <trkpt lat="42.766390" lon="1.481360">
+        <ele>731.1</ele>
+      </trkpt>
+      <trkpt lat="42.766400" lon="1.481330">
+        <ele>731.2</ele>
+      </trkpt>
+      <trkpt lat="42.766410" lon="1.481210">
+        <ele>731.6</ele>
+      </trkpt>
+      <trkpt lat="42.766450" lon="1.481090">
+        <ele>731.8</ele>
+      </trkpt>
+      <trkpt lat="42.766470" lon="1.480960">
+        <ele>731.7</ele>
+      </trkpt>
+      <trkpt lat="42.766500" lon="1.480790">
+        <ele>731.8</ele>
+      </trkpt>
+      <trkpt lat="42.766520" lon="1.480640">
+        <ele>732.2</ele>
+      </trkpt>
+      <trkpt lat="42.766530" lon="1.480500">
+        <ele>732.6</ele>
+      </trkpt>
+      <trkpt lat="42.766520" lon="1.480410">
+        <ele>732.8</ele>
+      </trkpt>
+      <trkpt lat="42.766530" lon="1.480350">
+        <ele>732.9</ele>
+      </trkpt>
+      <trkpt lat="42.766520" lon="1.480200">
+        <ele>733.1</ele>
+      </trkpt>
+      <trkpt lat="42.766520" lon="1.480200">
+        <ele>733.1</ele>
+        <extensions>
+          <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
+            <visugpx:node>2</visugpx:node>
+          </visugpx:TrkExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="42.766520" lon="1.480200">
+        <ele>733.1</ele>
+      </trkpt>
+      <trkpt lat="42.766460" lon="1.480170">
+        <ele>733.3</ele>
+      </trkpt>
+      <trkpt lat="42.766430" lon="1.480160">
+        <ele>733.4</ele>
+      </trkpt>
+      <trkpt lat="42.766410" lon="1.480150">
+        <ele>733.4</ele>
+      </trkpt>
+      <trkpt lat="42.766390" lon="1.480150">
+        <ele>733.5</ele>
+      </trkpt>
+      <trkpt lat="42.766370" lon="1.480150">
+        <ele>733.5</ele>
+        <extensions>
+          <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
+            <visugpx:node>3</visugpx:node>
+          </visugpx:TrkExtension>
+        </extensions>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

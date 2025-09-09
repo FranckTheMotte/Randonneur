@@ -57,9 +57,9 @@ _data = {
 [node name="SceneTransitionAnimation" type="Node2D"]
 
 [node name="FadeColorRect" type="ColorRect" parent="."]
-offset_left = -500.0
+offset_left = -600.0
 offset_top = -200.0
-offset_right = 1500.0
+offset_right = 1400.0
 offset_bottom = 1000.0
 color = Color(0, 0, 0, 0)
 

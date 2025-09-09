@@ -13,11 +13,6 @@ public partial class Actions : CanvasLayer
 		player.Walk = 0;
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
 	private void _on_check_button_toggled(bool isToggled)
 	{
 		/* Test to start or stop the auto-walk */

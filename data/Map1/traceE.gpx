@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="EditGPX">
+  <metadata>
+    <name>traceE</name>
+    <desc>E</desc>
+  </metadata>
+  <trk>
+    <trkseg>
+      <trkpt lat="42.766349" lon="1.480166">
+        <ele>733.5</ele>
+        <extensions>
+          <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
+            <visugpx:node>1</visugpx:node>
+          </visugpx:TrkExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="42.766380" lon="1.480000">
+        <ele>734</ele>
+      </trkpt>
+      <trkpt lat="42.766390" lon="1.479860">
+        <ele>734</ele>
+      </trkpt>
+      <trkpt lat="42.766400" lon="1.479790">
+        <ele>734</ele>
+      </trkpt>
+      <trkpt lat="42.766400" lon="1.479700">
+        <ele>734.1</ele>
+      </trkpt>
+      <trkpt lat="42.766400" lon="1.479490">
+        <ele>734.8</ele>
+      </trkpt>
+      <trkpt lat="42.766400" lon="1.479410">
+        <ele>735</ele>
+      </trkpt>
+      <trkpt lat="42.766410" lon="1.479360">
+        <ele>734.9</ele>
+      </trkpt>
+      <trkpt lat="42.766420" lon="1.479140">
+        <ele>735.1</ele>
+      </trkpt>
+      <trkpt lat="42.766420" lon="1.479020">
+        <ele>735.5</ele>
+      </trkpt>
+      <trkpt lat="42.766500" lon="1.478820">
+        <ele>735.8</ele>
+      </trkpt>
+      <trkpt lat="42.766470" lon="1.478670">
+        <ele>736.5</ele>
+      </trkpt>
+      <trkpt lat="42.766410" lon="1.478560">
+        <ele>736.9</ele>
+      </trkpt>
+      <trkpt lat="42.766390" lon="1.478470">
+        <ele>737</ele>
+        <extensions>
+          <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
+            <visugpx:node>2</visugpx:node>
+          </visugpx:TrkExtension>
+        </extensions>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://b4tnu5fp0rn6w"]
+
+[node name="WorldMap" type="Node2D"]
+
+[node name="BackgroundRect" type="ColorRect" parent="."]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -3552.0
+offset_top = -1426.0
+offset_right = -2837.0
+offset_bottom = -1139.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(10, 10)
+color = Color(0.992157, 0.741176, 0.262745, 1)

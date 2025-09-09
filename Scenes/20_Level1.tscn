@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://be11snw13ct0b"]
+[gd_scene load_steps=11 format=3 uid="uid://be11snw13ct0b"]
 
 [ext_resource type="Script" path="res://Scripts/Level/Level1.cs" id="1_3wch0"]
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
@@ -8,10 +8,14 @@
 [ext_resource type="Script" path="res://Scripts/Actions.cs" id="6_8bbqd"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
+[ext_resource type="Script" path="res://Scenes/MapArea.cs" id="9_c6hbm"]
+[ext_resource type="PackedScene" uid="uid://b4tnu5fp0rn6w" path="res://Scenes/world_map.tscn" id="9_upnc5"]
 
-[node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d")]
+[node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d", "player")]
 script = ExtResource("1_3wch0")
 camera2d = NodePath("Player/Camera2D")
+player = NodePath("Player")
+pathToMap = "res://data/Map1/"
 
 [node name="Background" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.2, 0.2)
@@ -37,23 +41,6 @@ uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158,
 [node name="CollisionProfilElevation" type="CollisionPolygon2D" parent="Ground/Sol"]
 build_mode = 1
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="Control" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -3.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="DebugLabel" type="Label" parent="CanvasLayer/Control"]
-layout_mode = 0
-offset_right = 270.0
-offset_bottom = 270.0
-text = "Default Text"
-
 [node name="Player" parent="." node_paths=PackedStringArray("sol") instance=ExtResource("3_c23mq")]
 position = Vector2(0, 144)
 sol = NodePath("../Ground/Sol")
@@ -63,8 +50,6 @@ position = Vector2(0, -1440)
 scale = Vector2(10, 10)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(1730, -340)
-scale = Vector2(10, 10)
 
 [node name="TrailSign" type="CanvasLayer" parent="Player"]
 visible = false
@@ -77,6 +62,32 @@ offset_top = -2140.0
 offset_right = -4030.0
 offset_bottom = -2140.0
 scale = Vector2(10, 10)
+
+[node name="Debug" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="Debug"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DebugLabel" type="Label" parent="Debug/Control"]
+layout_mode = 0
+offset_right = 270.0
+offset_bottom = 50.0
+text = "Default Text"
+
+[node name="WorldMap" parent="." instance=ExtResource("9_upnc5")]
+visible = false
+
+[node name="MapArea" type="Area2D" parent="."]
+position = Vector2(50, 500)
+collision_layer = 8
+collision_mask = 8
+script = ExtResource("9_c6hbm")
 
 [node name="Actions" type="CanvasLayer" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("6_8bbqd")
@@ -94,6 +105,9 @@ offset_left = 24.0
 offset_top = 61.0
 offset_right = 68.0
 offset_bottom = 85.0
+text = "Walk"
 
 [connection signal="TrailJunctionChoice" from="Player" to="Player" method="_on_trail_junction_choice"]
+[connection signal="TrailSelection" from="MapArea" to="." method="_on_map_area_trail_selection"]
+[connection signal="TrailSelection" from="MapArea" to="MapArea" method="_on_trail_selection"]
 [connection signal="toggled" from="Actions/Control/CheckButton" to="Actions" method="_on_check_button_toggled"]
