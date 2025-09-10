@@ -1,20 +1,28 @@
-[gd_scene load_steps=4 format=3 uid="uid://qd10ylv0nsn8"]
+[gd_scene load_steps=5 format=3 uid="uid://qd10ylv0nsn8"]
 
-[ext_resource type="Script" path="res://Scripts/UI/MouseArea2d.cs" id="1_0xlcn"]
+[ext_resource type="Script" path="res://Scripts/Tools/MouseCursor.cs" id="1_ma7kd"]
+[ext_resource type="Script" path="res://Scripts/Tools/MouseCursorSprite.cs" id="2_70egg"]
 [ext_resource type="Texture2D" uid="uid://cfussgu2qalpq" path="res://Art/UI/MouseCursor.png" id="2_vhp8k"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_awk3b"]
-radius = 7.07107
+radius = 3.0
 
-[node name="MouseCursor" type="Area2D"]
+[node name="MouseCursorNode" type="Node"]
+
+[node name="MouseCursor" type="Area2D" parent="."]
 collision_layer = 8
 collision_mask = 8
-script = ExtResource("1_0xlcn")
+script = ExtResource("1_ma7kd")
 
-[node name="MouseCollision" type="CollisionShape2D" parent="."]
-position = Vector2(2, 4)
+[node name="MouseCollision" type="CollisionShape2D" parent="MouseCursor"]
+position = Vector2(5, 4)
 shape = SubResource("CircleShape2D_awk3b")
 
-[node name="MouseCursor" type="Sprite2D" parent="."]
-position = Vector2(6, 10)
+[node name="MouseCursorCanvas" type="CanvasLayer" parent="MouseCursor"]
+layer = 4
+
+[node name="MouseCursorSprite" type="Sprite2D" parent="MouseCursor/MouseCursorCanvas"]
+z_index = 4
 texture = ExtResource("2_vhp8k")
+centered = false
+script = ExtResource("2_70egg")

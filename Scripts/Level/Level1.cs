@@ -36,9 +36,10 @@ public partial class Level1 : Node2D
 
 		/* Setup mouse for collision methods */
 		Input.MouseMode = Input.MouseModeEnum.Hidden;
-		var customCursor = GD.Load<PackedScene>("res://Scenes/mouse_cursor.tscn").Instantiate() as MouseArea2d;
+		var customCursorCanvas = GD.Load<PackedScene>("res://Scenes/mouse_cursor.tscn").Instantiate();
+		MouseCursor customCursor = customCursorCanvas.GetNode<MouseCursor>("MouseCursor");
 		customCursor.setMapArea(mapArea);
-		AddChild(customCursor);
+		AddChild(customCursorCanvas);
 
 		/* Scene transition */
 		if (FindChild("SceneTransitionAnimation") != null)
@@ -54,8 +55,7 @@ public partial class Level1 : Node2D
 	public override void _Process(double delta)
 	{
 		genLevel._Process(delta);
-		// Vector2 inc = new Vector2(camera2d.Offset.X + (100 * (float) delta), camera2d.Offset.Y);
-		// camera2d.Offset = inc;
+
 		// Display the X,Y of the player in the label
 		CharacterBody2D player = GetNode<CharacterBody2D>("Player");
 		Label label = GetNode<Label>("Debug/Control/DebugLabel");
@@ -66,8 +66,8 @@ public partial class Level1 : Node2D
 
 	public void TrailSignVisible(bool Visible)
 	{
-		CanvasLayer sign = GetNode<CanvasLayer>("TrailSign");
-		sign.Visible = Visible;
+		CanvasLayer sign = GetNode<CanvasLayer>("TrailSignNode/TrailSign");
+			sign.Visible = Visible;
 	}
 
 	/* TODO move this in global tools class */

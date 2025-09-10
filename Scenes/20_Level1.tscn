@@ -8,10 +8,11 @@
 [ext_resource type="Script" path="res://Scripts/Actions.cs" id="6_8bbqd"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
-[ext_resource type="Script" path="res://Scenes/MapArea.cs" id="9_c6hbm"]
+[ext_resource type="Script" path="res://Scripts/MapArea.cs" id="9_c6hbm"]
 [ext_resource type="PackedScene" uid="uid://b4tnu5fp0rn6w" path="res://Scenes/world_map.tscn" id="9_upnc5"]
 
 [node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d", "player")]
+y_sort_enabled = true
 script = ExtResource("1_3wch0")
 camera2d = NodePath("Player/Camera2D")
 player = NodePath("Player")
@@ -27,6 +28,7 @@ position = Vector2(240, 400)
 texture = ExtResource("2_vytwu")
 
 [node name="Ground" type="Node2D" parent="."]
+z_index = 1
 
 [node name="Sol" type="StaticBody2D" parent="Ground" node_paths=PackedStringArray("Player")]
 script = ExtResource("3_uowpc")
@@ -42,6 +44,7 @@ uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158,
 build_mode = 1
 
 [node name="Player" parent="." node_paths=PackedStringArray("sol", "level") instance=ExtResource("3_c23mq")]
+z_index = 2
 position = Vector2(0, 144)
 sol = NodePath("../Ground/Sol")
 level = NodePath("..")
@@ -49,6 +52,7 @@ level = NodePath("..")
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
 [node name="Debug" type="CanvasLayer" parent="."]
+layer = 0
 
 [node name="Control" type="Control" parent="Debug"]
 layout_mode = 3
@@ -65,13 +69,16 @@ offset_right = 270.0
 offset_bottom = 50.0
 text = "Default Text"
 
-[node name="TrailSign" type="CanvasLayer" parent="."]
+[node name="TrailSignNode" type="Node2D" parent="."]
+z_index = 2
+
+[node name="TrailSign" type="CanvasLayer" parent="TrailSignNode"]
 layer = 2
 visible = false
 scale = Vector2(0.1, 0.1)
 transform = Transform2D(0.1, 0, 0, 0.1, 0, 0)
 
-[node name="InGameUI" parent="TrailSign" instance=ExtResource("7_fx2fa")]
+[node name="InGameUI" parent="TrailSignNode/TrailSign" instance=ExtResource("7_fx2fa")]
 offset_left = -4030.0
 offset_top = -2140.0
 offset_right = -4030.0
@@ -96,6 +103,7 @@ script = ExtResource("6_8bbqd")
 player = NodePath("../Player")
 
 [node name="Control" type="Control" parent="Actions"]
+z_index = 2
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -112,6 +120,4 @@ text = "Walk"
 [connection signal="TrailJunctionChoice" from="." to="." method="_on_trail_junction_choice"]
 [connection signal="TrailJunctionChoiceDone" from="." to="." method="_on_trail_junction_choice_done"]
 [connection signal="TrailJunctionChoice" from="Player" to="Player" method="_on_trail_junction_choice"]
-[connection signal="TrailSelection" from="MapArea" to="." method="_on_map_area_trail_selection"]
-[connection signal="TrailSelection" from="MapArea" to="MapArea" method="_on_trail_selection"]
 [connection signal="toggled" from="Actions/Control/CheckButton" to="Actions" method="_on_check_button_toggled"]
