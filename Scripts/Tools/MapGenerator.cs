@@ -10,11 +10,12 @@ using Vector2 = Godot.Vector2;
 
 public partial class MapGenerator : Node
 {
-	// Structure pour représenter un point GPS
+	public const int TRAIL_LINE_WIDTH = 10;
+
 	public struct GpsPoint
 	{
-		public double Latitude;  // -90 à +90 (Sud à Nord)
-		public double Longitude; // -180 à +180 (Ouest à Est)
+		public double Latitude;  // -90 à +90 (South To North)
+		public double Longitude; // -180 à +180 (West to East)
 
 		public GpsPoint(double lat, double lon)
 		{
@@ -23,7 +24,7 @@ public partial class MapGenerator : Node
 		}
 	}
 
-	// Structure pour représenter une zone géographique
+	// Geographic area
 	public struct GeoBounds
 	{
 		public double MinLatitude;
@@ -43,26 +44,26 @@ public partial class MapGenerator : Node
 	/* TODO: make this dynamic */
 	Vector2 screenSize = new Vector2(100, 200);
 	GeoBounds mapArea = new GeoBounds(
-		minLat: 42.765229, maxLat: 42.766700,  // Sud à Nord
-		minLon: 1.482700, maxLon: 1.483030     // Ouest à Est
+		minLat: 42.765229, maxLat: 42.766700,  // South To North
+		minLon: 1.482700, maxLon: 1.483030     // West to East
 	);
 
-	// MÉTHODE 1: Projection linéaire simple (pour petites zones)
 	public static Vector2 GpsToScreenLinear(GpsPoint gpsPoint, GeoBounds bounds, Vector2 screenSize)
 	{
-		// Normaliser les coordonnées GPS entre 0 et 1
+		// Normalize GPS coord between 0 and 1
 		double normalizedLon = (gpsPoint.Longitude - bounds.MinLongitude) /
 							  (bounds.MaxLongitude - bounds.MinLongitude);
 
 		double normalizedLat = (gpsPoint.Latitude - bounds.MinLatitude) /
 							  (bounds.MaxLatitude - bounds.MinLatitude);
 
-		// Convertir en coordonnées écran
+		// screen coord conversion
 		float screenX = (float)(normalizedLon * screenSize.X);
-		float screenY = (float)((1.0 - normalizedLat) * screenSize.Y); // Inverser Y car écran (0,0) en haut
+		// Reverse Y because screen (0,0) is at top left
+		float screenY = (float)((1.0 - normalizedLat) * screenSize.Y);
 		return new Vector2(screenX, screenY);
 	}
-	public Area2D generateMap(string dir)
+	public List<Area2D> generateMap(string dir)
 	{
 		// pour chaque fichier dans dir:
 		// - parser le xml
@@ -75,12 +76,11 @@ public partial class MapGenerator : Node
 		// ex DMS coord of x1 & x2 (2 consecutive points)
 		// x1(long, lat) 45.7907840 - 6.9719600 => 45° 47' 26.822" - 6° 58' 19.056"
 		// x2(long, lat) 45.790742 - 6.971974 => 45° 47' 26.671" - 6° 58' 19.106"
+		List<Area2D> areasList = new();
 
 		string[] gpxFiles = Directory.GetFiles(ProjectSettings.GlobalizePath(dir));
 		foreach (string gpxFileName in gpxFiles)
 		{
-			if (!gpxFileName.Contains("traceG.gpx"))
-				continue;
 			Gpx trail;
 			/* Generate a profil from a gpx file */
 			trail = new Gpx();
@@ -99,32 +99,33 @@ public partial class MapGenerator : Node
 			}
 
 			// TODO This default name must be public and global
-			trailLine.Name = "theTrail";
+			trailLine.Name = "TrailLine2D";
 
 			trailLine.Points = trace;
-			// TODO 10 must be global
-			trailLine.Width = 10;
+			trailLine.Width = TRAIL_LINE_WIDTH;
 			// TODO This default color must be public and global
 			trailLine.DefaultColor = Colors.Orange;
 
 			// Area2D for collisions detection
-			Area2D area = new Area2D();
+			MapArea area = new();
+			area.Name = Path.GetFileName(gpxFileName);
 			area.AddChild(trailLine);
+			// layer to be enabled - 1
+			area.SetCollisionLayerValue(1, false);
+			area.SetCollisionLayerValue(4, true);
+			area.ZIndex = 2;
 
 			// Add collisions
 			CreateSegmentCollisions(area, trailLine);
 
-			return area;
+			areasList.Add(area);
 		}
-		return new Area2D();
+		return areasList;
 	}
-
-    private List<CollisionShape2D> collisions = new List<CollisionShape2D>();
 
 	private void CreateSegmentCollisions(Area2D area, Line2D line)
 	{
-		collisions.Clear();
-		// Créer une collision pour chaque segment de la ligne
+		// Create collition for each line segment
 		for (int i = 0; i < line.Points.Length - 1; i++)
 		{
 			Vector2 start = line.Points[i];
@@ -133,14 +134,12 @@ public partial class MapGenerator : Node
 			CollisionShape2D collision = new CollisionShape2D();
 			RectangleShape2D rectangle = new RectangleShape2D();
 
-			// Calculer la longueur et l'angle du segment
+			// Length and segment angle
 			Vector2 direction = end - start;
 			float length = direction.Length();
 			float angle = direction.Angle();
 
-			// TODO: put 10 as a global parameter
-			rectangle.Size = new Vector2(10, length);
-
+			rectangle.Size = new Vector2(TRAIL_LINE_WIDTH, length);
 
 			// Position and collision angle
 			collision.Shape = rectangle;
@@ -149,9 +148,8 @@ public partial class MapGenerator : Node
 			// is different of the godot reference.
 			collision.Rotation = angle + Mathf.DegToRad(90);
 
-			// Ajouter la collision à l'Area2D
+			// Add collision to Area2D
 			area.AddChild(collision);
-			collisions.Add(collision);
 		}
 	}
 }

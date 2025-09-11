@@ -10,11 +10,7 @@ public partial class MapArea : Area2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-	}
-
-	public void InitSignals()
-	{
-		trailLine = GetNode<Line2D>("theTrail");
+        Connect("TrailSelection", new Callable(this, nameof(_on_trail_selection)));
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -24,6 +20,9 @@ public partial class MapArea : Area2D
 
 	private void _on_trail_selection(Area2D area, bool selected)
 	{
+		// Retrieve the line
+		trailLine = area.GetNode<Line2D>("TrailLine2D");
+
 		if (selected)
 		{
 			setColorTrail(Colors.Red);

@@ -2,6 +2,8 @@ using Godot;
 using System;
 using static Godot.GD;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Collections;
 
 public partial class Level1 : Node2D
 {
@@ -21,24 +23,24 @@ public partial class Level1 : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		Hashtable trailTable = new Hashtable();
 		/* Create the map */
-		MapArea mapArea = GetNode<MapArea>("MapArea");
+		Node2D mapArea = GetNode<Node2D>("Map");
 		genLevel = new MapGenerator();
-		Area2D aTrace = genLevel.generateMap(pathToMap);
+		List<Area2D> trails = genLevel.generateMap(pathToMap);
 
-		foreach (Node2D child in aTrace.GetChildren())
+		foreach (var trail in trails)
 		{
-			aTrace.RemoveChild(child);
-			mapArea.AddChild(child);
+			GD.Print($"Add {trail.GetType()} named {trail.Name} to mapArea");
+			mapArea.AddChild(trail);
+			trailTable[trail.Name] = trail;
 		}
-
-		mapArea.InitSignals();
 
 		/* Setup mouse for collision methods */
 		Input.MouseMode = Input.MouseModeEnum.Hidden;
 		var customCursorCanvas = GD.Load<PackedScene>("res://Scenes/mouse_cursor.tscn").Instantiate();
 		MouseCursor customCursor = customCursorCanvas.GetNode<MouseCursor>("MouseCursor");
-		customCursor.setMapArea(mapArea);
+		customCursor.setTrails(trailTable);
 		AddChild(customCursorCanvas);
 
 		/* Scene transition */
