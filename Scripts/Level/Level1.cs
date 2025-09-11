@@ -23,7 +23,6 @@ public partial class Level1 : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Hashtable trailTable = new Hashtable();
 		/* Create the map */
 		Node2D mapArea = GetNode<Node2D>("Map");
 		genLevel = new MapGenerator();
@@ -33,14 +32,12 @@ public partial class Level1 : Node2D
 		{
 			GD.Print($"Add {trail.GetType()} named {trail.Name} to mapArea");
 			mapArea.AddChild(trail);
-			trailTable[trail.Name] = trail;
 		}
 
 		/* Setup mouse for collision methods */
 		Input.MouseMode = Input.MouseModeEnum.Hidden;
 		var customCursorCanvas = GD.Load<PackedScene>("res://Scenes/mouse_cursor.tscn").Instantiate();
 		MouseCursor customCursor = customCursorCanvas.GetNode<MouseCursor>("MouseCursor");
-		customCursor.setTrails(trailTable);
 		AddChild(customCursorCanvas);
 
 		/* Scene transition */

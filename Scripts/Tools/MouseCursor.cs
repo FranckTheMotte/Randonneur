@@ -10,9 +10,6 @@ mouse surface detection.
 public partial class MouseCursor : Area2D
 {
 
-    // list of trails on the map
-    private Hashtable m_trailTable = new Hashtable();
-
     public override void _Ready()
     {
         Connect("area_entered", new Callable(this, nameof(_on_area_entered)));
@@ -23,7 +20,6 @@ public partial class MouseCursor : Area2D
 
     private void _on_area_entered(Area2D area)
     {
-        MapArea mapArea = (MapArea)m_trailTable[area.Name];
         area.EmitSignal(MapArea.SignalName.TrailSelection, area, true);
     }
 
@@ -35,10 +31,5 @@ public partial class MouseCursor : Area2D
     public override void _Process(double delta)
     {
         Position = GetGlobalMousePosition();
-    }
-
-    internal void setTrails(Hashtable trails)
-    {
-        m_trailTable = trails;
     }
 }
