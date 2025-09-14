@@ -15,7 +15,7 @@ public partial class Level1 : Node2D
 
 	[Signal] public delegate void TrailJunctionChoiceEventHandler();
 	[Signal] public delegate void TrailJunctionChoiceDoneEventHandler();
-	private MapGenerator genLevel;
+	private MapGenerator mapGenerator;
 	private AnimationPlayer fadeAnimation;
 
 	private Sol sol;
@@ -24,14 +24,23 @@ public partial class Level1 : Node2D
 	public override void _Ready()
 	{
 		/* Create the map */
-		Node2D mapArea = GetNode<Node2D>("Map");
-		genLevel = new MapGenerator();
-		List<Area2D> trails = genLevel.generateMap(pathToMap);
+		Control worldMapControl = GetNode<Control>("WorldMap");
+
+		/* Set world map size */
+		MarginContainer worldMargin = worldMapControl.GetNode<MarginContainer>("Margin");
+		ColorRect worldbgRect = worldMapControl.GetNode<ColorRect>("Margin/BackgroundRect");
+		worldMapControl.Position = new Vector2(50, 500);
+		worldMargin.GetThemeConstant("margin_left");
+		worldMargin.CustomMinimumSize = new Vector2(400,300);
+		/* TODO: compute with margins */
+		mapGenerator = new MapGenerator(340, 270);
+
+		List<Area2D> trails = mapGenerator.generateMap(pathToMap);
 
 		foreach (var trail in trails)
 		{
 			GD.Print($"Add {trail.GetType()} named {trail.Name} to mapArea");
-			mapArea.AddChild(trail);
+			worldbgRect.AddChild(trail);
 		}
 
 		/* Setup mouse for collision methods */
@@ -53,7 +62,7 @@ public partial class Level1 : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		genLevel._Process(delta);
+		mapGenerator._Process(delta);
 
 		// Display the X,Y of the player in the label
 		CharacterBody2D player = GetNode<CharacterBody2D>("Player");
