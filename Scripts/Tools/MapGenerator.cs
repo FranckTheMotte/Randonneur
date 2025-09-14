@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -42,13 +43,14 @@ public partial class MapGenerator : Node
 	}
 
 	/* TODO: make this dynamic */
-	Vector2 screenSize = new Vector2(100, 200);
-	GeoBounds mapArea = new GeoBounds(
-		minLat: 42.765229, maxLat: 42.766700,  // South To North
-		minLon: 1.482700, maxLon: 1.483030     // West to East
-	);
+	public Vector2 displaySize { get; }
 
-	public static Vector2 GpsToScreenLinear(GpsPoint gpsPoint, GeoBounds bounds, Vector2 screenSize)
+    public MapGenerator(float width, float height)
+    {
+        displaySize = new Vector2(width, height);
+    }
+
+    public static Vector2 GpsToScreenLinear(GpsPoint gpsPoint, GeoBounds bounds, Vector2 screenSize)
 	{
 		// Normalize GPS coord between 0 and 1
 		double normalizedLon = (gpsPoint.Longitude - bounds.MinLongitude) /
@@ -78,7 +80,43 @@ public partial class MapGenerator : Node
 		// x2(long, lat) 45.790742 - 6.971974 => 45° 47' 26.671" - 6° 58' 19.106"
 		List<Area2D> areasList = new();
 
+		/* First run to get min and max values for longitude and latiture*/
 		string[] gpxFiles = Directory.GetFiles(ProjectSettings.GlobalizePath(dir));
+		double minLatitude, maxLatitude;
+		double minLongitude, maxLongitude;
+
+		minLatitude = 90;
+		minLongitude = 180;
+		maxLatitude = -90;
+		maxLongitude = 0;
+
+		foreach (string gpxFileName in gpxFiles)
+		{
+			Gpx trail;
+			/* Generate a profil from a gpx file */
+			trail = new Gpx();
+			trail.Load(gpxFileName);
+
+			foreach (GpxProperties gpxPoint in trail.TrackPoints)
+			{
+				if (minLatitude > gpxPoint.coord.X)
+					minLatitude = gpxPoint.coord.X;
+				if (minLongitude > gpxPoint.coord.Y)
+					minLongitude = gpxPoint.coord.Y;
+				if (maxLatitude < gpxPoint.coord.X)
+					maxLatitude = gpxPoint.coord.X;
+				if (maxLongitude < gpxPoint.coord.Y)
+					maxLongitude = gpxPoint.coord.Y;
+			}
+		}
+
+		GD.Print($"minLatitude {minLatitude} maxLatitude {maxLatitude} minLongitude {minLongitude} maxLongitude {maxLongitude}");
+
+		GeoBounds mapBounds = new GeoBounds(
+			minLat: minLatitude, maxLat: maxLatitude,  // South To North
+			minLon: minLongitude, maxLon: maxLongitude     // West to East
+		);
+
 		foreach (string gpxFileName in gpxFiles)
 		{
 			Gpx trail;
@@ -92,7 +130,7 @@ public partial class MapGenerator : Node
 			foreach (GpxProperties gpxPoint in trail.TrackPoints)
 			{
 				GpsPoint gpsPoint = new GpsPoint(gpxPoint.coord.X, gpxPoint.coord.Y);
-				trace[i] = GpsToScreenLinear(gpsPoint, mapArea, screenSize);
+				trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
 				GD.Print($" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y}");
 				GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");
 				i++;
@@ -110,7 +148,6 @@ public partial class MapGenerator : Node
 			MapArea area = new();
 			area.Name = Path.GetFileName(gpxFileName);
 			area.AddChild(trailLine);
-			// layer to be enabled - 1
 			area.SetCollisionLayerValue(1, false);
 			area.SetCollisionLayerValue(4, true);
 			area.ZIndex = 2;
