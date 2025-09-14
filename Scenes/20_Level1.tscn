@@ -85,7 +85,7 @@ offset_bottom = -2140.0
 scale = Vector2(10, 10)
 
 [node name="WorldMap" parent="." instance=ExtResource("9_upnc5")]
-visible = false
+z_index = 1
 
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("8_bsps8")]
 position = Vector2(0, -1296)
