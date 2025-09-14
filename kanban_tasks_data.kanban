@@ -13,29 +13,30 @@
 			"tasks": [
 				"61e62606-0eb1-4be5-a9fd-8f07d2347021",
 				"4822ef5d-ef8a-4f69-89a2-b01bad0fe1bc",
-				"0f8f360c-2eb8-4e81-9b1a-6683d75a4c78",
-				"866000ee-555f-4cbf-bd00-2c21890f26bb",
-				"9c9dcc62-3c18-4b71-92b3-6b3868ad40b5"
+				"9c9dcc62-3c18-4b71-92b3-6b3868ad40b5",
+				"866000ee-555f-4cbf-bd00-2c21890f26bb"
 			]
 		},
 		{
 			"uuid": "09c497c4-3204-4db9-8b31-8906c68cdeeb",
 			"title": "Doing",
 			"tasks": [
-				"40eb81b9-f024-48f0-b019-702be054b1d3",
-				"74c56059-03c1-42d8-ab56-c510d29d68e8"
+				"74c56059-03c1-42d8-ab56-c510d29d68e8",
+				"240670de-88af-4f9b-8176-0da545af0446"
 			]
 		},
 		{
 			"uuid": "7ef3ff33-bfc4-4628-aec0-8f4ce10154c9",
 			"title": "Done",
-			"tasks": []
+			"tasks": [
+				"40eb81b9-f024-48f0-b019-702be054b1d3"
+			]
 		}
 	],
 	"tasks": [
 		{
 			"uuid": "40eb81b9-f024-48f0-b019-702be054b1d3",
-			"title": "Définir changement de direction",
+			"title": "Définir changement de direction - Phase 1 - Pancarte uniquement",
 			"description": "Idées:\nComment notifier un carrefour?\n\nData:\n- placer un tag dans le xml?\n - avec direction et xml pour définir le chemin de la nouvelle direction\n\nGraphiquement:\n- panneau qui affiche la liste des directions\n- fondu lors du changement de direction\n\n\n\n\n",
 			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
 			"steps": []
@@ -50,13 +51,6 @@
 		{
 			"uuid": "4822ef5d-ef8a-4f69-89a2-b01bad0fe1bc",
 			"title": "Génération du décor",
-			"description": "",
-			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
-			"steps": []
-		},
-		{
-			"uuid": "0f8f360c-2eb8-4e81-9b1a-6683d75a4c78",
-			"title": "Map du dessus",
 			"description": "",
 			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
 			"steps": []
@@ -78,7 +72,14 @@
 		{
 			"uuid": "74c56059-03c1-42d8-ab56-c510d29d68e8",
 			"title": "But du jeu",
-			"description": "Faire des randonnées avec des évènements et des lieux à valider.\nLe randonneur a un matériel à gérer ainsi que sa condition physique.\n\nPour valider une randonnée, il faut :\n- partir d'un point A et arriver au point B.\n- gérer les évènements\n- valider des lieux de passage (point de vue, village, cirque, ...)\n- optimiser son sac\n\nCe que je veux mettre en avant:\n- Lecture de carte (difficultés chemin)\n- Randonnée de nuit\n- gestion météo\n- comportements à tenir face à des animaux\n- bivouac\n- nuit en refuge\n\nEvènements\n- rencontre avec patous\n- ours\n- autres randonneurs\n- orage\n\n\nVrac\n- barre de râle\n- niveau de difficulté par chemin\n- jardinage\n\n",
+			"description": "Faire des randonnées avec des évènements et des lieux à valider.\nLe randonneur a un matériel à gérer ainsi que sa condition physique.\n\nPour valider une randonnée, il faut :\n- partir d'un point A et arriver au point B.\n- gérer les évènements\n- valider des lieux de passage (point de vue, village, cirque, ...)\n- optimiser son sac\n\nCe que je veux mettre en avant:\n- Lecture de carte (difficultés chemin)\n- Randonnée de nuit\n- gestion météo\n- comportements à tenir face à des animaux\n- bivouac\n- nuit en refuge\n\nEvènements\n- rencontre avec patous\n- ours\n- autres randonneurs\n- orage\n\n\nVrac\n- barre de râle\n- niveau de difficulté par chemin\n- jardinage\n- fatigue = vision limitée (comme dans darkest dungeon)\n",
+			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
+			"steps": []
+		},
+		{
+			"uuid": "240670de-88af-4f9b-8176-0da545af0446",
+			"title": "Map",
+			"description": "Afficher la map des parcours GPX.\nUtilisé lors des changements de direction.\n",
 			"category": "87012a8d-f602-47a4-9fb5-278937ac87c2",
 			"steps": []
 		}
