@@ -22,6 +22,7 @@ public partial class MapArea : Area2D
 	{
 		// Retrieve the line
 		trailLine = area.GetNode<Line2D>("TrailLine2D");
+		GD.Print($"trail selection {area.Name}");
 
 		if (selected)
 		{

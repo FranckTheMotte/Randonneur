@@ -77,10 +77,16 @@ public partial class Level1 : Node2D
 		label.Text = txt;
 	}
 
+	public void MapVisible(bool Visible)
+	{
+		Control map = GetNode<Control>("WorldMap");
+		map.Visible = Visible;
+	}
+
 	public void TrailSignVisible(bool Visible)
 	{
 		CanvasLayer sign = GetNode<CanvasLayer>("TrailSignNode/TrailSign");
-			sign.Visible = Visible;
+		sign.Visible = Visible;
 	}
 
 	/* TODO move this in global tools class */
@@ -91,7 +97,7 @@ public partial class Level1 : Node2D
 
 	private void _on_trail_junction_choice_done(string gpxFile)
 	{
-		TrailSignVisible(false);
+		MapVisible(false);
 		sol.generateGround("res://data/" + gpxFile);
 		fadeAnimation.Play("fade_in");
 		Sleep(500);
@@ -105,7 +111,7 @@ public partial class Level1 : Node2D
 		InGameUi gameUI = InGameUi.Instance;
 		DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
 		destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate, sol.CurrentTrack.m_trailJunctions[junctionIndex]);
-		TrailSignVisible(true);
+		MapVisible(true);
 	}
 
 
