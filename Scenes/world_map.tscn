@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b4tnu5fp0rn6w"]
+[gd_scene load_steps=3 format=3 uid="uid://b4tnu5fp0rn6w"]
 
 [ext_resource type="Script" path="res://Scripts/UI/WorldMap.cs" id="1_5xiep"]
+[ext_resource type="Texture2D" uid="uid://b158v0os365ch" path="res://Art/UI/ui.png" id="2_jsdbf"]
 
 [node name="WorldMap" type="Control"]
 z_index = 2
@@ -9,15 +10,36 @@ anchors_preset = 0
 mouse_force_pass_scroll_events = false
 script = ExtResource("1_5xiep")
 
-[node name="Margin" type="MarginContainer" parent="."]
-custom_minimum_size = Vector2(200, 100)
+[node name="BgMargin" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(500, 400)
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
 
-[node name="BackgroundRect" type="ColorRect" parent="Margin"]
+[node name="BgNinePathRect" type="NinePatchRect" parent="BgMargin"]
 layout_mode = 2
-color = Color(0.992157, 0.741176, 0.262745, 1)
+texture = ExtResource("2_jsdbf")
+region_rect = Rect2(0, 133, 782, 268)
+
+[node name="MapMargin" type="MarginContainer" parent="BgMargin/BgNinePathRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="MapRect" type="ColorRect" parent="BgMargin/BgNinePathRect/MapMargin"]
+layout_mode = 2
+color = Color(1, 1, 1, 0)
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

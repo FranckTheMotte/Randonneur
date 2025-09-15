@@ -24,23 +24,28 @@ public partial class Level1 : Node2D
 	public override void _Ready()
 	{
 		/* Create the map */
-		Control worldMapControl = GetNode<Control>("WorldMap");
+		Control worldMapSign = GetNode<Control>("WorldMap");
 
 		/* Set world map size */
-		MarginContainer worldMargin = worldMapControl.GetNode<MarginContainer>("Margin");
-		ColorRect worldbgRect = worldMapControl.GetNode<ColorRect>("Margin/BackgroundRect");
-		worldMapControl.Position = new Vector2(50, 500);
-		worldMargin.GetThemeConstant("margin_left");
-		worldMargin.CustomMinimumSize = new Vector2(400,300);
+		MarginContainer bgMargin = worldMapSign.GetNode<MarginContainer>("BgMargin");
+		MarginContainer mapMargin = bgMargin.GetNode<MarginContainer>("BgNinePathRect/MapMargin");
+		ColorRect mapRect = mapMargin.GetNode<ColorRect>("MapRect");
+		worldMapSign.Position = new Vector2(50, 500);
+
 		/* TODO: compute with margins */
-		mapGenerator = new MapGenerator(340, 270);
+		float mapWidth = bgMargin.CustomMinimumSize.X - bgMargin.GetThemeConstant("margin_left") - bgMargin.GetThemeConstant("margin_right") -
+						 mapMargin.GetThemeConstant("margin_left") - mapMargin.GetThemeConstant("margin_right");
+		float mapHeight = bgMargin.CustomMinimumSize.Y - bgMargin.GetThemeConstant("margin_top") - bgMargin.GetThemeConstant("margin_bottom") -
+						  mapMargin.GetThemeConstant("margin_top") - mapMargin.GetThemeConstant("margin_bottom");
+		GD.Print($"map W H {mapWidth} {mapHeight}");
+		mapGenerator = new MapGenerator(mapWidth, mapHeight);
 
 		List<Area2D> trails = mapGenerator.generateMap(pathToMap);
 
 		foreach (var trail in trails)
 		{
 			GD.Print($"Add {trail.GetType()} named {trail.Name} to mapArea");
-			worldbgRect.AddChild(trail);
+			mapRect.AddChild(trail);
 		}
 
 		/* Setup mouse for collision methods */

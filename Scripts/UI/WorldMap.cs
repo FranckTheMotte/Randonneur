@@ -14,7 +14,7 @@ public partial class WorldMap : Control
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		m_margin = GetNode<MarginContainer>("Margin");
+		m_margin = GetNode<MarginContainer>("BgMargin");
 	}
 
 	public override void _Input(InputEvent @event)
