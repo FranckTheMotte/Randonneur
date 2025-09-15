@@ -32,8 +32,8 @@ public partial class Player : CharacterBody2D
 		{
 			/* Does the player reach a trail junction ? */
 			int index = (int)this.Position.X;
-			int trailJunctionIndex = sol.CurrentTrack.TrackPoints[index].trailJunctionIndex;
-			if (index < sol.CurrentTrack.TrackPoints.Length &&
+			int trailJunctionIndex = sol.CurrentTrack.m_trackPoints[index].trailJunctionIndex;
+			if (index < sol.CurrentTrack.m_trackPoints.Length &&
 				trailJunctionIndex != -1 &&
 				Walk != 0)
 			{

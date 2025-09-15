@@ -35,6 +35,13 @@ public struct DMS
 	public float sec;
 }
 
+public struct GpxWaypoint
+{
+	public Vector2 coord { get; set; }
+	public float elevation { get; set; }
+	public String waypoint;
+}
+
 public struct GpxProperties
 {
 	public Vector2 coord { get; set; }
@@ -42,6 +49,7 @@ public struct GpxProperties
 	public DMS latDMS;
 	public Vector2 elevation { get; set; }
 	public int trailJunctionIndex;
+	public String waypoint;
 }
 
 public struct GpxDestination
@@ -62,8 +70,9 @@ public partial class GpxTrailJunction : GodotObject
 public class Gpx
 {
 	// x : index, y : value	
-	public GpxProperties[] TrackPoints { get; set; }
-	public List<GpxTrailJunction> trailJunctions;
+	public GpxProperties[] m_trackPoints { get; set; }
+	private GpxWaypoint[] m_gpxWayPoints;
+	public List<GpxTrailJunction> m_trailJunctions;
 
 	private Direction strToDirection(string directionStr)
 	{
@@ -114,6 +123,17 @@ public class Gpx
 		return (deg, min, sec);
 	}
 
+	private String getWaypointName(float latitude, float longitude)
+	{
+		foreach (var waypoint in m_gpxWayPoints)
+		{
+			GD.Print($"way {waypoint.coord.X} {waypoint.coord.Y}");
+			if (waypoint.coord.X == latitude && waypoint.coord.Y == longitude)
+				return waypoint.waypoint;
+		}
+		return "";
+	}
+
 	public bool Load(string filePath)
 	{
 		XmlDocument xmlDoc = new XmlDocument();
@@ -133,40 +153,55 @@ public class Gpx
 		try
 		{
 			XmlNode root = xmlDoc.FirstChild;
-			Print($"First node: {root.Name}");
 
 			var namespaceManager = new XmlNamespaceManager(xmlDoc.NameTable);
 			namespaceManager.AddNamespace("a", "http://www.topografix.com/GPX/1/1");
 
-			XmlNodeList segments = xmlDoc.SelectNodes("//a:gpx/a:trk/a:trkseg/a:trkpt", namespaceManager);
-			Print($"nb segments: {segments.Count}");
-			TrackPoints = new GpxProperties[segments.Count];
 
+			/* Load waypoints */
+			XmlNodeList waypoints = xmlDoc.SelectNodes("//a:gpx/a:wpt", namespaceManager);
+			m_gpxWayPoints = new GpxWaypoint[waypoints.Count];
 			int i = 0; // counter to store trackpoints
-			foreach (XmlNode segment in segments)
+			foreach (XmlNode waypoint in waypoints)
+			{
+				m_gpxWayPoints[i].elevation = float.Parse(waypoint["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat);
+				float longitude = float.Parse(waypoint.Attributes["lon"].Value, CultureInfo.InvariantCulture.NumberFormat);
+				float latitude = float.Parse(waypoint.Attributes["lat"].Value, CultureInfo.InvariantCulture.NumberFormat);
+				m_gpxWayPoints[i].coord = new Vector2(latitude, longitude);
+				m_gpxWayPoints[i].waypoint = waypoint["name"].InnerText;
+				i++;
+			}
+
+			/* Load track points */
+			XmlNodeList trackpoints = xmlDoc.SelectNodes("//a:gpx/a:trk/a:trkseg/a:trkpt", namespaceManager);
+			m_trackPoints = new GpxProperties[trackpoints.Count];
+
+			i = 0; // counter to store trackpoints
+			foreach (XmlNode trackpoint in trackpoints)
 			{
 				// TODO: don't use 2000.00f
-				TrackPoints[i].elevation = new Vector2(i, 2000.00f + (float.Parse(segment["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
-				TrackPoints[i].trailJunctionIndex = -1;
-				float longitude = float.Parse(segment.Attributes["lon"].Value, CultureInfo.InvariantCulture.NumberFormat);
-				float latitude = float.Parse(segment.Attributes["lat"].Value, CultureInfo.InvariantCulture.NumberFormat);
+				m_trackPoints[i].elevation = new Vector2(i, 2000.00f + (float.Parse(trackpoint["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
+				m_trackPoints[i].trailJunctionIndex = -1;
+				float longitude = float.Parse(trackpoint.Attributes["lon"].Value, CultureInfo.InvariantCulture.NumberFormat);
+				float latitude = float.Parse(trackpoint.Attributes["lat"].Value, CultureInfo.InvariantCulture.NumberFormat);
 
 				var result = getDMSFromDecimal(longitude);
-				TrackPoints[i].longDMS.degree = result.degree;
-				TrackPoints[i].longDMS.min = result.min;
-				TrackPoints[i].longDMS.sec = result.sec;
+				m_trackPoints[i].longDMS.degree = result.degree;
+				m_trackPoints[i].longDMS.min = result.min;
+				m_trackPoints[i].longDMS.sec = result.sec;
 				result = getDMSFromDecimal(latitude);
-				TrackPoints[i].latDMS.degree = result.degree;
-				TrackPoints[i].latDMS.min = result.min;
-				TrackPoints[i].latDMS.sec = result.sec;
-				TrackPoints[i].coord = new Vector2(latitude, longitude);
-				XmlNode xTrailJunction = segment.SelectSingleNode("a:extensions/a:trailjunction", namespaceManager);
+				m_trackPoints[i].latDMS.degree = result.degree;
+				m_trackPoints[i].latDMS.min = result.min;
+				m_trackPoints[i].latDMS.sec = result.sec;
+				m_trackPoints[i].coord = new Vector2(latitude, longitude);
+				m_trackPoints[i].waypoint = getWaypointName(latitude, longitude);
+				XmlNode xTrailJunction = trackpoint.SelectSingleNode("a:extensions/a:trailjunction", namespaceManager);
 
 				if (xTrailJunction != null)
 				{
 					GD.Print($"Extensions-Trailjunction");
-					if (trailJunctions == null)
-						trailJunctions = new List<GpxTrailJunction>();
+					if (m_trailJunctions == null)
+						m_trailJunctions = new List<GpxTrailJunction>();
 
 					GpxTrailJunction trailJunction = new GpxTrailJunction();
 
@@ -176,7 +211,7 @@ public class Gpx
 						trailJunction.name = "Elsewhere";
 					GD.Print($"trailjunction.name {trailJunction.name}");
 
-					XmlNodeList destinations = segment.SelectNodes("a:extensions/a:trailjunction/a:destination", namespaceManager);
+					XmlNodeList destinations = trackpoint.SelectNodes("a:extensions/a:trailjunction/a:destination", namespaceManager);
 					foreach (XmlNode destination in destinations)
 					{
 						GpxDestination dest = new GpxDestination();
@@ -193,9 +228,9 @@ public class Gpx
 						trailJunction.destinations.Add(dest);
 					}
 
-					int newIndex = trailJunctions.Count;
-					TrackPoints[i].trailJunctionIndex = newIndex;
-					trailJunctions.Add(trailJunction);
+					int newIndex = m_trailJunctions.Count;
+					m_trackPoints[i].trailJunctionIndex = newIndex;
+					m_trailJunctions.Add(trailJunction);
 				}
 				i++;
 			}

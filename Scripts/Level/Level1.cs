@@ -104,7 +104,7 @@ public partial class Level1 : Node2D
 		/* Update destinations list on sign */
 		InGameUi gameUI = InGameUi.Instance;
 		DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
-		destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate, sol.CurrentTrack.trailJunctions[junctionIndex]);
+		destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate, sol.CurrentTrack.m_trailJunctions[junctionIndex]);
 		TrailSignVisible(true);
 	}
 

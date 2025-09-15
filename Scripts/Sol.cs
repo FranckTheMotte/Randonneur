@@ -63,13 +63,13 @@ public partial class Sol : StaticBody2D
 			CurrentTrack.Load(gpxFile);
 
 			/* Add 2 points in order to display a solid ground */
-			Vector2[] ground = new Vector2[CurrentTrack.TrackPoints.Length + 2];
+			Vector2[] ground = new Vector2[CurrentTrack.m_trackPoints.Length + 2];
 
-			int solLength = CurrentTrack.TrackPoints.Length;
+			int solLength = CurrentTrack.m_trackPoints.Length;
 			for (int i = 0; i < solLength; i++)
 			{
-				ground[i] = CurrentTrack.TrackPoints[i].elevation;
-				if (CurrentTrack.TrackPoints[i].trailJunctionIndex != -1)
+				ground[i] = CurrentTrack.m_trackPoints[i].elevation;
+				if (CurrentTrack.m_trackPoints[i].trailJunctionIndex != -1)
 				{
 					TrailJunctions.Add(new Vector2(ground[i].X, ground[i].Y - 50));
 				}
@@ -93,7 +93,7 @@ public partial class Sol : StaticBody2D
 			Player.Position = position;
 
 			/* player limit */
-			Vector2 limit = new Vector2(CurrentTrack.TrackPoints.Length, 0);
+			Vector2 limit = new Vector2(CurrentTrack.m_trackPoints.Length, 0);
 			Player.worldLimit = limit;
 		}
 		/* TODO put default value if no Gpx is provided */

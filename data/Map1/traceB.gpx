@@ -4,23 +4,16 @@
     <name>traceB</name>
     <desc>B</desc>
   </metadata>
+  <wpt lat="42.765520" lon="1.482860">
+    <ele>731</ele>
+	<name>Montcalm</name>
+  </wpt>
+  <wpt lat="42.766740" lon="1.483030">
+    <ele>729.2</ele>
+	<name>Roquefixa</name>
+  </wpt>
   <trk>
     <trkseg>
-      <trkpt lat="42.765229" lon="1.482780">
-        <ele>731</ele>
-      </trkpt>
-      <trkpt lat="42.765240" lon="1.482740">
-        <ele>731</ele>
-      </trkpt>
-      <trkpt lat="42.765390" lon="1.482830">
-        <ele>730.8</ele>
-      </trkpt>
-      <trkpt lat="42.765450" lon="1.482850">
-        <ele>730.7</ele>
-      </trkpt>
-      <trkpt lat="42.765480" lon="1.482850">
-        <ele>730.7</ele>
-      </trkpt>
       <trkpt lat="42.765520" lon="1.482860">
         <ele>730.7</ele>
       </trkpt>

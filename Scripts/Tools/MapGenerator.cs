@@ -97,7 +97,7 @@ public partial class MapGenerator : Node
 			trail = new Gpx();
 			trail.Load(gpxFileName);
 
-			foreach (GpxProperties gpxPoint in trail.TrackPoints)
+			foreach (GpxProperties gpxPoint in trail.m_trackPoints)
 			{
 				if (minLatitude > gpxPoint.coord.X)
 					minLatitude = gpxPoint.coord.X;
@@ -124,15 +124,26 @@ public partial class MapGenerator : Node
 			trail = new Gpx();
 			trail.Load(gpxFileName);
 			Line2D trailLine = new Line2D();
-			Vector2[] trace = new Vector2[trail.TrackPoints.Length];
+			Vector2[] trace = new Vector2[trail.m_trackPoints.Length];
 			int i = 0;
+			MapArea area = new();
 
-			foreach (GpxProperties gpxPoint in trail.TrackPoints)
+			foreach (GpxProperties gpxPoint in trail.m_trackPoints)
 			{
 				GpsPoint gpsPoint = new GpsPoint(gpxPoint.coord.X, gpxPoint.coord.Y);
 				trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
-				GD.Print($" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y}");
+				GD.Print($" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.waypoint}");
 				GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");
+				if (gpxPoint.waypoint.Length > 0)
+				{
+						Label waypointLabel = new Label();
+					waypointLabel.Name = waypointLabel.Text = gpxPoint.waypoint;
+					waypointLabel.Position = trace[i];
+					waypointLabel.ZIndex = 2;
+					waypointLabel.LabelSettings = new LabelSettings();
+					waypointLabel.LabelSettings.FontColor = Colors.Black;
+					area.AddChild(waypointLabel);
+				}
 				i++;
 			}
 
@@ -145,7 +156,6 @@ public partial class MapGenerator : Node
 			trailLine.DefaultColor = Colors.Orange;
 
 			// Area2D for collisions detection
-			MapArea area = new();
 			area.Name = Path.GetFileName(gpxFileName);
 			area.AddChild(trailLine);
 			area.SetCollisionLayerValue(1, false);
