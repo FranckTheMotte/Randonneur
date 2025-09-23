@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Device.Location;
 
 // This class load a gpx file to:
 // - convert lat and lon to coord (x,y) for a map (top view)
@@ -45,6 +46,7 @@ public struct GpxWaypoint
 public struct GpxProperties
 {
 	public Vector2 coord { get; set; }
+	public float distanceToNext; // distance to next gps point (meter)
 	public DMS longDMS;
 	public DMS latDMS;
 	public Vector2 elevation { get; set; }
@@ -65,6 +67,7 @@ public partial class GpxTrailJunction : GodotObject
 {
 	public string name;
 	public List<GpxDestination> destinations;
+	internal float distance; // Distance from start (meter)
 }
 
 public class Gpx
@@ -73,8 +76,9 @@ public class Gpx
 	public GpxProperties[] m_trackPoints { get; set; }
 	private GpxWaypoint[] m_gpxWayPoints;
 	public List<GpxTrailJunction> m_trailJunctions;
+    internal float maxX; // length of the track (meters)
 
-	private Direction strToDirection(string directionStr)
+    private Direction strToDirection(string directionStr)
 	{
 		Direction result;
 
@@ -127,11 +131,29 @@ public class Gpx
 	{
 		foreach (var waypoint in m_gpxWayPoints)
 		{
-			GD.Print($"way {waypoint.coord.X} {waypoint.coord.Y}");
 			if (waypoint.coord.X == latitude && waypoint.coord.Y == longitude)
 				return waypoint.waypoint;
 		}
 		return "";
+	}
+
+	/**
+	    Retrieve distance in meter between two gps points.
+		Use of  System.Device.Location;
+
+		@param sLatitude  latitude of start point
+		@param sLongitude longitude of start point
+		@param sLatitude  latitude of end point
+		@param sLongitude longitude of end point
+
+		@return distance in meter
+	*/
+	private float getDistance(float sLatitude, float sLongitude, float eLatitude, float eLongitude)
+	{
+		var sCoord = new GeoCoordinate(sLatitude, sLongitude);
+		var eCoord = new GeoCoordinate(eLatitude, eLongitude);
+
+		return (float)sCoord.GetDistanceTo(eCoord);
 	}
 
 	public bool Load(string filePath)
@@ -157,7 +179,6 @@ public class Gpx
 			var namespaceManager = new XmlNamespaceManager(xmlDoc.NameTable);
 			namespaceManager.AddNamespace("a", "http://www.topografix.com/GPX/1/1");
 
-
 			/* Load waypoints */
 			XmlNodeList waypoints = xmlDoc.SelectNodes("//a:gpx/a:wpt", namespaceManager);
 			m_gpxWayPoints = new GpxWaypoint[waypoints.Count];
@@ -179,8 +200,6 @@ public class Gpx
 			i = 0; // counter to store trackpoints
 			foreach (XmlNode trackpoint in trackpoints)
 			{
-				// TODO: don't use 2000.00f
-				m_trackPoints[i].elevation = new Vector2(i, 2000.00f + (float.Parse(trackpoint["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
 				m_trackPoints[i].trailJunctionIndex = -1;
 				float longitude = float.Parse(trackpoint.Attributes["lon"].Value, CultureInfo.InvariantCulture.NumberFormat);
 				float latitude = float.Parse(trackpoint.Attributes["lat"].Value, CultureInfo.InvariantCulture.NumberFormat);
@@ -195,8 +214,25 @@ public class Gpx
 				m_trackPoints[i].latDMS.sec = result.sec;
 				m_trackPoints[i].coord = new Vector2(latitude, longitude);
 				m_trackPoints[i].waypoint = getWaypointName(latitude, longitude);
-				XmlNode xTrailJunction = trackpoint.SelectSingleNode("a:extensions/a:trailjunction", namespaceManager);
 
+				// distance between previous point and current (stored in previous)
+				if (i > 0)
+				{
+					m_trackPoints[i - 1].distanceToNext = getDistance(m_trackPoints[i - 1].coord.X, m_trackPoints[i - 1].coord.Y, latitude, longitude);
+					//GD.Print($"distance {m_trackPoints[i-1].distanceToNext} maxX {maxX}");
+					// TODO: don't use 2000.00f
+					m_trackPoints[i].elevation = new Vector2(m_trackPoints[i - 1].elevation.X + m_trackPoints[i - 1].distanceToNext,
+															 2000.00f + (float.Parse(trackpoint["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
+					maxX += m_trackPoints[i - 1].distanceToNext;
+				}
+				else
+				{
+					// First coord 
+					// TODO: don't use 2000.00f
+					m_trackPoints[i].elevation = new Vector2(0, 2000.00f + (float.Parse(trackpoint["ele"].InnerText, CultureInfo.InvariantCulture.NumberFormat) * -1.00f));
+				}
+
+				XmlNode xTrailJunction = trackpoint.SelectSingleNode("a:extensions/a:trailjunction", namespaceManager);
 				if (xTrailJunction != null)
 				{
 					GD.Print($"Extensions-Trailjunction");
@@ -222,11 +258,12 @@ public class Gpx
 						dest.direction = strToDirection(destination["direction"].InnerText);
 						dest.trail = destination["trail"].InnerText;
 
-						GD.Print($"dest gpx: {destination["gpx"].InnerText} name: {destination.Attributes["name"].Value}");
+						//GD.Print($"dest gpx: {destination["gpx"].InnerText} name: {destination.Attributes["name"].Value}");
 						if (trailJunction.destinations == null)
 							trailJunction.destinations = new List<GpxDestination>();
 						trailJunction.destinations.Add(dest);
 					}
+					trailJunction.distance = maxX;
 
 					int newIndex = m_trailJunctions.Count;
 					m_trackPoints[i].trailJunctionIndex = newIndex;
@@ -234,6 +271,7 @@ public class Gpx
 				}
 				i++;
 			}
+			GD.Print($"Maxx {maxX}");
 		}
 		catch (System.Exception e)
 		{

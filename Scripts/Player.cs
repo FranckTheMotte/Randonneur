@@ -18,9 +18,23 @@ public partial class Player : CharacterBody2D
 
 	public static Player Instance { get; private set; }
 
+	// next junction index
+	private int m_junctionIndex = -1;
+
+	// next junction
+	private GpxTrailJunction m_junction = null;
+
 	public override void _Ready()
 	{
 		Instance = this;
+
+		// not all trails got a junction
+		if (sol.CurrentTrack.m_trailJunctions.Count > 0)
+		{
+			// start from first index
+			m_junctionIndex = 0;
+			m_junction = (GpxTrailJunction)sol.CurrentTrack.m_trailJunctions[m_junctionIndex];
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -31,33 +45,39 @@ public partial class Player : CharacterBody2D
 		if (this.Position.X >= 0 && this.Position.X < worldLimit.X)
 		{
 			/* Does the player reach a trail junction ? */
-			int index = (int)this.Position.X;
-			int trailJunctionIndex = sol.CurrentTrack.m_trackPoints[index].trailJunctionIndex;
-			if (index < sol.CurrentTrack.m_trackPoints.Length &&
-				trailJunctionIndex != -1 &&
-				Walk != 0)
+			if (m_junction != null && m_junction.distance - this.Position.X < 0 && Walk != 0)
 			{
 				/* For the moment, just stop walking */
 				Walk = 0;
 
 				/* Update destinations list on sign */
-				GD.Print($"trail junction index: {trailJunctionIndex}");
-				level.EmitSignal(Level1.SignalName.TrailJunctionChoice, trailJunctionIndex);
+				GD.Print($"trail junction index: {m_junctionIndex}");
+				level.EmitSignal(Level1.SignalName.TrailJunctionChoice, m_junctionIndex);
+				m_junctionIndex++;
+				// remains some junctions?
+				if (m_junctionIndex < sol.CurrentTrack.m_trailJunctions.Count)
+				{
+					m_junction = (GpxTrailJunction)sol.CurrentTrack.m_trailJunctions[m_junctionIndex];
+				}
+				else
+				{
+					m_junction = null;
+				}
 			}
-
-			// Add the gravity.
-			if (!IsOnFloor())
-			{
-				velocity += GetGravity() * (float)delta;
-			}
-			else
-			{
-				velocity.X = Walk * Speed;
-			}
-
-			Velocity = velocity;
-			MoveAndSlide();
 		}
+
+		// Add the gravity.
+		if (!IsOnFloor())
+		{
+			velocity += GetGravity() * (float)delta;
+		}
+		else
+		{
+			velocity.X = Walk * Speed;
+		}
+
+		Velocity = velocity;
+		MoveAndSlide();
 	}
 
 	private void _on_trail_junction_choice(string gpxFile)

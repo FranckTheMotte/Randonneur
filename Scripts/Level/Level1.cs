@@ -4,6 +4,10 @@ using static Godot.GD;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections;
+using System.Numerics;
+
+/* Because of System.Numerics */
+using Vector2 = Godot.Vector2;
 
 public partial class Level1 : Node2D
 {
@@ -83,6 +87,15 @@ public partial class Level1 : Node2D
 		map.Visible = Visible;
 	}
 
+	/**
+	 Update the map position based on the player's position.
+	 */
+	private void MapPositionUpdate()
+	{
+		Control map = GetNode<Control>("WorldMap");
+		map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 50);
+	}
+
 	public void TrailSignVisible(bool Visible)
 	{
 		CanvasLayer sign = GetNode<CanvasLayer>("TrailSignNode/TrailSign");
@@ -98,7 +111,8 @@ public partial class Level1 : Node2D
 	private void _on_trail_junction_choice_done(string gpxFile)
 	{
 		MapVisible(false);
-		sol.generateGround("res://data/" + gpxFile);
+		// TODO gpxFile must contains full path
+		sol.generateGround("res://data/Map1/" + gpxFile);
 		fadeAnimation.Play("fade_in");
 		Sleep(500);
 		fadeAnimation.Play("fade_out");
@@ -111,8 +125,7 @@ public partial class Level1 : Node2D
 		InGameUi gameUI = InGameUi.Instance;
 		DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
 		destinationsList.EmitSignal(DestinationsList.SignalName.DestinationsUpdate, sol.CurrentTrack.m_trailJunctions[junctionIndex]);
+		MapPositionUpdate();
 		MapVisible(true);
 	}
-
-
 }	

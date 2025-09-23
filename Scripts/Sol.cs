@@ -93,8 +93,8 @@ public partial class Sol : StaticBody2D
 			Player.Position = position;
 
 			/* player limit */
-			Vector2 limit = new Vector2(CurrentTrack.m_trackPoints.Length, 0);
-			Player.worldLimit = limit;
+			Player.worldLimit = new Vector2(CurrentTrack.maxX, 0);
+			GD.Print($"world limit X : {Player.worldLimit.X}");
 		}
 		/* TODO put default value if no Gpx is provided */
 		watch.Stop();

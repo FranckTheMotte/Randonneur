@@ -11,6 +11,14 @@ public partial class WorldMap : Control
 	// local position of mouse cursor when clicking on middle button
 	Vector2 m_dragPosition;
 
+	// name of the current trail (node name of the Area2D)
+	public string m_selectedTrail = null;
+
+	// Wolrd map Singleton
+    private static readonly Lazy<WorldMap> lazy =
+		new Lazy<WorldMap>(() => new WorldMap());
+    public static WorldMap Instance { get { return lazy.Value; } }
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -21,7 +29,14 @@ public partial class WorldMap : Control
 	{
 		if (@event is InputEventMouseButton mouseEvent)
 		{
-			if (mouseEvent.ButtonIndex == MouseButton.Middle)
+			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+			{
+				GD.Print($"Button pressed {m_selectedTrail}");
+				Player player = Player.Instance;
+				player.EmitSignal(Player.SignalName.TrailJunctionChoice, m_selectedTrail);
+
+			}
+			else if (mouseEvent.ButtonIndex == MouseButton.Middle)
 			{
 				GD.Print($"Middle {mouseEvent.Pressed}");
 				m_middleButton = false;
