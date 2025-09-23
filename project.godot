@@ -19,8 +19,6 @@ config/icon="res://icon.svg"
 
 GameMaster="*res://Scripts/Main/GameMaster.cs"
 SceneManager="*res://Scripts/Main/SceneManager.cs"
-InGameUi="*res://Scenes/in_game_ui.tscn"
-Player="*res://Scenes/player.tscn"
 
 [display]
 
