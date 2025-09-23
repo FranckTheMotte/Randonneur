@@ -1,8 +1,5 @@
-using Godot;
-using System;
-
-public class GameData {
-
+public class GameData
+{
     //Video Settings
     public bool fullScreen = true;
     public bool vsync = true;
@@ -26,5 +23,4 @@ public class GameData {
     public const float default_voiceMaxVolume = 1;
     public const float default_femaleMaxVolume = 1;
     public const float default_maleMaxVolume = 1;
-
 }

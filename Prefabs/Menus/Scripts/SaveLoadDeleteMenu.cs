@@ -1,63 +1,92 @@
 using Godot;
-using System;
 
-public partial class SaveLoadDeleteMenu : CanvasLayer {
-
+public partial class SaveLoadDeleteMenu : CanvasLayer
+{
     [ExportGroup("Buttons")]
     [ExportSubgroup("Button Set 1")]
-    [Export] public Button new1;
-    [Export] public Button load1;
-    [Export] public Button delete1;
+    [Export]
+    public Button new1;
+
+    [Export]
+    public Button load1;
+
+    [Export]
+    public Button delete1;
 
     [ExportSubgroup("Button Set 2")]
-    [Export] public Button new2;
-    [Export] public Button load2;
-    [Export] public Button delete2;
+    [Export]
+    public Button new2;
+
+    [Export]
+    public Button load2;
+
+    [Export]
+    public Button delete2;
 
     [ExportSubgroup("Button Set 3")]
-    [Export] public Button new3;
-    [Export] public Button load3;
-    [Export] public Button delete3;
+    [Export]
+    public Button new3;
+
+    [Export]
+    public Button load3;
+
+    [Export]
+    public Button delete3;
 
     [ExportGroup("Labels")]
-    [Export] public Label infoLabel1;
-    [Export] public Label infoLabel2;
-    [Export] public Label infoLabel3;
+    [Export]
+    public Label infoLabel1;
 
-    public override void _Ready() {
+    [Export]
+    public Label infoLabel2;
+
+    [Export]
+    public Label infoLabel3;
+
+    public override void _Ready()
+    {
         SetupMenu();
     }
 
-    private void SetupMenu() {
+    private void SetupMenu()
+    {
         DisableAllButtons();
 
         UpdateLabels();
 
-        if (GameMaster.loadedPlayerDataSlot1.newFile == true) {
+        if (GameMaster.loadedPlayerDataSlot1.newFile == true)
+        {
             new1.Disabled = false;
             new1.Visible = true;
-        } else {
+        }
+        else
+        {
             load1.Disabled = false;
             load1.Visible = true;
             delete1.Disabled = false;
             delete1.Visible = true;
         }
 
-        if (GameMaster.loadedPlayerDataSlot2.newFile == true) {
+        if (GameMaster.loadedPlayerDataSlot2.newFile == true)
+        {
             new2.Disabled = false;
             new2.Visible = true;
-        } else {
+        }
+        else
+        {
             load2.Disabled = false;
             load2.Visible = true;
             delete2.Disabled = false;
             delete2.Visible = true;
         }
 
-
-        if (GameMaster.loadedPlayerDataSlot3.newFile == true) {
+        if (GameMaster.loadedPlayerDataSlot3.newFile == true)
+        {
             new3.Disabled = false;
             new3.Visible = true;
-        } else {
+        }
+        else
+        {
             load3.Disabled = false;
             load3.Visible = true;
             delete3.Disabled = false;
@@ -65,33 +94,41 @@ public partial class SaveLoadDeleteMenu : CanvasLayer {
         }
     }
 
-    private void UpdateLabels() {
-        infoLabel1.Text = "New file: " + GameMaster.loadedPlayerDataSlot1.newFile.ToString() + "     ";
-        infoLabel1.Text += "Scene: " + GameMaster.loadedPlayerDataSlot1.savedScene.ToString() + "     ";
+    private void UpdateLabels()
+    {
+        infoLabel1.Text =
+            "New file: " + GameMaster.loadedPlayerDataSlot1.newFile.ToString() + "     ";
+        infoLabel1.Text +=
+            "Scene: " + GameMaster.loadedPlayerDataSlot1.savedScene.ToString() + "     ";
         infoLabel1.Text += "Test: " + GameMaster.loadedPlayerDataSlot1.sampleDictionary["test"];
 
-
-        infoLabel2.Text = "New file: " + GameMaster.loadedPlayerDataSlot2.newFile.ToString() + "     ";
-        infoLabel2.Text += "Scene: " + GameMaster.loadedPlayerDataSlot2.savedScene.ToString() + "     ";
+        infoLabel2.Text =
+            "New file: " + GameMaster.loadedPlayerDataSlot2.newFile.ToString() + "     ";
+        infoLabel2.Text +=
+            "Scene: " + GameMaster.loadedPlayerDataSlot2.savedScene.ToString() + "     ";
         infoLabel2.Text += "Test: " + GameMaster.loadedPlayerDataSlot2.sampleDictionary["test"];
 
-
-        infoLabel3.Text = "New file: " + GameMaster.loadedPlayerDataSlot3.newFile.ToString() + "     ";
-        infoLabel3.Text += "Scene: " + GameMaster.loadedPlayerDataSlot3.savedScene.ToString() + "     ";
+        infoLabel3.Text =
+            "New file: " + GameMaster.loadedPlayerDataSlot3.newFile.ToString() + "     ";
+        infoLabel3.Text +=
+            "Scene: " + GameMaster.loadedPlayerDataSlot3.savedScene.ToString() + "     ";
         infoLabel3.Text += "Test: " + GameMaster.loadedPlayerDataSlot3.sampleDictionary["test"];
     }
 
-
-    public void _on_new_load_button_up(int myInt) {
+    public void _on_new_load_button_up(int myInt)
+    {
         GameMaster.currentSlotNum = myInt;
 
-        if (myInt == 1) {
+        if (myInt == 1)
+        {
             GameMaster.playerData = GameMaster.loadedPlayerDataSlot1;
         }
-        if (myInt == 2) {
+        if (myInt == 2)
+        {
             GameMaster.playerData = GameMaster.loadedPlayerDataSlot2;
         }
-        if (myInt == 3) {
+        if (myInt == 3)
+        {
             GameMaster.playerData = GameMaster.loadedPlayerDataSlot3;
         }
 
@@ -101,14 +138,22 @@ public partial class SaveLoadDeleteMenu : CanvasLayer {
         SceneManager.instance.ChangeScene(GameMaster.playerData.savedScene);
     }
 
-   public void _on_delete_button_up(int myInt) {
-        if (GameMaster.showDebuggingMessages) { GD.Print("(MainMenu) Slot deleted: " + myInt); }
+    public void _on_delete_button_up(int myInt)
+    {
+        if (GameMaster.showDebuggingMessages)
+        {
+            GD.Print("(MainMenu) Slot deleted: " + myInt);
+        }
         GameMaster.DeletePlayerData(myInt);
         SetupMenu();
-   }
+    }
 
-    public void _on_allreset_button_button_up() {
-        if (GameMaster.showDebuggingMessages) { GD.Print("(MainMenu) All Data reset!"); }
+    public void _on_allreset_button_button_up()
+    {
+        if (GameMaster.showDebuggingMessages)
+        {
+            GD.Print("(MainMenu) All Data reset!");
+        }
         GameMaster.DeleteGameData();
         GameMaster.DeletePlayerData(1);
         GameMaster.DeletePlayerData(2);
@@ -116,12 +161,13 @@ public partial class SaveLoadDeleteMenu : CanvasLayer {
         SetupMenu();
     }
 
-    public void _on_quit_button_button_up() {
+    public void _on_quit_button_button_up()
+    {
         SceneManager.instance.QuitGame();
     }
 
-
-    private void DisableAllButtons() {
+    private void DisableAllButtons()
+    {
         new1.Visible = false;
         new1.Disabled = true;
         load1.Visible = false;
@@ -143,6 +189,4 @@ public partial class SaveLoadDeleteMenu : CanvasLayer {
         delete3.Visible = false;
         delete3.Disabled = true;
     }
-
-
 }

@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using System.Collections;
 
 /* As the detection with mouse cursor is easiest with an Area2D
 This class is here to use area detection instead of classical
@@ -9,7 +7,6 @@ mouse surface detection.
 */
 public partial class MouseCursor : Area2D
 {
-
     public override void _Ready()
     {
         Connect("area_entered", new Callable(this, nameof(_on_area_entered)));

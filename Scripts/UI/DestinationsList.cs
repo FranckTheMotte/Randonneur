@@ -1,59 +1,59 @@
 using Godot;
-using System;
 
 public partial class DestinationsList : VBoxContainer
 {
-	[Export] public Label Location;
+    [Export]
+    public Label Location;
 
-	[Export] public HBoxContainer Destination;
+    [Export]
+    public HBoxContainer Destination;
 
-	[Signal] public delegate void DestinationsUpdateEventHandler();
+    [Signal]
+    public delegate void DestinationsUpdateEventHandler();
 
-	// Called when the node enters the scene tree for the first time.
-	public void populateDestination(GpxTrailJunction trailJunction)
-	{
-		// Sign title
-		Location.Text = trailJunction.name;
+    // Called when the node enters the scene tree for the first time.
+    public void populateDestination(GpxTrailJunction trailJunction)
+    {
+        // Sign title
+        Location.Text = trailJunction.name;
 
-		// Clean previous destinations
-		for (int i = 0; i < this.GetChildCount(); i++)
-		{
-			this.RemoveChild(this.GetChild(1));
-		}
+        // Clean previous destinations
+        for (int i = 0; i < this.GetChildCount(); i++)
+        {
+            this.RemoveChild(this.GetChild(1));
+        }
 
-		// Populate with new ones
-		foreach (GpxDestination destination in trailJunction.destinations)
-		{
-			HBoxContainer newDest = (HBoxContainer)Destination.Duplicate();
-			DestinationButton destButton = (DestinationButton)newDest.GetChild(0);
-			destButton.Text = destination.name;
-			destButton.GpxFile = destination.gpxFile;
-			GD.Print($"dest button : {destButton.Text}");
-			Label distanceLabel = (Label)newDest.GetChild(1);
-			distanceLabel.Text = destination.distance.ToString() + " km";
-			Label trailLabel = (Label)newDest.GetChild(3);
-			trailLabel.Text = destination.trail;
-			newDest.Show();
-			this.AddChild(newDest);
-		}
-		// Hide the template
-		Destination.Hide();
+        // Populate with new ones
+        foreach (GpxDestination destination in trailJunction.destinations)
+        {
+            HBoxContainer newDest = (HBoxContainer)Destination.Duplicate();
+            DestinationButton destButton = (DestinationButton)newDest.GetChild(0);
+            destButton.Text = destination.name;
+            destButton.GpxFile = destination.gpxFile;
+            GD.Print($"dest button : {destButton.Text}");
+            Label distanceLabel = (Label)newDest.GetChild(1);
+            distanceLabel.Text = destination.distance.ToString() + " km";
+            Label trailLabel = (Label)newDest.GetChild(3);
+            trailLabel.Text = destination.trail;
+            newDest.Show();
+            this.AddChild(newDest);
+        }
+        // Hide the template
+        Destination.Hide();
 
-		// Adapt the sign size
-		NinePatchRect backgroundSign = (NinePatchRect)this.GetParent().GetParent();
-		HBoxContainer dest = (HBoxContainer)this.GetChild(1);
-		// margin H up + margin H low + title Height + nb dest * Height TODO remove hardcoded values
-		float height = (15 * 2) + 32 + (trailJunction.destinations.Count + 1) * dest.CustomMinimumSize.Y;
-		backgroundSign.CustomMinimumSize = new Vector2(256, height);
-	}
+        // Adapt the sign size
+        NinePatchRect backgroundSign = (NinePatchRect)this.GetParent().GetParent();
+        HBoxContainer dest = (HBoxContainer)this.GetChild(1);
+        // margin H up + margin H low + title Height + nb dest * Height TODO remove hardcoded values
+        float height =
+            (15 * 2) + 32 + (trailJunction.destinations.Count + 1) * dest.CustomMinimumSize.Y;
+        backgroundSign.CustomMinimumSize = new Vector2(256, height);
+    }
 
-	private void _on_ready()
-	{
-	}
+    private void _on_ready() { }
 
-	private void _on_destinations_update(GpxTrailJunction trailJunction)
-	{
-		populateDestination(trailJunction);
-	}
+    private void _on_destinations_update(GpxTrailJunction trailJunction)
+    {
+        populateDestination(trailJunction);
+    }
 }
-

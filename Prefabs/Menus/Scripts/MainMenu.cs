@@ -1,15 +1,9 @@
 using Godot;
-using System;
 
-public partial class MainMenu : Node2D {
+public partial class MainMenu : Node2D
+{
+    [Export]
+    public CanvasLayer saveLoadDelete;
 
-	[Export] public CanvasLayer saveLoadDelete;
-
-	public override void _Ready() {
-
-				
-
-	}
-
-	
+    public override void _Ready() { }
 }

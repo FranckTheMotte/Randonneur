@@ -1,63 +1,66 @@
-using Godot;
 using System;
+using Godot;
 
 public partial class WorldMap : Control
 {
-	// flag storing that middle mouse button is currently pressed
-	private bool m_middleButton = false;
+    // flag storing that middle mouse button is currently pressed
+    private bool m_middleButton = false;
 
-	// Container which store the map
-	private MarginContainer m_margin;
-	// local position of mouse cursor when clicking on middle button
-	Vector2 m_dragPosition;
+    // Container which store the map
+    private MarginContainer m_margin;
 
-	// name of the current trail (node name of the Area2D)
-	public string m_selectedTrail = null;
+    // local position of mouse cursor when clicking on middle button
+    Vector2 m_dragPosition;
 
-	// Wolrd map Singleton
-    private static readonly Lazy<WorldMap> lazy =
-		new Lazy<WorldMap>(() => new WorldMap());
-    public static WorldMap Instance { get { return lazy.Value; } }
+    // name of the current trail (node name of the Area2D)
+    public string m_selectedTrail = null;
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		m_margin = GetNode<MarginContainer>("BgMargin");
-	}
+    // Wolrd map Singleton
 
-	public override void _Input(InputEvent @event)
-	{
-		if (@event is InputEventMouseButton mouseEvent)
-		{
-			if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
-			{
-				GD.Print($"Button pressed {m_selectedTrail}");
-				Player player = Player.Instance;
-				player.EmitSignal(Player.SignalName.TrailJunctionChoice, m_selectedTrail);
+    private static readonly Lazy<WorldMap> lazy = new Lazy<WorldMap>(() => new WorldMap());
+    public static WorldMap Instance
+    {
+        get { return lazy.Value; }
+    }
 
-			}
-			else if (mouseEvent.ButtonIndex == MouseButton.Middle)
-			{
-				GD.Print($"Middle {mouseEvent.Pressed}");
-				m_middleButton = false;
-				if (mouseEvent.Pressed)
-				{
-					Vector2 mousePosition = GetLocalMousePosition();
-					if (m_margin.GetRect().HasPoint(mousePosition))
-					{
-						m_middleButton = true;
-						m_dragPosition = new Vector2(mousePosition.X, mousePosition.Y);
-						GD.Print($"decalage X {m_dragPosition.X} Y {m_dragPosition.Y}");
-					}
-				}
-			}
-		}
-		else if (@event is InputEventMouseMotion mouseMotion)
-		{
-			if (m_middleButton)
-			{
-				Position = GetGlobalMousePosition() - m_dragPosition;
-			}
-		}
+    // Called when the node enters the scene tree for the first time.
+    public override void _Ready()
+    {
+        m_margin = GetNode<MarginContainer>("BgMargin");
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventMouseButton mouseEvent)
+        {
+            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+            {
+                GD.Print($"Button pressed {m_selectedTrail}");
+                Player player = Player.Instance;
+                player.EmitSignal(Player.SignalName.TrailJunctionChoice, m_selectedTrail);
+            }
+            else if (mouseEvent.ButtonIndex == MouseButton.Middle)
+            {
+                GD.Print($"Middle {mouseEvent.Pressed}");
+                m_middleButton = false;
+                if (mouseEvent.Pressed)
+                {
+                    Vector2 mousePosition = GetLocalMousePosition();
+                    if (m_margin.GetRect().HasPoint(mousePosition))
+                    {
+                        m_middleButton = true;
+                        m_dragPosition = new Vector2(mousePosition.X, mousePosition.Y);
+                        GD.Print($"decalage X {m_dragPosition.X} Y {m_dragPosition.Y}");
+                    }
+                }
+            }
+        }
+        else if (@event is InputEventMouseMotion mouseMotion)
+        {
+            if (m_middleButton)
+            {
+                Position = GetGlobalMousePosition() - m_dragPosition;
+            }
+        }
     }
 }
