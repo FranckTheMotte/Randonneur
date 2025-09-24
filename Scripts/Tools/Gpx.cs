@@ -75,6 +75,9 @@ public class Gpx
     public List<GpxTrailJunction> m_trailJunctions;
     internal float maxX; // length of the track (meters)
 
+    // Number of pixels by meter
+    public const float PIXEL_METER = 1.0f;
+
     private Direction strToDirection(string directionStr)
     {
         Direction result;
@@ -233,12 +236,13 @@ public class Gpx
                 // distance between previous point and current (stored in previous)
                 if (i > 0)
                 {
-                    m_trackPoints[i - 1].distanceToNext = getDistance(
-                        m_trackPoints[i - 1].coord.X,
-                        m_trackPoints[i - 1].coord.Y,
-                        latitude,
-                        longitude
-                    );
+                    m_trackPoints[i - 1].distanceToNext =
+                        getDistance(
+                            m_trackPoints[i - 1].coord.X,
+                            m_trackPoints[i - 1].coord.Y,
+                            latitude,
+                            longitude
+                        ) * PIXEL_METER;
                     //GD.Print($"distance {m_trackPoints[i-1].distanceToNext} maxX {maxX}");
                     // TODO: don't use 2000.00f
                     m_trackPoints[i].elevation = new Vector2(
