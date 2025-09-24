@@ -96,7 +96,7 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wf6w2"]
-radius = 8.0
+radius = 7.0
 height = 38.0
 
 [node name="Player" type="CharacterBody2D"]
@@ -113,5 +113,5 @@ frame = 8
 frame_progress = 0.871791
 
 [node name="Collision" type="CollisionShape2D" parent="."]
-position = Vector2(2.27374e-13, 0)
+position = Vector2(1, 0)
 shape = SubResource("CapsuleShape2D_wf6w2")
