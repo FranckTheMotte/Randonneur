@@ -37,6 +37,8 @@ public partial class Player : CharacterBody2D
             m_junctionIndex = 0;
             m_junction = (GpxTrailJunction)sol.CurrentTrack.m_trailJunctions[m_junctionIndex];
         }
+        // the player can climb all
+        FloorBlockOnWall = false;
     }
 
     public override void _PhysicsProcess(double delta)
