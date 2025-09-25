@@ -1,11 +1,11 @@
 [gd_scene load_steps=10 format=3 uid="uid://be11snw13ct0b"]
 
-[ext_resource type="Script" path="res://Scripts/Level/Level1.cs" id="1_3wch0"]
+[ext_resource type="Script" uid="uid://b24uweoh1uvry" path="res://Scripts/Level/Level1.cs" id="1_3wch0"]
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
 [ext_resource type="PackedScene" uid="uid://reue2c77m55p" path="res://Scenes/player.tscn" id="3_c23mq"]
 [ext_resource type="Texture2D" uid="uid://cqag3u1am0jea" path="res://Art/Background/prairie.png" id="3_mgsr5"]
-[ext_resource type="Script" path="res://Scripts/Sol.cs" id="3_uowpc"]
-[ext_resource type="Script" path="res://Scripts/Actions.cs" id="6_8bbqd"]
+[ext_resource type="Script" uid="uid://cysc5mc3t3ajk" path="res://Scripts/Sol.cs" id="3_uowpc"]
+[ext_resource type="Script" uid="uid://dkmqx0q07t5vd" path="res://Scripts/Actions.cs" id="6_8bbqd"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
 [ext_resource type="PackedScene" uid="uid://b4tnu5fp0rn6w" path="res://Scenes/world_map.tscn" id="9_upnc5"]
@@ -89,7 +89,7 @@ visible = false
 z_index = 1
 
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("8_bsps8")]
-position = Vector2(0, -1296)
+position = Vector2(-31.999998, -1380)
 scale = Vector2(10, 10)
 
 [node name="Map" type="Node2D" parent="."]
