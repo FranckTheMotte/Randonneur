@@ -164,6 +164,11 @@ public partial class MapGenerator : Node
 
             // Area2D for collisions detection
             area.Name = Path.GetFileName(gpxFileName);
+            /* Store the real filename in editor description to skip StringName character
+               replacement rules : When changing the name, the following characters will
+               be replaced with an underscore: (. : @ / " %).
+            */
+            area.EditorDescription = Path.GetFileName(gpxFileName);
             area.AddChild(trailLine);
             area.SetCollisionLayerValue(1, false);
             area.SetCollisionLayerValue(4, true);

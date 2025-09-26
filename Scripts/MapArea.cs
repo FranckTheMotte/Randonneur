@@ -37,7 +37,7 @@ public partial class MapArea : Area2D
         if (selected)
         {
             setColorTrail(Colors.Red);
-            worldMap.m_selectedTrail = area.Name;
+            worldMap.m_selectedTrail = area.EditorDescription;
         }
         else
         {
