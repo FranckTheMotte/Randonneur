@@ -3,6 +3,9 @@ using Godot;
 
 public partial class WorldMap : Control
 {
+    // Godot path to MapRect (contains trail Line2D and CollisionShape2D)
+    private const string MAPRECT_PATH = "BgMargin/BgNinePathRect/MapMargin/MapRect";
+
     // flag storing that middle mouse button is currently pressed
     private bool m_middleButton = false;
 
@@ -33,11 +36,15 @@ public partial class WorldMap : Control
     {
         if (@event is InputEventMouseButton mouseEvent)
         {
-            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+            if (
+                mouseEvent.ButtonIndex == MouseButton.Left
+                && mouseEvent.Pressed
+                && Instance.m_selectedTrail != null
+            )
             {
-                GD.Print($"Button pressed {m_selectedTrail}");
+                GD.Print($"Button pressed {m_selectedTrail} {Instance.m_selectedTrail}");
                 Player player = Player.Instance;
-                player.EmitSignal(Player.SignalName.TrailJunctionChoice, m_selectedTrail);
+                player.EmitSignal(Player.SignalName.TrailJunctionChoice, Instance.m_selectedTrail);
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)
             {
@@ -60,6 +67,31 @@ public partial class WorldMap : Control
             if (m_middleButton)
             {
                 Position = GetGlobalMousePosition() - m_dragPosition;
+            }
+        }
+    }
+
+    /**
+        Hide and disable collision detection for the map
+
+        @param value true to disable, false to enable
+    */
+    public void Disable(bool value)
+    {
+        // Hide or show
+        Visible = !value;
+
+        // enable or disable all trails collisions shapes
+        ColorRect mapRect = GetNode<ColorRect>(MAPRECT_PATH);
+        foreach (var child in mapRect.GetChildren())
+        {
+            foreach (var subchild in child.GetChildren())
+            {
+                if (subchild.Name.ToString().StartsWith(MapGenerator.TRAIL_COLLISION_FILTER_NAME))
+                {
+                    CollisionShape2D collision = (CollisionShape2D)subchild;
+                    collision.Disabled = value;
+                }
             }
         }
     }

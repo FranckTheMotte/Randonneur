@@ -8,6 +8,8 @@ public partial class MapGenerator : Node
 {
     public const int TRAIL_LINE_WIDTH = 10;
 
+    public const string TRAIL_COLLISION_FILTER_NAME = "trail";
+
     public struct GpsPoint
     {
         public double Latitude; // -90 à +90 (South To North)
@@ -199,6 +201,7 @@ public partial class MapGenerator : Node
             // 90° shift because the default orientation of the collisionShape
             // is different of the godot reference.
             collision.Rotation = angle + Mathf.DegToRad(90);
+            collision.Name = TRAIL_COLLISION_FILTER_NAME + "#" + i;
 
             // Add collision to Area2D
             area.AddChild(collision);

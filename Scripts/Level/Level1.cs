@@ -78,6 +78,9 @@ public partial class Level1 : Node2D
         }
 
         sol = GetNode<Sol>("Ground/Sol");
+
+        // Map is not visible at start
+        MapVisible(false);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -95,8 +98,8 @@ public partial class Level1 : Node2D
 
     public void MapVisible(bool Visible)
     {
-        Control map = GetNode<Control>("WorldMap");
-        map.Visible = Visible;
+        WorldMap map = GetNode<WorldMap>("WorldMap");
+        map.Disable(!Visible);
     }
 
     /**
