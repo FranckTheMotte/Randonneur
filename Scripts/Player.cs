@@ -45,7 +45,6 @@ public partial class Player : CharacterBody2D
     {
         Godot.Vector2 velocity = Velocity;
 
-        // Don't fall
         if (this.Position.X >= 0 && this.Position.X < worldLimit.X)
         {
             /* Does the player reach a trail junction ? */
@@ -69,6 +68,11 @@ public partial class Player : CharacterBody2D
                     m_junction = null;
                 }
             }
+        }
+        else
+        {
+            // Don't fall
+            Walk = 0;
         }
 
         // Add the gravity.
