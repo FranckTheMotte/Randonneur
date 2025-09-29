@@ -4,8 +4,6 @@ using static Godot.GD;
 
 public partial class Sol : StaticBody2D
 {
-    const float ELEVATION_MAX = 10000.00f;
-
     private List<Vector2> TrailJunctions = new List<Vector2>();
 
     public Gpx CurrentTrack;
@@ -76,10 +74,10 @@ public partial class Sol : StaticBody2D
                 }
             }
 
-            ground[solLength].X = solLength;
-            ground[solLength].Y = ELEVATION_MAX;
+            ground[solLength].X = CurrentTrack.maxX;
+            ground[solLength].Y = Gpx.PIXEL_ELEVATION_MAX;
             ground[solLength + 1].X = 0.00f;
-            ground[solLength + 1].Y = ELEVATION_MAX;
+            ground[solLength + 1].Y = Gpx.PIXEL_ELEVATION_MAX;
 
             sol.Polygon = ground;
             solCollision.Polygon = sol.Polygon;

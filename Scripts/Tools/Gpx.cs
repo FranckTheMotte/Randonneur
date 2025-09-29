@@ -76,7 +76,13 @@ public class Gpx
     internal float maxX; // length of the track (meters)
 
     // Number of pixels by meter
-    public const float PIXEL_METER = 1.0f;
+    public const float PIXEL_METER = 5.0f;
+
+    // Max elevation in meters
+    public const float ELEVATION_MAX = 10000.0f;
+
+    // Max elevation in pixels
+    public const float PIXEL_ELEVATION_MAX = ELEVATION_MAX * PIXEL_METER;
 
     private Direction strToDirection(string directionStr)
     {
@@ -210,6 +216,7 @@ public class Gpx
             m_trackPoints = new GpxProperties[trackpoints.Count];
 
             i = 0; // counter to store trackpoints
+            float y_ele = 0.0f;
             foreach (XmlNode trackpoint in trackpoints)
             {
                 m_trackPoints[i].trailJunctionIndex = -1;
@@ -233,6 +240,15 @@ public class Gpx
                 m_trackPoints[i].coord = new Vector2(latitude, longitude);
                 m_trackPoints[i].waypoint = getWaypointName(latitude, longitude);
 
+                y_ele =
+                    (
+                        (
+                            float.Parse(
+                                trackpoint["ele"].InnerText,
+                                CultureInfo.InvariantCulture.NumberFormat
+                            ) * PIXEL_METER
+                        ) - PIXEL_ELEVATION_MAX
+                    ) * -1; // y axis is inverted
                 // distance between previous point and current (stored in previous)
                 if (i > 0)
                 {
@@ -244,33 +260,16 @@ public class Gpx
                             longitude
                         ) * PIXEL_METER;
                     //GD.Print($"distance {m_trackPoints[i-1].distanceToNext} maxX {maxX}");
-                    // TODO: don't use 2000.00f
                     m_trackPoints[i].elevation = new Vector2(
                         m_trackPoints[i - 1].elevation.X + m_trackPoints[i - 1].distanceToNext,
-                        2000.00f
-                            + (
-                                float.Parse(
-                                    trackpoint["ele"].InnerText,
-                                    CultureInfo.InvariantCulture.NumberFormat
-                                ) * -1.00f
-                            )
+                        y_ele
                     );
                     maxX += m_trackPoints[i - 1].distanceToNext;
                 }
                 else
                 {
-                    // First coord
-                    // TODO: don't use 2000.00f
-                    m_trackPoints[i].elevation = new Vector2(
-                        0,
-                        2000.00f
-                            + (
-                                float.Parse(
-                                    trackpoint["ele"].InnerText,
-                                    CultureInfo.InvariantCulture.NumberFormat
-                                ) * -1.00f
-                            )
-                    );
+                    // First coord, no distance to evaluate
+                    m_trackPoints[i].elevation = new Vector2(0, y_ele);
                 }
 
                 XmlNode xTrailJunction = trackpoint.SelectSingleNode(
