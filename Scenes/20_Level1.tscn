@@ -19,7 +19,7 @@ pathToMap = "res://data/Map1/"
 
 [node name="Background" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.2, 0.2)
-repeat_size = Vector2(480, 0)
+repeat_size = Vector2(480, 800)
 repeat_times = 4
 
 [node name="Sprite2D" type="Sprite2D" parent="Background"]
