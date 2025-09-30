@@ -62,17 +62,19 @@ public struct GpxDestination
 
 public partial class GpxTrailJunction : GodotObject
 {
-    public string name;
-    public List<GpxDestination> destinations;
+    public string? name;
+    public List<GpxDestination>? destinations;
     internal float distance; // Distance from start (meter)
 }
 
 public class Gpx
 {
     // x : index, y : value
-    public GpxProperties[] m_trackPoints { get; set; }
-    private GpxWaypoint[] m_gpxWayPoints;
-    public List<GpxTrailJunction> m_trailJunctions;
+    public GpxProperties[]? m_trackPoints { get; set; }
+    private GpxWaypoint[]? m_gpxWayPoints;
+
+    public List<GpxTrailJunction>? m_trailJunctions;
+
     internal float maxX; // length of the track (meters)
 
     // Number of pixels by meter
@@ -83,6 +85,12 @@ public class Gpx
 
     // Max elevation in pixels
     public const float PIXEL_ELEVATION_MAX = ELEVATION_MAX * PIXEL_METER;
+
+    // Default name for a missing name
+    internal const string DEFAULT_NAME = "Elsewhere...";
+
+    // Impossible value for a geographical coordinate
+    internal const float UNITIALIZED_COORD = 777.77f;
 
     private Direction strToDirection(string directionStr)
     {
@@ -135,10 +143,13 @@ public class Gpx
 
     private String getWaypointName(float latitude, float longitude)
     {
-        foreach (var waypoint in m_gpxWayPoints)
+        if (m_gpxWayPoints is not null)
         {
-            if (waypoint.coord.X == latitude && waypoint.coord.Y == longitude)
-                return waypoint.waypoint;
+            foreach (var waypoint in m_gpxWayPoints)
+            {
+                if (waypoint.coord.X == latitude && waypoint.coord.Y == longitude)
+                    return waypoint.waypoint;
+            }
         }
         return "";
     }
@@ -164,7 +175,7 @@ public class Gpx
 
     public bool Load(string filePath)
     {
-        XmlDocument xmlDoc = new XmlDocument();
+        XmlDocument xmlDoc = new();
 
         // Read the file with godot (as res:// is not known by .NET framework)
         using var file = Godot.FileAccess.Open(filePath, Godot.FileAccess.ModeFlags.Read);
@@ -180,54 +191,127 @@ public class Gpx
 
         try
         {
+            if (xmlDoc.FirstChild == null)
+            {
+                GD.PushWarning($"${nameof(Load)}: xml file is empty");
+                return false;
+            }
             XmlNode root = xmlDoc.FirstChild;
-
             var namespaceManager = new XmlNamespaceManager(xmlDoc.NameTable);
             namespaceManager.AddNamespace("a", "http://www.topografix.com/GPX/1/1");
 
+            int i = 0; // counter to store waypoints and trackpoints
             /* Load waypoints */
-            XmlNodeList waypoints = xmlDoc.SelectNodes("//a:gpx/a:wpt", namespaceManager);
-            m_gpxWayPoints = new GpxWaypoint[waypoints.Count];
-            int i = 0; // counter to store trackpoints
-            foreach (XmlNode waypoint in waypoints)
+            XmlNodeList waypoints = xmlDoc.SelectNodes("//a:gpx/a:wpt", namespaceManager)!;
+            if (waypoints != null)
             {
-                m_gpxWayPoints[i].elevation = float.Parse(
-                    waypoint["ele"].InnerText,
-                    CultureInfo.InvariantCulture.NumberFormat
-                );
-                float longitude = float.Parse(
-                    waypoint.Attributes["lon"].Value,
-                    CultureInfo.InvariantCulture.NumberFormat
-                );
-                float latitude = float.Parse(
-                    waypoint.Attributes["lat"].Value,
-                    CultureInfo.InvariantCulture.NumberFormat
-                );
-                m_gpxWayPoints[i].coord = new Vector2(latitude, longitude);
-                m_gpxWayPoints[i].waypoint = waypoint["name"].InnerText;
-                i++;
+                m_gpxWayPoints = new GpxWaypoint[waypoints.Count];
+                foreach (XmlNode waypoint in waypoints)
+                {
+                    var eleWaypoint = waypoint["ele"];
+
+                    // if some data are corrupted, the waypoint is ignored
+                    if (eleWaypoint is null || waypoint.Attributes is null)
+                    {
+                        GD.PushWarning(
+                            $"${nameof(Load)}: a waypoint of ${filePath} is corrupted, skip it."
+                        );
+                        continue;
+                    }
+
+                    // elevation
+                    m_gpxWayPoints[i].elevation = float.Parse(
+                        eleWaypoint.InnerText,
+                        CultureInfo.InvariantCulture.NumberFormat
+                    );
+
+                    // coordinates
+                    float longitude = UNITIALIZED_COORD;
+                    float latitude = UNITIALIZED_COORD;
+                    var lonWaypoint = waypoint.Attributes["lon"];
+                    var latWaypoint = waypoint.Attributes["lat"];
+
+                    if (lonWaypoint is not null)
+                        longitude = float.Parse(
+                            lonWaypoint.Value,
+                            CultureInfo.InvariantCulture.NumberFormat
+                        );
+
+                    if (latWaypoint is not null)
+                        latitude = float.Parse(
+                            latWaypoint.Value,
+                            CultureInfo.InvariantCulture.NumberFormat
+                        );
+
+                    if (longitude == UNITIALIZED_COORD || latitude == UNITIALIZED_COORD)
+                    {
+                        GD.PushWarning($"${nameof(Load)}: wrong waypoint coords (${filePath}).");
+                        continue;
+                    }
+                    m_gpxWayPoints[i].coord = new Vector2(latitude, longitude);
+
+                    // name (optional)
+                    var nameWaypoint = waypoint["name"];
+                    if (nameWaypoint is not null)
+                        m_gpxWayPoints[i].waypoint = nameWaypoint.InnerText;
+                    else
+                        m_gpxWayPoints[i].waypoint = DEFAULT_NAME;
+                    i++;
+                }
             }
 
             /* Load track points */
             XmlNodeList trackpoints = xmlDoc.SelectNodes(
                 "//a:gpx/a:trk/a:trkseg/a:trkpt",
                 namespaceManager
-            );
+            )!;
+
+            // no trackpoints? it's a problem
+            if (trackpoints is null)
+            {
+                m_gpxWayPoints = null;
+                GD.PushError($"${nameof(Load)}: no trackpoint inside ${filePath}.");
+                return false;
+            }
+
             m_trackPoints = new GpxProperties[trackpoints.Count];
 
             i = 0; // counter to store trackpoints
             float y_ele = 0.0f;
             foreach (XmlNode trackpoint in trackpoints)
             {
+                var eleTrackpoint = trackpoint["ele"];
+
+                // if some data are corrupted, the waypoint is ignored
+                if (eleTrackpoint is null || trackpoint.Attributes is null)
+                {
+                    GD.PushWarning(
+                        $"${nameof(Load)}: a trackpoint of ${filePath} is corrupted, skip it."
+                    );
+                    continue;
+                }
+                var lonTrackpoint = trackpoint.Attributes["lon"];
+                var latTrackpoint = trackpoint.Attributes["lat"];
                 m_trackPoints[i].trailJunctionIndex = -1;
-                float longitude = float.Parse(
-                    trackpoint.Attributes["lon"].Value,
-                    CultureInfo.InvariantCulture.NumberFormat
-                );
-                float latitude = float.Parse(
-                    trackpoint.Attributes["lat"].Value,
-                    CultureInfo.InvariantCulture.NumberFormat
-                );
+                float longitude = UNITIALIZED_COORD;
+                float latitude = 0.00f;
+
+                if (lonTrackpoint is not null)
+                    longitude = float.Parse(
+                        lonTrackpoint.Value,
+                        CultureInfo.InvariantCulture.NumberFormat
+                    );
+                if (latTrackpoint is not null)
+                    latitude = float.Parse(
+                        latTrackpoint.Value,
+                        CultureInfo.InvariantCulture.NumberFormat
+                    );
+
+                if (longitude == UNITIALIZED_COORD || latitude == UNITIALIZED_COORD)
+                {
+                    GD.PushWarning($"${nameof(Load)}: wrong trackpoint coords (${filePath}).");
+                    continue;
+                }
 
                 var result = getDMSFromDecimal(longitude);
                 m_trackPoints[i].longDMS.degree = result.degree;
@@ -244,7 +328,7 @@ public class Gpx
                     (
                         (
                             float.Parse(
-                                trackpoint["ele"].InnerText,
+                                eleTrackpoint.InnerText,
                                 CultureInfo.InvariantCulture.NumberFormat
                             ) * PIXEL_METER
                         ) - PIXEL_ELEVATION_MAX
@@ -275,7 +359,7 @@ public class Gpx
                 XmlNode xTrailJunction = trackpoint.SelectSingleNode(
                     "a:extensions/a:trailjunction",
                     namespaceManager
-                );
+                )!;
                 if (xTrailJunction != null)
                 {
                     GD.Print($"Extensions-Trailjunction");
@@ -284,35 +368,57 @@ public class Gpx
 
                     GpxTrailJunction trailJunction = new GpxTrailJunction();
 
-                    if (xTrailJunction.SelectNodes("name") != null)
-                        trailJunction.name = xTrailJunction["name"].InnerText;
+                    var junctionName = xTrailJunction["name"];
+                    if (junctionName is not null)
+                        trailJunction.name = junctionName.InnerText;
                     else
-                        trailJunction.name = "Elsewhere";
+                        trailJunction.name = DEFAULT_NAME;
                     GD.Print($"trailjunction.name {trailJunction.name}");
 
                     XmlNodeList destinations = trackpoint.SelectNodes(
                         "a:extensions/a:trailjunction/a:destination",
                         namespaceManager
-                    );
-                    foreach (XmlNode destination in destinations)
+                    )!;
+
+                    if (destinations is not null)
                     {
-                        GpxDestination dest = new GpxDestination();
+                        foreach (XmlNode destination in destinations)
+                        {
+                            GpxDestination dest = new GpxDestination();
+                            if (destination.Attributes is null)
+                                continue;
 
-                        dest.name = destination.Attributes["name"].Value;
-                        dest.gpxFile = destination["gpx"].InnerText;
-                        dest.distance = float.Parse(
-                            destination["distance"].InnerText,
-                            CultureInfo.InvariantCulture.NumberFormat
-                        );
-                        dest.direction = strToDirection(destination["direction"].InnerText);
-                        dest.trail = destination["trail"].InnerText;
+                            var nameDest = destination.Attributes["name"];
+                            if (nameDest is not null)
+                                dest.name = nameDest.Value;
 
-                        //GD.Print($"dest gpx: {destination["gpx"].InnerText} name: {destination.Attributes["name"].Value}");
-                        if (trailJunction.destinations == null)
-                            trailJunction.destinations = new List<GpxDestination>();
-                        trailJunction.destinations.Add(dest);
+                            var gpxDest = destination["gpx"];
+                            if (gpxDest is null)
+                                continue;
+                            dest.gpxFile = gpxDest.InnerText;
+
+                            var distanceDest = destination["distance"];
+                            if (distanceDest is not null)
+                                dest.distance = float.Parse(
+                                    distanceDest.InnerText,
+                                    CultureInfo.InvariantCulture.NumberFormat
+                                );
+
+                            var directionDest = destination["direction"];
+                            if (directionDest is not null)
+                                dest.direction = strToDirection(directionDest.InnerText);
+
+                            var trailDest = destination["trail"];
+                            if (trailDest is not null)
+                                dest.trail = trailDest.InnerText;
+
+                            //GD.Print($"dest gpx: {destination["gpx"].InnerText} name: {destination.Attributes["name"].Value}");
+                            if (trailJunction.destinations == null)
+                                trailJunction.destinations = new List<GpxDestination>();
+                            trailJunction.destinations.Add(dest);
+                        }
+                        trailJunction.distance = maxX;
                     }
-                    trailJunction.distance = maxX;
 
                     int newIndex = m_trailJunctions.Count;
                     m_trackPoints[i].trailJunctionIndex = newIndex;

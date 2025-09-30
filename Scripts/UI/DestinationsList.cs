@@ -3,10 +3,10 @@ using Godot;
 public partial class DestinationsList : VBoxContainer
 {
     [Export]
-    public Label Location;
+    public Label? Location;
 
     [Export]
-    public HBoxContainer Destination;
+    public HBoxContainer? Destination;
 
     [Signal]
     public delegate void DestinationsUpdateEventHandler();
@@ -14,6 +14,13 @@ public partial class DestinationsList : VBoxContainer
     // Called when the node enters the scene tree for the first time.
     public void populateDestination(GpxTrailJunction trailJunction)
     {
+        // Sanity checks
+        if (Location == null || Destination == null || trailJunction.destinations == null)
+        {
+            GD.PushWarning($"${nameof(populateDestination)}: sanity checks failed");
+            return;
+        }
+
         // Sign title
         Location.Text = trailJunction.name;
 

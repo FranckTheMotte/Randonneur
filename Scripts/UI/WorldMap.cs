@@ -10,13 +10,13 @@ public partial class WorldMap : Control
     private bool m_middleButton = false;
 
     // Container which store the map
-    private MarginContainer m_margin;
+    private MarginContainer? m_margin;
 
     // local position of mouse cursor when clicking on middle button
     Vector2 m_dragPosition;
 
     // name of the current trail (node name of the Area2D)
-    public string m_selectedTrail = null;
+    public string? m_selectedTrail = null;
 
     // Wolrd map Singleton
 
@@ -34,6 +34,13 @@ public partial class WorldMap : Control
 
     public override void _Input(InputEvent @event)
     {
+        // Sanity checks
+        if (Player.Instance == null || m_margin == null)
+        {
+            GD.PushWarning($"${nameof(_Input)}: sanity checks failed");
+            return;
+        }
+
         if (@event is InputEventMouseButton mouseEvent)
         {
             if (
@@ -43,8 +50,10 @@ public partial class WorldMap : Control
             )
             {
                 GD.Print($"Button pressed {m_selectedTrail} {Instance.m_selectedTrail}");
-                Player player = Player.Instance;
-                player.EmitSignal(Player.SignalName.TrailJunctionChoice, Instance.m_selectedTrail);
+                Player.Instance.EmitSignal(
+                    Player.SignalName.TrailJunctionChoice,
+                    Instance.m_selectedTrail
+                );
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)
             {

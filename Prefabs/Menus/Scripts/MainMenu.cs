@@ -3,7 +3,7 @@ using Godot;
 public partial class MainMenu : Node2D
 {
     [Export]
-    public CanvasLayer saveLoadDelete;
+    public CanvasLayer? saveLoadDelete;
 
     public override void _Ready() { }
 }

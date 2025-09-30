@@ -2,7 +2,7 @@ using Godot;
 
 public partial class InGameUi : Control
 {
-    public static InGameUi Instance { get; private set; }
+    public static InGameUi? Instance { get; private set; }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

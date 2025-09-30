@@ -3,10 +3,17 @@ using Godot;
 public partial class PlayerDataTest : Node
 {
     [Export]
-    public Label myLabel;
+    public Label? myLabel;
 
     public override void _Ready()
     {
+        // Sanity checks
+        if (myLabel == null)
+        {
+            GD.PushWarning($"${nameof(_Ready)}: sanity checks failed");
+            return;
+        }
+
         myLabel.Text =
             "GetTree().CurrentScene.SceneFilePath: " + GetTree().CurrentScene.SceneFilePath + "\n";
         myLabel.Text += "GameMaster Current Slot " + GameMaster.currentSlotNum + "\n";

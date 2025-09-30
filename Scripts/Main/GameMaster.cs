@@ -2,7 +2,7 @@ using Godot;
 
 public partial class GameMaster : Node
 {
-    public static GameMaster instance;
+    public static GameMaster? instance;
 
     //Release.Features.Patch
     public static string gameVersion = "0.1.1 Build Date: 9/24/2023";

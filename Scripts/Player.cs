@@ -7,35 +7,41 @@ public partial class Player : CharacterBody2D
     public int Walk = 1;
 
     [Export]
-    public Sol sol;
+    public Sol? sol;
 
     [Signal]
     public delegate void TrailJunctionChoiceEventHandler();
 
     [Export]
-    public Level1 level;
+    public Level1? level;
 
     public const float Speed = 100.0f;
     public Godot.Vector2 worldLimit;
 
-    public static Player Instance { get; private set; }
+    public static Player? Instance { get; private set; }
 
     // next junction index
     private int m_junctionIndex = -1;
 
     // next junction
-    private GpxTrailJunction m_junction = null;
+    private GpxTrailJunction? m_junction = null;
 
     public override void _Ready()
     {
         Instance = this;
 
         // not all trails got a junction
-        if (sol.CurrentTrack.m_trailJunctions.Count > 0)
+        if (sol != null)
         {
-            // start from first index
-            m_junctionIndex = 0;
-            m_junction = (GpxTrailJunction)sol.CurrentTrack.m_trailJunctions[m_junctionIndex];
+            if (sol.CurrentTrack != null && sol.CurrentTrack.m_trailJunctions != null)
+            {
+                if (sol.CurrentTrack.m_trailJunctions.Count > 0)
+                {
+                    // start from first index
+                    m_junctionIndex = 0;
+                    m_junction = sol.CurrentTrack.m_trailJunctions[m_junctionIndex];
+                }
+            }
         }
         // the player can climb all
         FloorBlockOnWall = false;
@@ -43,6 +49,13 @@ public partial class Player : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        // Sanity checks
+        if (level == null || sol == null)
+        {
+            GD.PushWarning($"${nameof(_PhysicsProcess)}: sanity checks failed");
+            return;
+        }
+
         Godot.Vector2 velocity = Velocity;
 
         if (this.Position.X >= 0 && this.Position.X < worldLimit.X)
@@ -58,7 +71,11 @@ public partial class Player : CharacterBody2D
                 level.EmitSignal(Level1.SignalName.TrailJunctionChoice, m_junctionIndex);
                 m_junctionIndex++;
                 // remains some junctions?
-                if (m_junctionIndex < sol.CurrentTrack.m_trailJunctions.Count)
+                if (
+                    sol.CurrentTrack != null
+                    && sol.CurrentTrack.m_trailJunctions != null
+                    && m_junctionIndex < sol.CurrentTrack.m_trailJunctions.Count
+                )
                 {
                     m_junction = (GpxTrailJunction)
                         sol.CurrentTrack.m_trailJunctions[m_junctionIndex];
@@ -91,6 +108,10 @@ public partial class Player : CharacterBody2D
 
     private void _on_trail_junction_choice(string gpxFile)
     {
+        // Sanity checks
+        if (level == null)
+            return;
+
         level.EmitSignal(Level1.SignalName.TrailJunctionChoiceDone, gpxFile);
         this.Position = new Godot.Vector2(this.Position.X + 1, this.Position.Y);
         Walk = 1;

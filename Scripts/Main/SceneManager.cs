@@ -10,7 +10,7 @@ public enum eSceneNames
 
 public partial class SceneManager : Node
 {
-    public static SceneManager instance;
+    public static SceneManager? instance;
 
     //Update this Dictionary whenever you add or change a scene you want included in the Scene Manager.
     public Dictionary<eSceneNames, SceneCstr> sceneDictionary = new Dictionary<

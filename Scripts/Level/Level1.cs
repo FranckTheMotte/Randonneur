@@ -8,28 +8,35 @@ using Vector2 = Godot.Vector2;
 public partial class Level1 : Node2D
 {
     [Export]
-    public Camera2D camera2d;
+    public Camera2D? camera2d;
 
     [Export]
-    public Player player;
+    public Player? player;
 
     // godot directory to gpx files to define the level map
     [Export]
-    string pathToMap;
+    string? pathToMap;
 
     [Signal]
     public delegate void TrailJunctionChoiceEventHandler();
 
     [Signal]
     public delegate void TrailJunctionChoiceDoneEventHandler();
-    private MapGenerator mapGenerator;
-    private AnimationPlayer fadeAnimation;
+    private MapGenerator? mapGenerator;
+    private AnimationPlayer? fadeAnimation;
 
-    private Sol sol;
+    private Sol? sol;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        // Sanity checks
+        if (pathToMap == null)
+        {
+            GD.PushWarning($"${nameof(_Ready)}: sanity checks failed");
+            return;
+        }
+
         /* Create the map */
         Control worldMapSign = GetNode<Control>("WorldMap");
 
@@ -55,8 +62,13 @@ public partial class Level1 : Node2D
         GD.Print($"map W H {mapWidth} {mapHeight}");
         mapGenerator = new MapGenerator(mapWidth, mapHeight);
 
-        List<Area2D> trails = mapGenerator.generateMap(pathToMap);
+        List<Area2D>? trails = mapGenerator.generateMap(pathToMap);
 
+        if (trails is null)
+        {
+            GD.PushError($"${nameof(_Ready)}: map not generated");
+            return;
+        }
         foreach (var trail in trails)
         {
             GD.Print($"Add {trail.GetType()} named {trail.Name} to mapArea");
@@ -86,6 +98,13 @@ public partial class Level1 : Node2D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
+        // Sanity checks
+        if (mapGenerator == null)
+        {
+            GD.PushWarning($"${nameof(_Process)}: sanity checks failed");
+            return;
+        }
+
         mapGenerator._Process(delta);
 
         // Display the X,Y of the player in the label
@@ -107,6 +126,13 @@ public partial class Level1 : Node2D
      */
     private void MapPositionUpdate()
     {
+        // Sanity checks
+        if (player == null)
+        {
+            GD.PushWarning($"${nameof(_PhysicsProcess)}: sanity checks failed");
+            return;
+        }
+
         Control map = GetNode<Control>("WorldMap");
         map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 50);
     }
@@ -125,6 +151,13 @@ public partial class Level1 : Node2D
 
     private void _on_trail_junction_choice_done(string gpxFile)
     {
+        // Sanity checks
+        if (sol == null || fadeAnimation == null)
+        {
+            GD.PushWarning($"${nameof(_on_trail_junction_choice_done)}: sanity checks failed");
+            return;
+        }
+
         MapVisible(false);
         // TODO gpxFile must contains full path
         sol.generateGround("res://data/Map1/" + gpxFile);
@@ -136,9 +169,22 @@ public partial class Level1 : Node2D
 
     private void _on_trail_junction_choice(int junctionIndex)
     {
+        // Sanity checks
+        if (
+            sol == null
+            || sol.CurrentTrack == null
+            || sol.CurrentTrack.m_trailJunctions == null
+            || InGameUi.Instance == null
+        )
+        {
+            GD.PushWarning($"${nameof(_on_trail_junction_choice)}: sanity checks failed");
+            return;
+        }
+
         /* Update destinations list on sign */
-        InGameUi gameUI = InGameUi.Instance;
-        DestinationsList destinationsList = gameUI.GetNode<DestinationsList>("%DestinationsList");
+        DestinationsList destinationsList = InGameUi.Instance.GetNode<DestinationsList>(
+            "%DestinationsList"
+        );
         destinationsList.EmitSignal(
             DestinationsList.SignalName.DestinationsUpdate,
             sol.CurrentTrack.m_trailJunctions[junctionIndex]

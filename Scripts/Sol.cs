@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 using static Godot.GD;
@@ -6,13 +7,13 @@ public partial class Sol : StaticBody2D
 {
     private List<Vector2> TrailJunctions = new List<Vector2>();
 
-    public Gpx CurrentTrack;
+    public Gpx? CurrentTrack;
 
     [Export]
-    Player Player;
+    Player? Player;
 
     [Export]
-    private string GpxFile;
+    private string? GpxFile;
 
     // Generate a 2D polygon (list of Vector2) to test on a customize ground
     private Vector2[] generateGround(int length)
@@ -48,6 +49,13 @@ public partial class Sol : StaticBody2D
 
     public void generateGround(string gpxFile)
     {
+        // Sanity checks
+        if (Player == null)
+        {
+            GD.PushWarning($"${nameof(generateGround)}: sanity checks failed");
+            return;
+        }
+
         var watch = new System.Diagnostics.Stopwatch();
         watch.Start();
         if (Godot.FileAccess.FileExists(gpxFile))
@@ -61,6 +69,14 @@ public partial class Sol : StaticBody2D
             CurrentTrack = new Gpx();
             CurrentTrack.Load(gpxFile);
 
+            if (CurrentTrack.m_trackPoints == null)
+            {
+                GD.PushWarning(
+                    $"${nameof(generateGround)}: no track points in current gpx file ${gpxFile}"
+                );
+                watch.Stop();
+                return;
+            }
             /* Add 2 points in order to display a solid ground */
             Vector2[] ground = new Vector2[CurrentTrack.m_trackPoints.Length + 2];
 
@@ -104,7 +120,8 @@ public partial class Sol : StaticBody2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        generateGround(GpxFile);
+        if (GpxFile != null)
+            generateGround(GpxFile);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

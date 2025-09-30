@@ -5,43 +5,43 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
     [ExportGroup("Buttons")]
     [ExportSubgroup("Button Set 1")]
     [Export]
-    public Button new1;
+    public Button? new1;
 
     [Export]
-    public Button load1;
+    public Button? load1;
 
     [Export]
-    public Button delete1;
+    public Button? delete1;
 
     [ExportSubgroup("Button Set 2")]
     [Export]
-    public Button new2;
+    public Button? new2;
 
     [Export]
-    public Button load2;
+    public Button? load2;
 
     [Export]
-    public Button delete2;
+    public Button? delete2;
 
     [ExportSubgroup("Button Set 3")]
     [Export]
-    public Button new3;
+    public Button? new3;
 
     [Export]
-    public Button load3;
+    public Button? load3;
 
     [Export]
-    public Button delete3;
+    public Button? delete3;
 
     [ExportGroup("Labels")]
     [Export]
-    public Label infoLabel1;
+    public Label? infoLabel1;
 
     [Export]
-    public Label infoLabel2;
+    public Label? infoLabel2;
 
     [Export]
-    public Label infoLabel3;
+    public Label? infoLabel3;
 
     public override void _Ready()
     {
@@ -50,6 +50,23 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
 
     private void SetupMenu()
     {
+        // Sanity checks
+        if (
+            new1 == null
+            || load1 == null
+            || delete1 == null
+            || new2 == null
+            || load2 == null
+            || delete2 == null
+            || new3 == null
+            || load3 == null
+            || delete3 == null
+        )
+        {
+            GD.PushWarning($"${nameof(SetupMenu)}: sanity checks failed");
+            return;
+        }
+
         DisableAllButtons();
 
         UpdateLabels();
@@ -96,6 +113,13 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
 
     private void UpdateLabels()
     {
+        // Sanity checks
+        if (infoLabel1 == null || infoLabel2 == null || infoLabel3 == null)
+        {
+            GD.PushWarning($"${nameof(UpdateLabels)}: sanity checks failed");
+            return;
+        }
+
         infoLabel1.Text =
             "New file: " + GameMaster.loadedPlayerDataSlot1.newFile.ToString() + "     ";
         infoLabel1.Text +=
@@ -117,6 +141,13 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
 
     public void _on_new_load_button_up(int myInt)
     {
+        // Sanity checks
+        if (SceneManager.instance == null)
+        {
+            GD.PushWarning($"${nameof(_on_new_load_button_up)}: sanity checks failed");
+            return;
+        }
+
         GameMaster.currentSlotNum = myInt;
 
         if (myInt == 1)
@@ -163,11 +194,35 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
 
     public void _on_quit_button_button_up()
     {
+        // Sanity checks
+        if (SceneManager.instance == null)
+        {
+            GD.PushWarning($"${nameof(_on_quit_button_button_up)}: sanity checks failed");
+            return;
+        }
+
         SceneManager.instance.QuitGame();
     }
 
     private void DisableAllButtons()
     {
+        // Sanity checks
+        if (
+            new1 == null
+            || load1 == null
+            || delete1 == null
+            || new2 == null
+            || load2 == null
+            || delete2 == null
+            || new3 == null
+            || load3 == null
+            || delete3 == null
+        )
+        {
+            GD.PushWarning($"${nameof(DisableAllButtons)}: sanity checks failed");
+            return;
+        }
+
         new1.Visible = false;
         new1.Disabled = true;
         load1.Visible = false;

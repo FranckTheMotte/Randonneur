@@ -64,7 +64,7 @@ public partial class MapGenerator : Node
         return new Vector2(screenX, screenY);
     }
 
-    public List<Area2D> generateMap(string dir)
+    public List<Area2D>? generateMap(string dir)
     {
         // pour chaque fichier dans dir:
         // - parser le xml
@@ -96,18 +96,24 @@ public partial class MapGenerator : Node
             Gpx trail;
             /* Generate a profil from a gpx file */
             trail = new Gpx();
-            trail.Load(gpxFileName);
-
-            foreach (GpxProperties gpxPoint in trail.m_trackPoints)
+            if (trail.Load(gpxFileName) == true && trail.m_trackPoints is not null)
             {
-                if (minLatitude > gpxPoint.coord.X)
-                    minLatitude = gpxPoint.coord.X;
-                if (minLongitude > gpxPoint.coord.Y)
-                    minLongitude = gpxPoint.coord.Y;
-                if (maxLatitude < gpxPoint.coord.X)
-                    maxLatitude = gpxPoint.coord.X;
-                if (maxLongitude < gpxPoint.coord.Y)
-                    maxLongitude = gpxPoint.coord.Y;
+                foreach (GpxProperties gpxPoint in trail.m_trackPoints)
+                {
+                    if (minLatitude > gpxPoint.coord.X)
+                        minLatitude = gpxPoint.coord.X;
+                    if (minLongitude > gpxPoint.coord.Y)
+                        minLongitude = gpxPoint.coord.Y;
+                    if (maxLatitude < gpxPoint.coord.X)
+                        maxLatitude = gpxPoint.coord.X;
+                    if (maxLongitude < gpxPoint.coord.Y)
+                        maxLongitude = gpxPoint.coord.Y;
+                }
+            }
+            else
+            {
+                GD.PushWarning($"${nameof(generateMap)}: Failure in gpx file : ${gpxFileName}");
+                return null;
             }
         }
 
@@ -127,57 +133,64 @@ public partial class MapGenerator : Node
             Gpx trail;
             /* Generate a profil from a gpx file */
             trail = new Gpx();
-            trail.Load(gpxFileName);
-            Line2D trailLine = new Line2D();
-            Vector2[] trace = new Vector2[trail.m_trackPoints.Length];
-            int i = 0;
-            MapArea area = new();
-
-            foreach (GpxProperties gpxPoint in trail.m_trackPoints)
+            if (trail.Load(gpxFileName) == true && trail.m_trackPoints is not null)
             {
-                GpsPoint gpsPoint = new GpsPoint(gpxPoint.coord.X, gpxPoint.coord.Y);
-                trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
-                GD.Print(
-                    $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.waypoint}"
-                );
-                GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");
-                if (gpxPoint.waypoint.Length > 0)
+                Line2D trailLine = new Line2D();
+                Vector2[] trace = new Vector2[trail.m_trackPoints.Length];
+                int i = 0;
+                MapArea area = new();
+
+                foreach (GpxProperties gpxPoint in trail.m_trackPoints)
                 {
-                    Label waypointLabel = new Label();
-                    waypointLabel.Name = waypointLabel.Text = gpxPoint.waypoint;
-                    waypointLabel.Position = trace[i];
-                    waypointLabel.ZIndex = 2;
-                    waypointLabel.LabelSettings = new LabelSettings();
-                    waypointLabel.LabelSettings.FontColor = Colors.Black;
-                    area.AddChild(waypointLabel);
+                    GpsPoint gpsPoint = new GpsPoint(gpxPoint.coord.X, gpxPoint.coord.Y);
+                    trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
+                    GD.Print(
+                        $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.waypoint}"
+                    );
+                    GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");
+                    if (gpxPoint.waypoint.Length > 0)
+                    {
+                        Label waypointLabel = new Label();
+                        waypointLabel.Name = waypointLabel.Text = gpxPoint.waypoint;
+                        waypointLabel.Position = trace[i];
+                        waypointLabel.ZIndex = 2;
+                        waypointLabel.LabelSettings = new LabelSettings();
+                        waypointLabel.LabelSettings.FontColor = Colors.Black;
+                        area.AddChild(waypointLabel);
+                    }
+                    i++;
                 }
-                i++;
+
+                // TODO This default name must be public and global
+                trailLine.Name = "TrailLine2D";
+
+                trailLine.Points = trace;
+                trailLine.Width = TRAIL_LINE_WIDTH;
+                // TODO This default color must be public and global
+                trailLine.DefaultColor = Colors.Orange;
+
+                // Area2D for collisions detection
+                area.Name = Path.GetFileName(gpxFileName);
+                /* Store the real filename in editor description to skip StringName character
+                   replacement rules : When changing the name, the following characters will
+                   be replaced with an underscore: (. : @ / " %).
+                */
+                area.EditorDescription = Path.GetFileName(gpxFileName);
+                area.AddChild(trailLine);
+                area.SetCollisionLayerValue(1, false);
+                area.SetCollisionLayerValue(4, true);
+                area.ZIndex = 2;
+
+                // Add collisions
+                CreateSegmentCollisions(area, trailLine);
+
+                areasList.Add(area);
             }
-
-            // TODO This default name must be public and global
-            trailLine.Name = "TrailLine2D";
-
-            trailLine.Points = trace;
-            trailLine.Width = TRAIL_LINE_WIDTH;
-            // TODO This default color must be public and global
-            trailLine.DefaultColor = Colors.Orange;
-
-            // Area2D for collisions detection
-            area.Name = Path.GetFileName(gpxFileName);
-            /* Store the real filename in editor description to skip StringName character
-               replacement rules : When changing the name, the following characters will
-               be replaced with an underscore: (. : @ / " %).
-            */
-            area.EditorDescription = Path.GetFileName(gpxFileName);
-            area.AddChild(trailLine);
-            area.SetCollisionLayerValue(1, false);
-            area.SetCollisionLayerValue(4, true);
-            area.ZIndex = 2;
-
-            // Add collisions
-            CreateSegmentCollisions(area, trailLine);
-
-            areasList.Add(area);
+            else
+            {
+                GD.PushWarning($"${nameof(generateMap)}: (2) Failure in gpx file : ${gpxFileName}");
+                return null;
+            }
         }
         return areasList;
     }
