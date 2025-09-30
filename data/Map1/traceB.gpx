@@ -1,63 +1,81 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="EditGPX">
-  <metadata>
-    <name>traceB</name>
-    <desc>B</desc>
-  </metadata>
-  <wpt lat="42.765520" lon="1.482860">
-    <ele>731</ele>
-	<name>Montcalm</name>
-  </wpt>
-  <wpt lat="42.766740" lon="1.483030">
-    <ele>729.2</ele>
-	<name>Roquefixa</name>
-  </wpt>
-  <trk>
-    <trkseg>
-      <trkpt lat="42.765520" lon="1.482860">
-        <ele>730.7</ele>
-      </trkpt>
-      <trkpt lat="42.765560" lon="1.482860">
-        <ele>730.7</ele>
-      </trkpt>
-      <trkpt lat="42.765660" lon="1.482830">
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" creator="GpxSwK v2-50831 (https://gpx.tybern.fr)">
+<metadata>
+  <name>traceB_GhLLH</name>
+  <desc><![CDATA[B]]></desc>
+  <copyright author="Creative Commons">
+    <license>https://creativecommons.org/licenses/by-nc-sa/4.0/</license>
+  </copyright>
+  <time>2025-09-30T13:31:13.516Z</time>
+  <bounds minlat="42.76551" minlon="1.48270" maxlat="42.76674" maxlon="1.48303"/>
+</metadata>
+<wpt lat="42.765530" lon="1.482849">
+    <ele>730.4</ele>
+    <name><![CDATA[Croisement - Col du sanglier]]></name>
+    <cmt><![CDATA[
+]]></cmt>
+    <desc><![CDATA[TraceG;TraceD]]></desc>
+    <sym>Where</sym>
+    <type>Roadbook</type>
+    <extensions>
+    <gpxx:WaypointExtension><gpxx:Address>
+    <gpxx:StreetAddress>4 Rue du Montcalm</gpxx:StreetAddress>
+    <gpxx:City>Auzat</gpxx:City>
+    <gpxx:PostalCode>09220</gpxx:PostalCode>
+    </gpxx:Address></gpxx:WaypointExtension>
+    </extensions>
+</wpt>
+<trk>
+    <name>traceB_GhLLH</name>
+<desc>Description</desc>    <trkseg>
+    <trkpt lat="42.765508" lon="1.482857">
         <ele>730.4</ele>
-      </trkpt>
-      <trkpt lat="42.765970" lon="1.482730">
-        <ele>730.1</ele>
-      </trkpt>
-      <trkpt lat="42.766090" lon="1.482700">
-        <ele>730</ele>
-      </trkpt>
-      <trkpt lat="42.766180" lon="1.482700">
+    </trkpt>
+    <trkpt lat="42.765519" lon="1.482858">
+        <ele>730.4</ele>
+    </trkpt>
+    <trkpt lat="42.765556" lon="1.482855">
+        <ele>730.3</ele>
+    </trkpt>
+    <trkpt lat="42.765656" lon="1.482826">
+        <ele>730.2</ele>
+    </trkpt>
+    <trkpt lat="42.765971" lon="1.482729">
         <ele>729.8</ele>
-      </trkpt>
-      <trkpt lat="42.766270" lon="1.482710">
+    </trkpt>
+    <trkpt lat="42.766089" lon="1.4827">
+        <ele>729.8</ele>
+    </trkpt>
+    <trkpt lat="42.766175" lon="1.482697">
+        <ele>729.7</ele>
+    </trkpt>
+    <trkpt lat="42.766266" lon="1.48271">
         <ele>729.6</ele>
-      </trkpt>
-      <trkpt lat="42.766340" lon="1.482740">
+    </trkpt>
+    <trkpt lat="42.76627" lon="1.482711">
+        <ele>729.6</ele>
+    </trkpt>
+    <trkpt lat="42.766343" lon="1.482736">
+        <ele>729.4</ele>
+    </trkpt>
+    <trkpt lat="42.766426" lon="1.482777">
         <ele>729.3</ele>
-      </trkpt>
-      <trkpt lat="42.766430" lon="1.482780">
-        <ele>729</ele>
-      </trkpt>
-      <trkpt lat="42.766550" lon="1.482850">
-        <ele>729</ele>
-      </trkpt>
-      <trkpt lat="42.766660" lon="1.482940">
-        <ele>729</ele>
-      </trkpt>
-      <trkpt lat="42.766700" lon="1.482990">
+    </trkpt>
+    <trkpt lat="42.766545" lon="1.482853">
         <ele>729.1</ele>
-      </trkpt>
-      <trkpt lat="42.766740" lon="1.483030">
-        <ele>729.2</ele>
-        <extensions>
-          <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
-            <visugpx:node>1</visugpx:node>
-          </visugpx:TrkExtension>
-        </extensions>
-      </trkpt>
+    </trkpt>
+    <trkpt lat="42.766657" lon="1.482943">
+        <ele>728.8</ele>
+    </trkpt>
+    <trkpt lat="42.766704" lon="1.482991">
+        <ele>728.7</ele>
+    </trkpt>
+    <trkpt lat="42.766738" lon="1.483026">
+        <ele>728.7</ele>
+    </trkpt>
+    <trkpt lat="42.766743" lon="1.483033">
+        <ele>728.7</ele>
+    </trkpt>
     </trkseg>
-  </trk>
+</trk>
 </gpx>
