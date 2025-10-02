@@ -84,9 +84,27 @@ public partial class Sol : StaticBody2D
             for (int i = 0; i < solLength; i++)
             {
                 ground[i] = CurrentTrack.m_trackPoints[i].elevation;
-                if (CurrentTrack.m_trackPoints[i].trailJunctionIndex != -1)
+                var Waypoint = CurrentTrack.m_trackPoints[i].Waypoint;
+                if (Waypoint != null)
                 {
-                    TrailJunctions.Add(new Vector2(ground[i].X, ground[i].Y - 50));
+                    // TODO: here only to display a graphic object for junction
+                    Vector2 junctionPosition = ground[i];
+                    TrailJunctions.Add(junctionPosition);
+
+                    Area2D junctionArea = new() { Position = ground[i] };
+                    junctionArea.BodyEntered += delegate
+                    {
+                        JunctionHandler(this, Waypoint);
+                    };
+                    // Use the junction collision layer
+                    junctionArea.SetCollisionLayerValue(1, false);
+                    junctionArea.SetCollisionLayerValue(5, true);
+                    junctionArea.SetCollisionMaskValue(1, false);
+                    junctionArea.SetCollisionMaskValue(5, true);
+                    CircleShape2D circleShape2D = new() { Radius = 10.0f };
+                    CollisionShape2D junctionCollision = new() { Shape = circleShape2D };
+                    junctionArea.AddChild(junctionCollision);
+                    AddChild(junctionArea);
                 }
             }
 
@@ -115,6 +133,15 @@ public partial class Sol : StaticBody2D
         /* TODO put default value if no Gpx is provided */
         watch.Stop();
         Print($"Ground creation Time: {watch.ElapsedMilliseconds} ms");
+    }
+
+    /**
+      "BodyEntered" signal Handler.
+    */
+    private void JunctionHandler(Node2D Node, GpxWaypoint Waypoint)
+    {
+        GD.Print($"Name : ${Waypoint.Name}");
+        Player?.DisplayJunction(Waypoint);
     }
 
     // Called when the node enters the scene tree for the first time.

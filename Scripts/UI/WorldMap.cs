@@ -99,7 +99,8 @@ public partial class WorldMap : Control
                 if (subchild.Name.ToString().StartsWith(MapGenerator.TRAIL_COLLISION_FILTER_NAME))
                 {
                     CollisionShape2D collision = (CollisionShape2D)subchild;
-                    collision.Disabled = value;
+                    // put it as deferred, because it can be called during collision signal
+                    collision.SetDeferred("Disabled", value);
                 }
             }
         }

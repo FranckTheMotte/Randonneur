@@ -145,13 +145,13 @@ public partial class MapGenerator : Node
                     GpsPoint gpsPoint = new GpsPoint(gpxPoint.coord.X, gpxPoint.coord.Y);
                     trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
                     GD.Print(
-                        $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.waypoint}"
+                        $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.Waypoint}"
                     );
                     GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");
-                    if (gpxPoint.waypoint.Length > 0)
+                    if (gpxPoint.Waypoint != null)
                     {
                         Label waypointLabel = new Label();
-                        waypointLabel.Name = waypointLabel.Text = gpxPoint.waypoint;
+                        waypointLabel.Name = waypointLabel.Text = gpxPoint.Waypoint.Name;
                         waypointLabel.Position = trace[i];
                         waypointLabel.ZIndex = 2;
                         waypointLabel.LabelSettings = new LabelSettings();
