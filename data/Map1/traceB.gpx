@@ -11,6 +11,22 @@
 </metadata>
 <wpt lat="42.76627" lon="1.482711">
     <ele>730.4</ele>
+    <name><![CDATA[POV - Stèle fuxéenne]]></name>
+    <cmt><![CDATA[
+]]></cmt>
+    <desc><![CDATA[]]></desc>
+    <sym>Where</sym>
+    <type>Roadbook</type>
+    <extensions>
+    <gpxx:WaypointExtension><gpxx:Address>
+    <gpxx:StreetAddress>4 Rue du Montcalm</gpxx:StreetAddress>
+    <gpxx:City>Auzat</gpxx:City>
+    <gpxx:PostalCode>09220</gpxx:PostalCode>
+    </gpxx:Address></gpxx:WaypointExtension>
+    </extensions>
+</wpt>
+<wpt lat="42.765508" lon="1.482857">
+    <ele>730.4</ele>
     <name><![CDATA[Croisement - Col du sanglier]]></name>
     <cmt><![CDATA[
 ]]></cmt>
