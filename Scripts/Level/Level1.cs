@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
@@ -18,16 +19,16 @@ public partial class Level1 : Node2D
     string? pathToMap;
 
     [Signal]
-    public delegate void TrailJunctionChoiceEventHandler();
-
-    [Signal]
     public delegate void TrailJunctionChoiceDoneEventHandler();
     private MapGenerator? mapGenerator;
     private AnimationPlayer? fadeAnimation;
 
     private Sol? sol;
 
+    public Hashtable? Trails { get; private set; }
+
     // Called when the node enters the scene tree for the first time.
+
     public override void _Ready()
     {
         // Sanity checks
@@ -62,7 +63,9 @@ public partial class Level1 : Node2D
         GD.Print($"map W H {mapWidth} {mapHeight}");
         mapGenerator = new MapGenerator(mapWidth, mapHeight);
 
-        List<Area2D>? trails = mapGenerator.generateMap(pathToMap);
+        var (TrailsNodes, TrailsGpx) = mapGenerator.generateMap(pathToMap);
+        List<Area2D>? trails = TrailsNodes;
+        Trails = TrailsGpx;
 
         if (trails is null)
         {
@@ -134,7 +137,7 @@ public partial class Level1 : Node2D
         }
 
         Control map = GetNode<Control>("WorldMap");
-        map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 50);
+        map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 100);
     }
 
     public void TrailSignVisible(bool Visible)
@@ -167,29 +170,30 @@ public partial class Level1 : Node2D
         Sleep(500);
     }
 
-    private void _on_trail_junction_choice(int junctionIndex)
-    {
-        // Sanity checks
-        if (
-            sol == null
-            || sol.CurrentTrack == null
-            || sol.CurrentTrack.m_trailJunctions == null
-            || InGameUi.Instance == null
-        )
-        {
-            GD.PushWarning($"${nameof(_on_trail_junction_choice)}: sanity checks failed");
-            return;
-        }
+    /**
+      Display the junction choice through the map.
 
-        /* Update destinations list on sign */
-        DestinationsList destinationsList = InGameUi.Instance.GetNode<DestinationsList>(
-            "%DestinationsList"
-        );
-        destinationsList.EmitSignal(
-            DestinationsList.SignalName.DestinationsUpdate,
-            sol.CurrentTrack.m_trailJunctions[junctionIndex]
-        );
+      @param TrackName Contains the name of the gpx file.
+      @param Coord     Coordinate of the triggered waypoint.
+    */
+    public void JunctionChoice(string TrackName, Vector2 Coord)
+    {
         MapPositionUpdate();
         MapVisible(true);
+
+        /* TODO highlight the matched waypoint, unlight others */
+        Gpx? trail = (Gpx?)Trails?[TrackName];
+        if (trail != null)
+        {
+            GpxWaypoint? waypoint = trail.Waypoints.GetWaypoint(Coord);
+            if (waypoint is not null)
+            {
+                ColorRect? landmark = waypoint.Landmark;
+                if (landmark is not null)
+                {
+                    landmark.Color = Colors.Black;
+                }
+            }
+        }
     }
 }

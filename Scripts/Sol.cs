@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Godot;
 using static Godot.GD;
 
@@ -92,9 +93,10 @@ public partial class Sol : StaticBody2D
                     TrailJunctions.Add(junctionPosition);
 
                     Area2D junctionArea = new() { Position = ground[i] };
+                    junctionArea.Name = Path.GetFileName(gpxFile);
                     junctionArea.BodyEntered += delegate
                     {
-                        JunctionHandler(this, Waypoint);
+                        JunctionHandler(Path.GetFileName(gpxFile), Waypoint.Coord);
                     };
                     // Use the junction collision layer
                     junctionArea.SetCollisionLayerValue(1, false);
@@ -137,11 +139,17 @@ public partial class Sol : StaticBody2D
 
     /**
       "BodyEntered" signal Handler.
+
+      @param TrackName Contains the name of the gpx file.
+      @param Coord     Coordinate of the triggered waypoint.
     */
-    private void JunctionHandler(Node2D Node, GpxWaypoint Waypoint)
+    private void JunctionHandler(string TrackName, Vector2 Coord)
     {
-        GD.Print($"Name : ${Waypoint.Name}");
-        Player?.DisplayJunction(Waypoint);
+        GpxWaypoint? Waypoint = CurrentTrack?.Waypoints.GetWaypoint(Coord);
+        if (Waypoint is not null)
+        {
+            Player?.DisplayJunction(TrackName, Coord);
+        }
     }
 
     // Called when the node enters the scene tree for the first time.

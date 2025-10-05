@@ -11,8 +11,8 @@ public partial class MapArea : Area2D
     public override void _Ready()
     {
         // Trigger actions when mouse go over/out a trail
-        Connect("TrailSelection", new Callable(this, nameof(_on_trail_selection)));
-        InputEvent += OnInputEvent;
+        // TODO : it's disabled but keep it.
+        // Connect("TrailSelection", new Callable(this, nameof(_on_trail_selection)));
         InputPickable = true;
     }
 
@@ -56,24 +56,5 @@ public partial class MapArea : Area2D
         }
 
         trailLine.DefaultColor = color;
-    }
-
-    /**
-        Emitted when an input event occurs.
-        Here, only the MouseButton event is catched
-
-        @param viewport current viewport
-        @param event input event properties
-        @param shapeIdx index to the collision2D object
-    */
-    private void OnInputEvent(Node viewport, InputEvent @event, long shapeIdx)
-    {
-        if (@event is InputEventMouseButton mouseButton)
-        {
-            if (mouseButton.ButtonIndex == MouseButton.Left && mouseButton.Pressed)
-            {
-                GD.Print("Clic gauche détecté sur l'Area2D !");
-            }
-        }
     }
 }

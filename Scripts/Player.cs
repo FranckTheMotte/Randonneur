@@ -64,17 +64,17 @@ public partial class Player : CharacterBody2D
         Walk = 1;
     }
 
-    internal void DisplayJunction(GpxWaypoint Waypoint)
+    /**
+      Stop player and display the junction panel.
+
+      @param TrackName Contains the name of the gpx file.
+      @param Coord     Coordinate of the triggered waypoint.
+    */
+    internal void DisplayJunction(string Trace, Vector2 Coord)
     {
         if (level == null)
             return;
         Walk = 0;
-        /* TODO
-          - 0 is an hardcoded value just for a default status
-          - rework this part to display the trail junction.
-            Trail junction was based on a panel. It will be done with
-            interactive world map.
-        */
-        level.EmitSignal(Level1.SignalName.TrailJunctionChoice, 0);
+        level.JunctionChoice(Trace, Coord);
     }
 }

@@ -66,7 +66,7 @@ public class Gpx
     public GpxProperties[]? m_trackPoints { get; set; }
 
     // waypoints from the gpx file
-    readonly GpxWaypoints Waypoints = new();
+    public readonly GpxWaypoints Waypoints = new();
 
     public List<GpxTrailJunction>? m_trailJunctions;
 

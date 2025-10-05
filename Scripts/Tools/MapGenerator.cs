@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Godot;
@@ -64,7 +66,15 @@ public partial class MapGenerator : Node
         return new Vector2(screenX, screenY);
     }
 
-    public List<Area2D>? generateMap(string dir)
+    /**
+        Generate Nodes from all gpx files in specified directory.
+
+        @param      dir    Location of gpx files.
+
+        @return TrailsNodes a list of area2d where each one contains Nodes for a trail.
+                TrailsGpx   an hashtable of trails gpx items.
+    */
+    public (List<Area2D>? TrailsNodes, Hashtable? TrailsGpx) generateMap(string dir)
     {
         // pour chaque fichier dans dir:
         // - parser le xml
@@ -78,6 +88,7 @@ public partial class MapGenerator : Node
         // x1(long, lat) 45.7907840 - 6.9719600 => 45° 47' 26.822" - 6° 58' 19.056"
         // x2(long, lat) 45.790742 - 6.971974 => 45° 47' 26.671" - 6° 58' 19.106"
         List<Area2D> areasList = new();
+        Hashtable Trails = [];
 
         /* First run to get min and max values for longitude and latiture*/
         string[] gpxFiles = Directory.GetFiles(ProjectSettings.GlobalizePath(dir));
@@ -113,7 +124,7 @@ public partial class MapGenerator : Node
             else
             {
                 GD.PushWarning($"${nameof(generateMap)}: Failure in gpx file : ${gpxFileName}");
-                return null;
+                return (null, null);
             }
         }
 
@@ -139,24 +150,33 @@ public partial class MapGenerator : Node
                 Vector2[] trace = new Vector2[trail.m_trackPoints.Length];
                 int i = 0;
                 MapArea area = new();
+                string traceFileName = Path.GetFileName(gpxFileName);
 
                 foreach (GpxProperties gpxPoint in trail.m_trackPoints)
                 {
                     GpsPoint gpsPoint = new GpsPoint(gpxPoint.coord.X, gpxPoint.coord.Y);
                     trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
-                    GD.Print(
+                    /*GD.Print(
                         $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.Waypoint}"
                     );
-                    GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");
-                    if (gpxPoint.Waypoint != null)
+                    GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");*/
+                    GpxWaypoint? waypoint = gpxPoint.Waypoint;
+                    if (waypoint != null)
                     {
                         Label waypointLabel = new Label();
-                        waypointLabel.Name = waypointLabel.Text = gpxPoint.Waypoint.Name;
+                        waypointLabel.Name = waypointLabel.Text = waypoint.Name;
                         waypointLabel.Position = trace[i];
                         waypointLabel.ZIndex = 2;
                         waypointLabel.LabelSettings = new LabelSettings();
                         waypointLabel.LabelSettings.FontColor = Colors.Black;
+
+                        // TEST: just to check where waypoints are located on map
+                        // This marker can only be add now because the
+                        // lat/lon to screen coord conversion is done here.
+                        JunctionArea junctionArea = new(trace[i], waypoint.Name, traceFileName);
+                        //trail.Waypoints.SetWaypointLandmark(waypoint.Coord, colorRect);
                         area.AddChild(waypointLabel);
+                        area.AddChild(junctionArea);
                     }
                     i++;
                 }
@@ -170,12 +190,12 @@ public partial class MapGenerator : Node
                 trailLine.DefaultColor = Colors.Orange;
 
                 // Area2D for collisions detection
-                area.Name = Path.GetFileName(gpxFileName);
+                area.Name = traceFileName;
                 /* Store the real filename in editor description to skip StringName character
                    replacement rules : When changing the name, the following characters will
                    be replaced with an underscore: (. : @ / " %).
                 */
-                area.EditorDescription = Path.GetFileName(gpxFileName);
+                area.EditorDescription = traceFileName;
                 area.AddChild(trailLine);
                 area.SetCollisionLayerValue(1, false);
                 area.SetCollisionLayerValue(4, true);
@@ -185,14 +205,15 @@ public partial class MapGenerator : Node
                 CreateSegmentCollisions(area, trailLine);
 
                 areasList.Add(area);
+                Trails.Add(traceFileName, trail);
             }
             else
             {
                 GD.PushWarning($"${nameof(generateMap)}: (2) Failure in gpx file : ${gpxFileName}");
-                return null;
+                return (null, null);
             }
         }
-        return areasList;
+        return (areasList, Trails);
     }
 
     private void CreateSegmentCollisions(Area2D area, Line2D line)

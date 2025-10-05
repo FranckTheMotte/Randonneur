@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Godot;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
@@ -15,6 +16,9 @@ public class GpxWaypoint
     // elevation in meter
     public float Elevation { get; set; }
 
+    // Graphical node of the waypoint
+    public ColorRect? Landmark;
+
     // litteral name (optional)
     public string Name = "";
 }
@@ -25,6 +29,8 @@ public class GpxWaypoint
 public class GpxWaypoints
 {
     private readonly List<GpxWaypoint> _gpxWayPoints = [];
+
+    private GpxWaypoint? noWaypoint = null;
 
     /**
         Retrieve waypoint with a latitude/longitude coordinate.
@@ -71,5 +77,16 @@ public class GpxWaypoints
     internal void Clear()
     {
         _gpxWayPoints.Clear();
+    }
+
+    internal void SetWaypointLandmark(Vector2 Coord, ColorRect Landmark)
+    {
+        foreach (GpxWaypoint waypoint in _gpxWayPoints)
+        {
+            if (waypoint.Coord == Coord)
+            {
+                waypoint.Landmark = Landmark;
+            }
+        }
     }
 }
