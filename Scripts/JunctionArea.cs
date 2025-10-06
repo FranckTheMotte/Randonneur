@@ -74,7 +74,9 @@ public partial class JunctionArea : Area2D
         WorldMap worldMap = WorldMap.Instance;
 
         // Retrieve the rect
-        ColorRect junctionRect = area.GetNode<ColorRect>(SquareName);
+        ColorRect junctionRect = area.GetNodeOrNull<ColorRect>(SquareName);
+        if (junctionRect == null)
+            return;
         GD.Print($"junction selection {area.Name}");
 
         if (selected)
