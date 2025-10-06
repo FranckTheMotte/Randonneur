@@ -41,7 +41,7 @@ public partial class JunctionArea : Area2D
         // -- Setup area2D
         Name = name;
         // trace name stored in description as it will be kept raw
-        EditorDescription = traceName;
+        SetMeta("TraceName", traceName);
         Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));
         // Collision with mouse cursor
         SetCollisionLayerValue(1, false);
@@ -79,7 +79,7 @@ public partial class JunctionArea : Area2D
         if (selected)
         {
             junctionRect.Color = SelectedColor;
-            worldMap.m_selectedTrail = area.EditorDescription;
+            worldMap.m_selectedTrail = (string)area.GetMeta("TraceName");
         }
         else
         {
