@@ -59,9 +59,6 @@ public partial class JunctionArea : Area2D
         InputPickable = true;
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta) { }
-
     /**
         Called with Signal "TrailSelection".
 
@@ -81,24 +78,13 @@ public partial class JunctionArea : Area2D
 
         if (selected)
         {
-            SetColor(junctionRect, SelectedColor);
+            junctionRect.Color = SelectedColor;
             worldMap.m_selectedTrail = area.EditorDescription;
         }
         else
         {
-            SetColor(junctionRect, UnselectedColor);
+            junctionRect.Color = UnselectedColor;
             worldMap.m_selectedTrail = null;
         }
-    }
-
-    /**
-      Set body color of a junction ColorRect.
-
-      @param junctionRect a Colorect
-      @param color        a Color
-    */
-    private static void SetColor(ColorRect junctionRect, Color color)
-    {
-        junctionRect.Color = color;
     }
 }
