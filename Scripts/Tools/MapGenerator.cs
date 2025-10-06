@@ -8,9 +8,9 @@ using Vector2 = Godot.Vector2;
 
 public partial class MapGenerator : Node
 {
-    public const int TRAIL_LINE_WIDTH = 10;
+    public const int TrailLineWidth = 10;
 
-    public const string TRAIL_COLLISION_FILTER_NAME = "trail";
+    public const string TrailCollisionFilterName = "trail";
 
     public struct GpsPoint
     {
@@ -185,7 +185,7 @@ public partial class MapGenerator : Node
                 trailLine.Name = "TrailLine2D";
 
                 trailLine.Points = trace;
-                trailLine.Width = TRAIL_LINE_WIDTH;
+                trailLine.Width = TrailLineWidth;
                 // TODO This default color must be public and global
                 trailLine.DefaultColor = Colors.Orange;
 
@@ -232,7 +232,7 @@ public partial class MapGenerator : Node
             float length = direction.Length();
             float angle = direction.Angle();
 
-            rectangle.Size = new Vector2(TRAIL_LINE_WIDTH, length);
+            rectangle.Size = new Vector2(TrailLineWidth, length);
 
             // Position and collision angle
             collision.Shape = rectangle;
@@ -240,7 +240,7 @@ public partial class MapGenerator : Node
             // 90° shift because the default orientation of the collisionShape
             // is different of the godot reference.
             collision.Rotation = angle + Mathf.DegToRad(90);
-            collision.Name = TRAIL_COLLISION_FILTER_NAME + "#" + i;
+            collision.Name = TrailCollisionFilterName + "#" + i;
 
             // Add collision to Area2D
             area.AddChild(collision);

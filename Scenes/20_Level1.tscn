@@ -32,7 +32,7 @@ z_index = 1
 [node name="Sol" type="StaticBody2D" parent="Ground" node_paths=PackedStringArray("Player")]
 script = ExtResource("3_uowpc")
 Player = NodePath("../../Player")
-GpxFile = "res://data/Map1/traceB.gpx"
+_gpxFile = "res://data/Map1/traceB.gpx"
 
 [node name="ProfilElevation" type="Polygon2D" parent="Ground/Sol"]
 texture = ExtResource("3_mgsr5")

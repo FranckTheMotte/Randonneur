@@ -20,10 +20,10 @@ public partial class Level1 : Node2D
 
     [Signal]
     public delegate void TrailJunctionChoiceDoneEventHandler();
-    private MapGenerator? mapGenerator;
-    private AnimationPlayer? fadeAnimation;
 
-    private Sol? sol;
+    private AnimationPlayer? _fadeAnimation;
+
+    private Sol? _sol;
 
     public Hashtable? Trails { get; private set; }
 
@@ -61,7 +61,7 @@ public partial class Level1 : Node2D
             - mapMargin.GetThemeConstant("margin_top")
             - mapMargin.GetThemeConstant("margin_bottom");
         GD.Print($"map W H {mapWidth} {mapHeight}");
-        mapGenerator = new MapGenerator(mapWidth, mapHeight);
+        MapGenerator mapGenerator = new(mapWidth, mapHeight);
 
         var (TrailsNodes, TrailsGpx) = mapGenerator.generateMap(pathToMap);
         List<Area2D>? trails = TrailsNodes;
@@ -89,10 +89,10 @@ public partial class Level1 : Node2D
         if (FindChild("SceneTransitionAnimation") != null)
         {
             Node2D sceneTransition = GetNode<Node2D>("SceneTransitionAnimation");
-            fadeAnimation = sceneTransition.GetNode<AnimationPlayer>("FadeAnimation");
+            _fadeAnimation = sceneTransition.GetNode<AnimationPlayer>("FadeAnimation");
         }
 
-        sol = GetNode<Sol>("Ground/Sol");
+        _sol = GetNode<Sol>("Ground/Sol");
 
         // Map is not visible at start
         MapVisible(false);
@@ -101,15 +101,6 @@ public partial class Level1 : Node2D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        // Sanity checks
-        if (mapGenerator == null)
-        {
-            GD.PushWarning($"${nameof(_Process)}: sanity checks failed");
-            return;
-        }
-
-        mapGenerator._Process(delta);
-
         // Display the X,Y of the player in the label
         CharacterBody2D player = GetNode<CharacterBody2D>("Player");
         Label label = GetNode<Label>("Debug/Control/DebugLabel");
@@ -155,7 +146,7 @@ public partial class Level1 : Node2D
     private void _on_trail_junction_choice_done(string gpxFile)
     {
         // Sanity checks
-        if (sol == null || fadeAnimation == null)
+        if (_sol == null || _fadeAnimation == null)
         {
             GD.PushWarning($"${nameof(_on_trail_junction_choice_done)}: sanity checks failed");
             return;
@@ -163,10 +154,10 @@ public partial class Level1 : Node2D
 
         MapVisible(false);
         // TODO gpxFile must contains full path
-        sol.generateGround("res://data/Map1/" + gpxFile);
-        fadeAnimation.Play("fade_in");
+        _sol.generateGround("res://data/Map1/" + gpxFile);
+        _fadeAnimation.Play("fade_in");
         Sleep(500);
-        fadeAnimation.Play("fade_out");
+        _fadeAnimation.Play("fade_out");
         Sleep(500);
     }
 

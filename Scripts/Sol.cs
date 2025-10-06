@@ -6,7 +6,7 @@ using static Godot.GD;
 
 public partial class Sol : StaticBody2D
 {
-    private List<Vector2> TrailJunctions = new List<Vector2>();
+    private readonly List<Vector2> _trailJunctions = [];
 
     public Gpx? CurrentTrack;
 
@@ -14,10 +14,10 @@ public partial class Sol : StaticBody2D
     Player? Player;
 
     [Export]
-    private string? GpxFile;
+    private string? _gpxFile;
 
     // Generate a 2D polygon (list of Vector2) to test on a customize ground
-    private Vector2[] generateGround(int length)
+    private static Vector2[] GenerateGround(int length)
     {
         Vector2[] result = new Vector2[length];
         int x = -50;
@@ -41,7 +41,7 @@ public partial class Sol : StaticBody2D
 
     public override void _Draw()
     {
-        foreach (Vector2 trailJunction in TrailJunctions)
+        foreach (Vector2 trailJunction in _trailJunctions)
         {
             DrawCircle(trailJunction, 10.0f, Colors.Blue);
         }
@@ -90,7 +90,7 @@ public partial class Sol : StaticBody2D
                 {
                     // TODO: here only to display a graphic object for junction
                     Vector2 junctionPosition = ground[i];
-                    TrailJunctions.Add(junctionPosition);
+                    _trailJunctions.Add(junctionPosition);
 
                     Area2D junctionArea = new() { Position = ground[i] };
                     junctionArea.Name = Path.GetFileName(gpxFile);
@@ -111,9 +111,9 @@ public partial class Sol : StaticBody2D
             }
 
             ground[solLength].X = CurrentTrack.maxX;
-            ground[solLength].Y = Gpx.PIXEL_ELEVATION_MAX;
+            ground[solLength].Y = Gpx.PixelElevationMax;
             ground[solLength + 1].X = 0.00f;
-            ground[solLength + 1].Y = Gpx.PIXEL_ELEVATION_MAX;
+            ground[solLength + 1].Y = Gpx.PixelElevationMax;
 
             sol.Polygon = ground;
             solCollision.Polygon = sol.Polygon;
@@ -155,8 +155,8 @@ public partial class Sol : StaticBody2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        if (GpxFile != null)
-            generateGround(GpxFile);
+        if (_gpxFile != null)
+            generateGround(_gpxFile);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

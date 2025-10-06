@@ -73,22 +73,22 @@ public class Gpx
     internal float maxX; // length of the track (meters)
 
     // Number of pixels by meter
-    public const float PIXEL_METER = 5.0f;
+    public const float PixelMeter = 5.0f;
 
     // Max elevation in meters
-    public const float ELEVATION_MAX = 10000.0f;
+    public const float ElevationMax = 10000.0f;
 
     // Max elevation in pixels
-    public const float PIXEL_ELEVATION_MAX = ELEVATION_MAX * PIXEL_METER;
+    public const float PixelElevationMax = ElevationMax * PixelMeter;
 
     // Default name for a missing name
-    internal const string DEFAULT_NAME = "Elsewhere...";
+    internal const string DefaultName = "Elsewhere...";
 
     // Impossible value for a geographical coordinate
-    internal const float UNITIALIZED_COORD = 777.77f;
+    internal const float UnitializedCoord = 777.77f;
 
     // Waypoint tag to describe a junction
-    internal const string TAG_JUNCTION = "Croisement -";
+    internal const string TagJunction = "Croisement -";
 
     private Direction strToDirection(string directionStr)
     {
@@ -209,8 +209,8 @@ public class Gpx
                     );
 
                     // coordinates
-                    float longitude = UNITIALIZED_COORD;
-                    float latitude = UNITIALIZED_COORD;
+                    float longitude = UnitializedCoord;
+                    float latitude = UnitializedCoord;
                     var lonWaypoint = waypoint.Attributes["lon"];
                     var latWaypoint = waypoint.Attributes["lat"];
 
@@ -226,7 +226,7 @@ public class Gpx
                             CultureInfo.InvariantCulture.NumberFormat
                         );
 
-                    if (longitude == UNITIALIZED_COORD || latitude == UNITIALIZED_COORD)
+                    if (longitude == UnitializedCoord || latitude == UnitializedCoord)
                     {
                         GD.PushWarning($"${nameof(Load)}: wrong waypoint coords (${filePath}).");
                         continue;
@@ -235,19 +235,19 @@ public class Gpx
 
                     // name (optional)
                     var nameWaypoint = waypoint["name"];
-                    string name = DEFAULT_NAME;
+                    string name = DefaultName;
                     if (nameWaypoint is not null)
                         name = nameWaypoint.InnerText;
                     Waypoints.Add(coord, elevation, name);
 
                     GD.Print($"wpt : ${name}");
 
-                    if (name.Contains(TAG_JUNCTION) == true)
+                    if (name.Contains(TagJunction) == true)
                     {
                         m_trailJunctions ??= [];
                         GpxTrailJunction trailJunction = new()
                         {
-                            name = name[(name.Find(TAG_JUNCTION) + TAG_JUNCTION.Length)..],
+                            name = name[(name.Find(TagJunction) + TagJunction.Length)..],
                         };
                         m_trailJunctions.Add(trailJunction);
                     }
@@ -289,7 +289,7 @@ public class Gpx
                 var lonTrackpoint = trackpoint.Attributes["lon"];
                 var latTrackpoint = trackpoint.Attributes["lat"];
                 m_trackPoints[i].trailJunctionIndex = -1;
-                float longitude = UNITIALIZED_COORD;
+                float longitude = UnitializedCoord;
                 float latitude = 0.00f;
 
                 if (lonTrackpoint is not null)
@@ -303,7 +303,7 @@ public class Gpx
                         CultureInfo.InvariantCulture.NumberFormat
                     );
 
-                if (longitude == UNITIALIZED_COORD || latitude == UNITIALIZED_COORD)
+                if (longitude == UnitializedCoord || latitude == UnitializedCoord)
                 {
                     GD.PushWarning($"${nameof(Load)}: wrong trackpoint coords (${filePath}).");
                     continue;
@@ -326,8 +326,8 @@ public class Gpx
                             float.Parse(
                                 eleTrackpoint.InnerText,
                                 CultureInfo.InvariantCulture.NumberFormat
-                            ) * PIXEL_METER
-                        ) - PIXEL_ELEVATION_MAX
+                            ) * PixelMeter
+                        ) - PixelElevationMax
                     ) * -1; // y axis is inverted
                 // distance between previous point and current (stored in previous)
                 if (i > 0)
@@ -338,7 +338,7 @@ public class Gpx
                             m_trackPoints[i - 1].coord.Y,
                             latitude,
                             longitude
-                        ) * PIXEL_METER;
+                        ) * PixelMeter;
                     //GD.Print($"distance {m_trackPoints[i-1].distanceToNext} maxX {maxX}");
                     m_trackPoints[i].elevation = new Vector2(
                         m_trackPoints[i - 1].elevation.X + m_trackPoints[i - 1].distanceToNext,

@@ -5,14 +5,14 @@ using Godot;
 */
 public partial class JunctionArea : Area2D
 {
-    private const string SQUARE_NAME = "Square2D";
-    private const int SQUARE_SIZE = 16;
-    private const int SQUARE_ZINDEX = 4; // Front of map
-    private Color UNSELECTED_COLOR = Colors.CadetBlue;
-    private Color SELECTED_COLOR = Colors.MediumOrchid;
+    private const string SquareName = "Square2D";
+    private const int SquareSize = 16;
+    private const int SquareZindex = 4; // Front of map
+    private static readonly Color UnselectedColor = Colors.CadetBlue;
+    private static readonly Color SelectedColor = Colors.MediumOrchid;
 
     // Display of a junction
-    private ColorRect JunctionRect = new();
+    private readonly ColorRect _junctionRect = new();
 
     /**
         Constructor with mandatory properties
@@ -24,17 +24,17 @@ public partial class JunctionArea : Area2D
     public JunctionArea(Vector2 position, string name, string traceName)
     {
         // -- Setup the junction square
-        JunctionRect.Name = SQUARE_NAME;
-        JunctionRect.Color = UNSELECTED_COLOR;
-        JunctionRect.Size = new Vector2(SQUARE_SIZE, SQUARE_SIZE);
-        JunctionRect.ZIndex = SQUARE_ZINDEX;
-        AddChild(JunctionRect);
+        _junctionRect.Name = SquareName;
+        _junctionRect.Color = UnselectedColor;
+        _junctionRect.Size = new Vector2(SquareSize, SquareSize);
+        _junctionRect.ZIndex = SquareZindex;
+        AddChild(_junctionRect);
         // Add a collision shape
-        RectangleShape2D rectangle = new() { Size = new Vector2(SQUARE_SIZE, SQUARE_SIZE) };
+        RectangleShape2D rectangle = new() { Size = new Vector2(SquareSize, SquareSize) };
         CollisionShape2D collision = new()
         {
             Shape = rectangle,
-            Position = new Vector2(SQUARE_SIZE / 2, SQUARE_SIZE / 2),
+            Position = new Vector2(SquareSize / 2, SquareSize / 2),
         };
         AddChild(collision);
 
@@ -42,7 +42,7 @@ public partial class JunctionArea : Area2D
         Name = name;
         // trace name stored in description as it will be kept raw
         EditorDescription = traceName;
-        Position = new Vector2(position.X - (SQUARE_SIZE / 2), position.Y - (SQUARE_SIZE / 2));
+        Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));
         // Collision with mouse cursor
         SetCollisionLayerValue(1, false);
         SetCollisionLayerValue(4, true);
@@ -74,17 +74,17 @@ public partial class JunctionArea : Area2D
         WorldMap worldMap = WorldMap.Instance;
 
         // Retrieve the rect
-        ColorRect junctionRect = area.GetNode<ColorRect>(SQUARE_NAME);
+        ColorRect junctionRect = area.GetNode<ColorRect>(SquareName);
         GD.Print($"junction selection {area.Name}");
 
         if (selected)
         {
-            SetColor(junctionRect, SELECTED_COLOR);
+            SetColor(junctionRect, SelectedColor);
             worldMap.m_selectedTrail = area.EditorDescription;
         }
         else
         {
-            SetColor(junctionRect, UNSELECTED_COLOR);
+            SetColor(junctionRect, UnselectedColor);
             worldMap.m_selectedTrail = null;
         }
     }

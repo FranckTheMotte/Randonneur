@@ -4,16 +4,16 @@ using Godot;
 public partial class WorldMap : Control
 {
     // Godot path to MapRect (contains trail Line2D and CollisionShape2D)
-    private const string MAPRECT_PATH = "BgMargin/BgNinePathRect/MapMargin/MapRect";
+    private const string MapRectPath = "BgMargin/BgNinePathRect/MapMargin/MapRect";
 
     // flag storing that middle mouse button is currently pressed
-    private bool m_middleButton = false;
+    private bool _middleButton = false;
 
     // Container which store the map
-    private MarginContainer? m_margin;
+    private MarginContainer? _margin;
 
     // local position of mouse cursor when clicking on middle button
-    Vector2 m_dragPosition;
+    private Vector2 _dragPosition;
 
     // name of the current trail (node name of the Area2D)
     public string? m_selectedTrail = null;
@@ -29,13 +29,13 @@ public partial class WorldMap : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        m_margin = GetNode<MarginContainer>("BgMargin");
+        _margin = GetNode<MarginContainer>("BgMargin");
     }
 
     public override void _Input(InputEvent @event)
     {
         // Sanity checks
-        if (Player.Instance == null || m_margin == null)
+        if (Player.Instance == null || _margin == null)
         {
             GD.PushWarning($"${nameof(_Input)}: sanity checks failed");
             return;
@@ -58,24 +58,24 @@ public partial class WorldMap : Control
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)
             {
                 GD.Print($"Middle {mouseEvent.Pressed}");
-                m_middleButton = false;
+                _middleButton = false;
                 if (mouseEvent.Pressed)
                 {
                     Vector2 mousePosition = GetLocalMousePosition();
-                    if (m_margin.GetRect().HasPoint(mousePosition))
+                    if (_margin.GetRect().HasPoint(mousePosition))
                     {
-                        m_middleButton = true;
-                        m_dragPosition = new Vector2(mousePosition.X, mousePosition.Y);
-                        GD.Print($"decalage X {m_dragPosition.X} Y {m_dragPosition.Y}");
+                        _middleButton = true;
+                        _dragPosition = new Vector2(mousePosition.X, mousePosition.Y);
+                        GD.Print($"decalage X {_dragPosition.X} Y {_dragPosition.Y}");
                     }
                 }
             }
         }
         else if (@event is InputEventMouseMotion mouseMotion)
         {
-            if (m_middleButton)
+            if (_middleButton)
             {
-                Position = GetGlobalMousePosition() - m_dragPosition;
+                Position = GetGlobalMousePosition() - _dragPosition;
             }
         }
     }
@@ -91,12 +91,12 @@ public partial class WorldMap : Control
         Visible = !value;
 
         // enable or disable all trails collisions shapes
-        ColorRect mapRect = GetNode<ColorRect>(MAPRECT_PATH);
+        ColorRect mapRect = GetNode<ColorRect>(MapRectPath);
         foreach (var child in mapRect.GetChildren())
         {
             foreach (var subchild in child.GetChildren())
             {
-                if (subchild.Name.ToString().StartsWith(MapGenerator.TRAIL_COLLISION_FILTER_NAME))
+                if (subchild.Name.ToString().StartsWith(MapGenerator.TrailCollisionFilterName))
                 {
                     CollisionShape2D collision = (CollisionShape2D)subchild;
                     // put it as deferred, because it can be called during collision signal

@@ -17,10 +17,10 @@ public class GameData
     public float maleMaxVolume = 1;
 
     //Default Audio Volumes
-    public const float default_masterMaxVolume = 1;
-    public const float default_musicMaxVolume = 0.40f;
-    public const float default_soundfxMaxVolume = 1;
-    public const float default_voiceMaxVolume = 1;
-    public const float default_femaleMaxVolume = 1;
-    public const float default_maleMaxVolume = 1;
+    public const float DefaultMasterMaxVolume = 1;
+    public const float DefaultMusicMaxVolume = 0.40f;
+    public const float DefaultSoundfxMaxVolume = 1;
+    public const float DefaultVoiceMaxVolume = 1;
+    public const float DefaultFemaleMaxVolume = 1;
+    public const float DefaultMaleMaxVolume = 1;
 }

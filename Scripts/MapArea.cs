@@ -2,7 +2,7 @@ using Godot;
 
 public partial class MapArea : Area2D
 {
-    private Line2D? trailLine;
+    private Line2D? _trailLine;
 
     [Signal]
     public delegate void TrailSelectionEventHandler();
@@ -31,7 +31,7 @@ public partial class MapArea : Area2D
         WorldMap worldMap = WorldMap.Instance;
 
         // Retrieve the line
-        trailLine = area.GetNode<Line2D>("TrailLine2D");
+        _trailLine = area.GetNode<Line2D>("TrailLine2D");
         GD.Print($"trail selection {area.Name}");
 
         if (selected)
@@ -49,12 +49,12 @@ public partial class MapArea : Area2D
     private void setColorTrail(Color color)
     {
         // Sanity checks
-        if (trailLine == null)
+        if (_trailLine == null)
         {
             GD.PushWarning($"${nameof(setColorTrail)}: sanity checks failed");
             return;
         }
 
-        trailLine.DefaultColor = color;
+        _trailLine.DefaultColor = color;
     }
 }
