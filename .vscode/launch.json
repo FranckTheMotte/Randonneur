@@ -1,0 +1,34 @@
+{
+	"version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "console": "internalConsole",
+            "program": "${env:GODOT4}",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+        },
+        {
+            "name": "Debug Scene",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "console": "internalConsole",
+            "program": "${env:GODOT4}",
+            "args": [
+                "--upwards",
+                "${workspaceFolder}/scenes/20_Level1.tscn",
+                "-q"
+            ]
+        },
+        {
+            "name": "Attach",
+            "type": "coreclr",
+            "request": "attach",
+        }
+    ]
+}
