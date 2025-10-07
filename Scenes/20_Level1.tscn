@@ -86,7 +86,7 @@ scale = Vector2(10, 10)
 
 [node name="WorldMap" parent="." instance=ExtResource("9_upnc5")]
 visible = false
-z_index = 1
+z_index = 3
 
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("8_bsps8")]
 position = Vector2(-31.999998, -1380)
@@ -115,5 +115,4 @@ offset_bottom = 85.0
 text = "Walk"
 
 [connection signal="TrailJunctionChoiceDone" from="." to="." method="_on_trail_junction_choice_done"]
-[connection signal="TrailJunctionChoice" from="Player" to="Player" method="_on_trail_junction_choice"]
 [connection signal="toggled" from="Actions/Control/CheckButton" to="Actions" method="_on_check_button_toggled"]
