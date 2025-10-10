@@ -25,12 +25,12 @@
     </gpxx:Address></gpxx:WaypointExtension>
     </extensions>
 </wpt>
-<wpt lat="42.765508" lon="1.482857">
+<wpt lat="42.766743" lon="1.483033">
     <ele>730.4</ele>
     <name><![CDATA[Croisement - Col du sanglier]]></name>
     <cmt><![CDATA[
 ]]></cmt>
-    <desc><![CDATA[TraceG;TraceD]]></desc>
+    <desc><![CDATA[TraceG.gpx;TraceD.gpx]]></desc>
     <sym>Where</sym>
     <type>Roadbook</type>
     <extensions>
