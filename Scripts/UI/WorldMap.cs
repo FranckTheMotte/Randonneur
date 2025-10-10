@@ -49,11 +49,12 @@ public partial class WorldMap : Control
                 && Instance.m_selectedTrail != null
             )
             {
-                GD.Print($"Button pressed {m_selectedTrail} {Instance.m_selectedTrail}");
+                GD.Print($"WorldMap Button pressed {Instance.m_selectedTrail}");
                 Player.Instance.EmitSignal(
                     Player.SignalName.TrailJunctionChoice,
                     Instance.m_selectedTrail
                 );
+                Instance.m_selectedTrail = null;
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)
             {
@@ -96,11 +97,21 @@ public partial class WorldMap : Control
         {
             foreach (var subchild in child.GetChildren())
             {
+                // line collision shapes
                 if (subchild.Name.ToString().StartsWith(MapGenerator.TrailCollisionFilterName))
                 {
                     CollisionShape2D collision = (CollisionShape2D)subchild;
                     // put it as deferred, because it can be called during collision signal
-                    collision.SetDeferred("Disabled", value);
+                    collision.SetDeferred("disabled", value);
+                }
+                // junction collision shapes
+                else if (subchild.Name.ToString().StartsWith(JunctionArea.JunctionArea2DFilterName))
+                {
+                    CollisionShape2D collision = subchild.GetNodeOrNull<CollisionShape2D>(
+                        JunctionArea.JunctionCollisionFilterName
+                    );
+                    collision?.SetDeferred("disabled", value);
+                    GD.Print($"collision Name {collision?.Name} {value}");
                 }
             }
         }

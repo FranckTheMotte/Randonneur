@@ -56,11 +56,16 @@ public partial class Player : CharacterBody2D
     private void _on_trail_junction_choice(string gpxFile)
     {
         // Sanity checks
-        if (level == null)
+        if (level == null || sol == null)
             return;
 
-        level.EmitSignal(Level1.SignalName.TrailJunctionChoiceDone, gpxFile);
-        this.Position = new Godot.Vector2(this.Position.X + 1, this.Position.Y);
+        if (sol.GpxFile != gpxFile)
+        {
+            level.EmitSignal(Level1.SignalName.TrailJunctionChoiceDone, gpxFile);
+        }
+        // TODO comment faire passer à travers la collison de la junction?
+        SetCollisionLayerValue(5, true);
+        SetCollisionMaskValue(5, true);
         Walk = 1;
     }
 
@@ -75,6 +80,8 @@ public partial class Player : CharacterBody2D
         if (level == null)
             return;
         Walk = 0;
+        SetCollisionLayerValue(5, false);
+        SetCollisionMaskValue(5, false);
         level.JunctionChoice(Trace, Coord);
     }
 }

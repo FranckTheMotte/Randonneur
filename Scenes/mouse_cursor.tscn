@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://qd10ylv0nsn8"]
 
-[ext_resource type="Script" path="res://Scripts/Tools/MouseCursor.cs" id="1_ma7kd"]
-[ext_resource type="Script" path="res://Scripts/Tools/MouseCursorSprite.cs" id="2_70egg"]
+[ext_resource type="Script" uid="uid://cin7eui3hrv1u" path="res://Scripts/Tools/MouseCursor.cs" id="1_ma7kd"]
+[ext_resource type="Script" uid="uid://1egc5t2om12f" path="res://Scripts/Tools/MouseCursorSprite.cs" id="2_70egg"]
 [ext_resource type="Texture2D" uid="uid://cfussgu2qalpq" path="res://Art/UI/MouseCursor.png" id="2_vhp8k"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_awk3b"]
@@ -10,8 +10,8 @@ radius = 3.0
 [node name="MouseCursorNode" type="Node"]
 
 [node name="MouseCursor" type="Area2D" parent="."]
-collision_layer = 8
-collision_mask = 8
+collision_layer = 24
+collision_mask = 24
 script = ExtResource("1_ma7kd")
 
 [node name="MouseCollision" type="CollisionShape2D" parent="MouseCursor"]

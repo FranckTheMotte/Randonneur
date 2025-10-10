@@ -17,12 +17,18 @@ public partial class MouseCursor : Area2D
 
     private void _on_area_entered(Area2D area)
     {
-        area.EmitSignal(MapArea.SignalName.TrailSelection, area, true);
+        if (area.Name.ToString().StartsWith("trace"))
+            area.EmitSignal(MapArea.SignalName.TrailSelection, area, true);
+        else if (area.Name.ToString().StartsWith(JunctionArea.JunctionArea2DFilterName))
+            area.EmitSignal(JunctionArea.SignalName.TrailSelection, area, true);
     }
 
     private void _on_area_exited(Area2D area)
     {
-        area.EmitSignal(MapArea.SignalName.TrailSelection, area, false);
+        if (area.Name.ToString().StartsWith("trace"))
+            area.EmitSignal(MapArea.SignalName.TrailSelection, area, false);
+        else if (area.Name.ToString().StartsWith(JunctionArea.JunctionArea2DFilterName))
+            area.EmitSignal(JunctionArea.SignalName.TrailSelection, area, false);
     }
 
     public override void _Process(double delta)
