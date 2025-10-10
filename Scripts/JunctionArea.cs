@@ -5,73 +5,85 @@ using Godot;
 */
 public partial class JunctionArea : Area2D
 {
+    public const string JunctionArea2DFilterName = "junction";
+    public const string JunctionCollisionFilterName = "junction";
     private const string SquareName = "Square2D";
     private const int SquareSize = 16;
     private const int SquareZindex = 4; // Front of map
     private static readonly Color UnselectedColor = Colors.CadetBlue;
     private static readonly Color SelectedColor = Colors.MediumOrchid;
 
+    [Signal]
+    public delegate void TrailSelectionEventHandler();
+
     // Display of a junction
     private readonly ColorRect _junctionRect = new();
 
-    /**
-        Constructor with mandatory properties
-
-        @param position  middle position of the junction.
-        @param name      Litteral name of junction.
-        @param traceName Gpx file name which store this junction.
-    */
+    /// <summary>
+    /// Constructor to create a JunctionArea
+    /// </summary>
+    /// <param name="position">Middle position of the junction.</param>
+    /// <param name="name">Literal name of junction.</param>
+    /// <param name="traceName">Gpx file name which store this junction.</param>
     public JunctionArea(Vector2 position, string name, string traceName)
     {
         // -- Setup the junction square
-        _junctionRect.Name = SquareName;
-        _junctionRect.Color = UnselectedColor;
-        _junctionRect.Size = new Vector2(SquareSize, SquareSize);
-        _junctionRect.ZIndex = SquareZindex;
-        AddChild(_junctionRect);
-        // Add a collision shape
-        RectangleShape2D rectangle = new() { Size = new Vector2(SquareSize, SquareSize) };
-        CollisionShape2D collision = new()
+        ColorRect junctionRect = new()
         {
-            Shape = rectangle,
-            Position = new Vector2(SquareSize / 2, SquareSize / 2),
+            Name = SquareName,
+            Color = UnselectedColor,
+            Size = new Vector2(SquareSize, SquareSize),
+            ZIndex = SquareZindex,
         };
-        AddChild(collision);
+        AddChild(junctionRect);
 
         // -- Setup area2D
-        Name = name;
+        Name = JunctionArea2DFilterName + " " + name;
         // trace name stored in description as it will be kept raw
         SetMeta("TraceName", traceName);
         Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));
         // Collision with mouse cursor
         SetCollisionLayerValue(1, false);
-        SetCollisionLayerValue(4, true);
-    }
+        SetCollisionLayerValue(5, true);
+        SetCollisionMaskValue(1, false);
+        SetCollisionMaskValue(5, true);
 
-    [Signal]
-    public delegate void TrailSelectionEventHandler();
+        // Add a collision shape
+        RectangleShape2D rectangle = new() { Size = new Vector2(SquareSize, SquareSize) };
+        CollisionShape2D collision = new()
+        {
+            Name = JunctionCollisionFilterName,
+            Shape = rectangle,
+            Position = new Vector2(SquareSize / 2, SquareSize / 2),
+        };
+        AddChild(collision);
+    }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         // Trigger actions when mouse go over/out a trail
-        Connect("TrailSelection", new Callable(this, nameof(_on_trail_selection)));
+        Connect("TrailSelection", new Callable(this, nameof(OnTrailSelection)));
         InputPickable = true;
     }
 
     /**
+        <summary>
         Called with Signal "TrailSelection".
-
-        @param area Properties of the un/selected area
-        @param selected True if selected, False otherwise
-
+        </summary>
+        <param name="area">Properties of the un/selected area</param>
+        <param name="selected">True if selected, False otherwise</param>
+        <remarks>
+        This method is called when the mouse cursor enters or exits a trail.
+        It updates the visual color of the trail and the selected trail of the WorldMap.
+        </remarks>
     */
-    private void _on_trail_selection(Area2D area, bool selected)
+    private void OnTrailSelection(Area2D area, bool selected)
     {
         WorldMap worldMap = WorldMap.Instance;
 
         // Retrieve the rect
-        ColorRect junctionRect = area.GetNodeOrNull<ColorRect>(SquareName);
+        ColorRect? junctionRect = area.GetNodeOrNull<ColorRect>(SquareName);
         if (junctionRect == null)
             return;
         GD.Print($"junction selection {area.Name}");
@@ -79,6 +91,7 @@ public partial class JunctionArea : Area2D
         if (selected)
         {
             junctionRect.Color = SelectedColor;
+            // Selection of a trail means that the junction is now the destination
             worldMap.m_selectedTrail = (string)area.GetMeta("TraceName");
         }
         else

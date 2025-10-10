@@ -166,7 +166,21 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
         GameMaster.playerData.newFile = false;
         GameMaster.playerData.saveFileVersion = GameMaster.gameVersion;
         GameMaster.SavePlayerData(GameMaster.currentSlotNum);
-        SceneManager.instance.ChangeScene(GameMaster.playerData.savedScene);
+        //SceneManager.instance.ChangeScene(GameMaster.playerData.savedScene);
+        /* POC
+            TODO:
+            - specify the level start for new game
+            - load from saved game
+        */
+        SceneManager sceneManager = SceneManager.instance;
+        if (sceneManager == null)
+        {
+            GD.PushError("No scene manager");
+            return;
+        }
+        string startingTraceFile = "res://data/Map1/TraceB.gpx";
+        sceneManager.LoadScenes(startingTraceFile);
+        sceneManager.ChangeLevel(startingTraceFile);
     }
 
     public void _on_delete_button_up(int myInt)

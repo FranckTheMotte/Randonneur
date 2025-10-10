@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Godot;
 /* Because of System.Numerics */
@@ -23,12 +24,9 @@ public partial class Level1 : Node2D
 
     private AnimationPlayer? _fadeAnimation;
 
-    private Sol? _sol;
-
     public Hashtable? Trails { get; private set; }
 
     // Called when the node enters the scene tree for the first time.
-
     public override void _Ready()
     {
         // Sanity checks
@@ -92,8 +90,6 @@ public partial class Level1 : Node2D
             _fadeAnimation = sceneTransition.GetNode<AnimationPlayer>("FadeAnimation");
         }
 
-        _sol = GetNode<Sol>("Ground/Sol");
-
         // Map is not visible at start
         MapVisible(false);
     }
@@ -111,8 +107,9 @@ public partial class Level1 : Node2D
 
     public void MapVisible(bool Visible)
     {
-        WorldMap map = GetNode<WorldMap>("WorldMap");
-        map.Disable(!Visible);
+        GD.Print($"MAP VISIBLE {Visible}");
+        WorldMap map = GetNodeOrNull<WorldMap>("WorldMap");
+        map?.Disable(!Visible);
     }
 
     /**
@@ -146,15 +143,17 @@ public partial class Level1 : Node2D
     private void _on_trail_junction_choice_done(string gpxFile)
     {
         // Sanity checks
-        if (_sol == null || _fadeAnimation == null)
+        if (_fadeAnimation == null)
         {
             GD.PushWarning($"${nameof(_on_trail_junction_choice_done)}: sanity checks failed");
             return;
         }
 
         MapVisible(false);
-        // TODO gpxFile must contains full path
-        _sol.generateGround("res://data/Map1/" + gpxFile);
+        // TODO: POC: force a trace
+        gpxFile = "res://data/Map1/TraceG.gpx";
+        SceneManager.instance?.ChangeLevel(gpxFile);
+
         _fadeAnimation.Play("fade_in");
         Sleep(500);
         _fadeAnimation.Play("fade_out");

@@ -6,7 +6,7 @@ using static Godot.GD;
 
 public partial class Sol : StaticBody2D
 {
-    private readonly List<Vector2> _trailJunctions = [];
+    private List<Vector2> _trailJunctions = [];
 
     public Gpx? CurrentTrack;
 
@@ -14,30 +14,7 @@ public partial class Sol : StaticBody2D
     Player? Player;
 
     [Export]
-    private string? _gpxFile;
-
-    // Generate a 2D polygon (list of Vector2) to test on a customize ground
-    private static Vector2[] GenerateGround(int length)
-    {
-        Vector2[] result = new Vector2[length];
-        int x = -50;
-        int y = 200;
-
-        for (int i = 0; i < length - 2; ++i)
-        {
-            result[i].X = x;
-            result[i].Y = y;
-            x += 10;
-            y += i % 2 == 0 ? 5 : -5;
-        }
-        result[length - 2].X = x;
-        result[length - 2].Y = 300;
-
-        result[length - 1].X = -50;
-        result[length - 1].Y = 300;
-
-        return result;
-    }
+    public string? GpxFile;
 
     public override void _Draw()
     {
@@ -53,9 +30,12 @@ public partial class Sol : StaticBody2D
         // Sanity checks
         if (Player == null)
         {
-            GD.PushWarning($"${nameof(generateGround)}: sanity checks failed");
+            GD.PushWarning($"{nameof(generateGround)}: sanity checks failed");
             return;
         }
+
+        // reset
+        _trailJunctions = [];
 
         var watch = new System.Diagnostics.Stopwatch();
         watch.Start();
@@ -73,7 +53,7 @@ public partial class Sol : StaticBody2D
             if (CurrentTrack.m_trackPoints == null)
             {
                 GD.PushWarning(
-                    $"${nameof(generateGround)}: no track points in current gpx file ${gpxFile}"
+                    $"{nameof(generateGround)}: no track points in current gpx file ${gpxFile}"
                 );
                 watch.Stop();
                 return;
@@ -103,8 +83,8 @@ public partial class Sol : StaticBody2D
                     junctionArea.SetCollisionLayerValue(5, true);
                     junctionArea.SetCollisionMaskValue(1, false);
                     junctionArea.SetCollisionMaskValue(5, true);
-                    CircleShape2D circleShape2D = new() { Radius = 10.0f };
-                    CollisionShape2D junctionCollision = new() { Shape = circleShape2D };
+                    RectangleShape2D rectangle = new() { Size = new Vector2(20, 20) };
+                    CollisionShape2D junctionCollision = new() { Shape = rectangle };
                     junctionArea.AddChild(junctionCollision);
                     AddChild(junctionArea);
                 }
@@ -151,14 +131,4 @@ public partial class Sol : StaticBody2D
             Player?.DisplayJunction(TrackName, Coord);
         }
     }
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        if (_gpxFile != null)
-            generateGround(_gpxFile);
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta) { }
 }

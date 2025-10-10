@@ -56,7 +56,7 @@ public struct GpxDestination
 public partial class GpxTrailJunction : GodotObject
 {
     public string? name;
-    public List<GpxDestination>? destinations;
+    public List<GpxDestination> destinations = [];
     internal float distance; // Distance from start (meter)
 }
 
@@ -240,7 +240,7 @@ public class Gpx
                         name = nameWaypoint.InnerText;
                     Waypoints.Add(coord, elevation, name);
 
-                    GD.Print($"wpt : ${name}");
+                    //GD.Print($"wpt : ${name}");
 
                     if (name.Contains(TagJunction) == true)
                     {
@@ -249,6 +249,21 @@ public class Gpx
                         {
                             name = name[(name.Find(TagJunction) + TagJunction.Length)..],
                         };
+
+                        // desc section contains a list of connected traces (through their gpx file name)
+                        string desc = "";
+                        var descWaypoint = waypoint["desc"];
+                        if (descWaypoint is not null)
+                            desc = descWaypoint.InnerText;
+                        string[] connectedTraces = desc.Split(';');
+                        foreach (string trace in connectedTraces)
+                        {
+                            GpxDestination gpxDestination = new()
+                            {
+                                gpxFile = "res://data/Map1/" + trace,
+                            };
+                            trailJunction.destinations.Add(gpxDestination);
+                        }
                         m_trailJunctions.Add(trailJunction);
                     }
                 }
@@ -353,7 +368,6 @@ public class Gpx
                 }
                 i++;
             }
-            GD.Print($"Maxx {maxX}");
         }
         catch (System.Exception e)
         {
