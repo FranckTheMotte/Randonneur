@@ -21,7 +21,7 @@
             "program": "${env:GODOT4}",
             "args": [
                 "--upwards",
-                "${workspaceFolder}/scenes/20_Level1.tscn",
+                "${workspaceFolder}/scenes/10_Main.tscn",
                 "-q"
             ]
         },
@@ -30,5 +30,8 @@
             "type": "coreclr",
             "request": "attach",
         }
-    ]
+    ],
+    "expressionEvaluationOptions":{
+        "allowImplicitFuncEval": false
+    }
 }
