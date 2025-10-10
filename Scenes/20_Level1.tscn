@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://be11snw13ct0b"]
 
-[ext_resource type="Script" uid="uid://b24uweoh1uvry" path="res://Scripts/Level/Level1.cs" id="1_3wch0"]
+[ext_resource type="Script" uid="uid://b24uweoh1uvry" path="res://Scripts/Level/TemplateLevel.cs" id="1_3wch0"]
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
 [ext_resource type="PackedScene" uid="uid://reue2c77m55p" path="res://Scenes/player.tscn" id="3_c23mq"]
 [ext_resource type="Texture2D" uid="uid://cqag3u1am0jea" path="res://Art/Background/prairie.png" id="3_mgsr5"]

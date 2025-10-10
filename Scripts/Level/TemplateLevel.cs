@@ -7,7 +7,7 @@ using Godot;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
-public partial class Level1 : Node2D
+public partial class TemplateLevel : Node2D
 {
     [Export]
     public Camera2D? camera2d;

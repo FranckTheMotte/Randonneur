@@ -14,7 +14,7 @@ public partial class Player : CharacterBody2D
     public delegate void TrailJunctionChoiceEventHandler();
 
     [Export]
-    public Level1? level;
+    public TemplateLevel? level;
 
     public const float Speed = 100.0f;
     public Godot.Vector2 worldLimit;
@@ -61,7 +61,7 @@ public partial class Player : CharacterBody2D
 
         if (sol.GpxFile != gpxFile)
         {
-            level.EmitSignal(Level1.SignalName.TrailJunctionChoiceDone, gpxFile);
+            level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, gpxFile);
         }
         // TODO comment faire passer à travers la collison de la junction?
         SetCollisionLayerValue(5, true);

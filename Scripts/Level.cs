@@ -43,7 +43,7 @@ namespace Randonneur.Scripts
             PackedScene aPackedScene = GD.Load<PackedScene>(LevelTextScene);
             Scene = aPackedScene.Instantiate();
 
-            Level1 level1 = (Level1)Scene;
+            TemplateLevel level1 = (TemplateLevel)Scene;
 
             Sol land =
                 Scene.GetNodeOrNull<Sol>("Ground/Sol")
