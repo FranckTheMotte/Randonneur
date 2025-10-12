@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" creator="GpxSwK v2-50831 (https://gpx.tybern.fr)">
+<gpx version="1.1" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.topografix.com/GPX/1/1"
+    xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+    xmlns:gpx_style="http://www.topografix.com/GPX/gpx_style/0/2"
+    xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+    xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"
+    xmlns:randonneur="file:///D:/dev/projects/randonneur/data/xsd/RandonneurExtensions.xsd"
+    creator="GpxSwK v2-50831 (https://gpx.tybern.fr)">
 <metadata>
   <name>traceB_GhLLH</name>
   <desc><![CDATA[B]]></desc>
@@ -11,39 +19,35 @@
 </metadata>
 <wpt lat="42.76627" lon="1.482711">
     <ele>730.4</ele>
-    <name><![CDATA[POV - Stèle fuxéenne]]></name>
-    <cmt><![CDATA[
-]]></cmt>
-    <desc><![CDATA[]]></desc>
+    <name>Stèle fuxéenne</name>
+    <cmt></cmt>
+    <desc></desc>
     <sym>Where</sym>
     <type>Roadbook</type>
     <extensions>
-    <gpxx:WaypointExtension><gpxx:Address>
-    <gpxx:StreetAddress>4 Rue du Montcalm</gpxx:StreetAddress>
-    <gpxx:City>Auzat</gpxx:City>
-    <gpxx:PostalCode>09220</gpxx:PostalCode>
-    </gpxx:Address></gpxx:WaypointExtension>
+	    <type>pov</type>
     </extensions>
 </wpt>
 <wpt lat="42.766743" lon="1.483033">
     <ele>730.4</ele>
-    <name><![CDATA[Croisement - Col du sanglier]]></name>
-    <cmt><![CDATA[
-]]></cmt>
-    <desc><![CDATA[TraceG.gpx;TraceD.gpx]]></desc>
+    <name>Col du sanglier</name>
+    <cmt></cmt>
+    <desc></desc>
     <sym>Where</sym>
     <type>Roadbook</type>
     <extensions>
-    <gpxx:WaypointExtension><gpxx:Address>
-    <gpxx:StreetAddress>4 Rue du Montcalm</gpxx:StreetAddress>
-    <gpxx:City>Auzat</gpxx:City>
-    <gpxx:PostalCode>09220</gpxx:PostalCode>
-    </gpxx:Address></gpxx:WaypointExtension>
+        <type>junction</type>
+        <junctions>
+            <gpxfile>TraceG.gpx</gpxfile>
+            <gpxfile>TraceD.gpx</gpxfile>
+        </junctions>
+        <start>true</start>
     </extensions>
 </wpt>
 <trk>
     <name>traceB_GhLLH</name>
-<desc>Description</desc>    <trkseg>
+    <desc>Description</desc>
+    <trkseg>
     <trkpt lat="42.765508" lon="1.482857">
         <ele>730.4</ele>
     </trkpt>
