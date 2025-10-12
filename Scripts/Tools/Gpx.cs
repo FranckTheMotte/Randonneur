@@ -1,326 +1,539 @@
 using System;
-using System.Collections.Generic;
-using System.Device.Location;
-using System.Globalization;
-using System.IO;
-using System.Xml;
-using Godot;
-using static Godot.GD;
-
 // This class load a gpx file to:
 // - convert lat and lon to coord (x,y) for a map (top view)
 // - convert elevation to coord (x,y) for an elevation profile
 
 // A gpx file can contains reference to another gpx files.
 
-public enum Direction
+/*
+ Licensed under the Apache License, Version 2.0
+
+ http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+using System.Collections.Generic;
+using System.Device.Location;
+using System.Globalization;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
+using Godot;
+using static Godot.GD;
+
+namespace XmlGpx
 {
-    E,
-    W,
-    N,
-    S,
-    NE,
-    NW,
-    SE,
-    SW,
-    NOWHERE,
-}
-
-public struct DMS
-{
-    public int degree;
-    public int min;
-    public float sec;
-}
-
-public struct GpxProperties
-{
-    public Vector2 coord { get; set; }
-    public float distanceToNext; // distance to next gps point (meter)
-    public DMS longDMS;
-    public DMS latDMS;
-    public Vector2 elevation { get; set; }
-    public int trailJunctionIndex;
-    public GpxWaypoint? Waypoint; // waypoint linked to this coordinate (can be null)
-}
-
-public struct GpxDestination
-{
-    public string gpxFile;
-    public string name;
-    public float distance;
-    public Direction direction;
-    public string trail;
-}
-
-public partial class GpxTrailJunction : GodotObject
-{
-    public string? name;
-    public List<GpxDestination> destinations = [];
-    internal float distance; // Distance from start (meter)
-}
-
-public class Gpx
-{
-    // x : index, y : value
-    public GpxProperties[]? m_trackPoints { get; set; }
-
-    // waypoints from the gpx file
-    public readonly GpxWaypoints Waypoints = new();
-
-    public List<GpxTrailJunction>? m_trailJunctions;
-
-    internal float maxX; // length of the track (meters)
-
-    // Number of pixels by meter
-    public const float PixelMeter = 5.0f;
-
-    // Max elevation in meters
-    public const float ElevationMax = 10000.0f;
-
-    // Max elevation in pixels
-    public const float PixelElevationMax = ElevationMax * PixelMeter;
-
-    // Default name for a missing name
-    internal const string DefaultName = "Elsewhere...";
-
-    // Impossible value for a geographical coordinate
-    internal const float UnitializedCoord = 777.77f;
-
-    // Waypoint tag to describe a junction
-    internal const string TagJunction = "Croisement -";
-
-    private Direction strToDirection(string directionStr)
+    [XmlRoot(ElementName = "copyright", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Copyright
     {
-        Direction result;
+        [XmlElement(ElementName = "license", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? License { get; set; }
 
-        switch (directionStr)
-        {
-            case "N":
-                result = Direction.N;
-                break;
-            case "S":
-                result = Direction.S;
-                break;
-            case "E":
-                result = Direction.E;
-                break;
-            case "W":
-                result = Direction.W;
-                break;
-            case "NE":
-                result = Direction.NE;
-                break;
-            case "NW":
-                result = Direction.NW;
-                break;
-            case "SE":
-                result = Direction.SE;
-                break;
-            case "SW":
-                result = Direction.SW;
-                break;
-            default:
-                result = Direction.NOWHERE;
-                break;
-        }
-
-        return result;
+        [XmlAttribute(AttributeName = "author")]
+        public string? Author { get; set; }
     }
 
-    private (int degree, int min, float sec) getDMSFromDecimal(float coord)
+    [XmlRoot(ElementName = "bounds", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Bounds
     {
-        float sec = (float)Math.Round(coord * 3600);
-        int deg = (int)sec / 3600;
-        sec = Math.Abs(sec % 3600);
-        int min = (int)sec / 60;
-        sec %= 60;
+        [XmlAttribute(AttributeName = "minlat")]
+        public string? Minlat { get; set; }
 
-        return (deg, min, sec);
+        [XmlAttribute(AttributeName = "minlon")]
+        public string? Minlon { get; set; }
+
+        [XmlAttribute(AttributeName = "maxlat")]
+        public string? Maxlat { get; set; }
+
+        [XmlAttribute(AttributeName = "maxlon")]
+        public string? Maxlon { get; set; }
     }
 
-    /**
-        Retrieve distance in meter between two gps points.
-        Use of  System.Device.Location;
-
-        @param sLatitude  latitude of start point
-        @param sLongitude longitude of start point
-        @param sLatitude  latitude of end point
-        @param sLongitude longitude of end point
-
-        @return distance in meter
-    */
-    private float getDistance(float sLatitude, float sLongitude, float eLatitude, float eLongitude)
+    [XmlRoot(ElementName = "metadata", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Metadata
     {
-        var sCoord = new GeoCoordinate(sLatitude, sLongitude);
-        var eCoord = new GeoCoordinate(eLatitude, eLongitude);
+        [XmlElement(ElementName = "name", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Name { get; set; }
 
-        return (float)sCoord.GetDistanceTo(eCoord);
+        [XmlElement(ElementName = "desc", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Desc { get; set; }
+
+        [XmlElement(ElementName = "copyright", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public Copyright? Copyright { get; set; }
+
+        [XmlElement(ElementName = "time", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Time { get; set; }
+
+        [XmlElement(ElementName = "bounds", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public Bounds? Bounds { get; set; }
     }
 
-    public bool Load(string filePath)
+    [XmlRoot(ElementName = "extensions", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Extensions
     {
-        XmlDocument xmlDoc = new();
+        [XmlElement(ElementName = "type", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Type { get; set; }
 
-        // Read the file with godot (as res:// is not known by .NET framework)
-        using var file = Godot.FileAccess.Open(filePath, Godot.FileAccess.ModeFlags.Read);
-        if (file == null)
+        [XmlElement(ElementName = "junctions", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public Junctions? Junctions { get; set; }
+
+        [XmlElement(ElementName = "start", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Start { get; set; }
+    }
+
+    [XmlRoot(ElementName = "wpt", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Wpt
+    {
+        [XmlElement(ElementName = "ele", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Ele { get; set; }
+
+        [XmlElement(ElementName = "name", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Name { get; set; }
+
+        [XmlElement(ElementName = "cmt", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Cmt { get; set; }
+
+        [XmlElement(ElementName = "desc", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Desc { get; set; }
+
+        [XmlElement(ElementName = "sym", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Sym { get; set; }
+
+        [XmlElement(ElementName = "type", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Type { get; set; }
+
+        [XmlElement(ElementName = "extensions", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public Extensions? Extensions { get; set; }
+
+        [XmlAttribute(AttributeName = "lat")]
+        public string? Lat { get; set; }
+
+        [XmlAttribute(AttributeName = "lon")]
+        public string? Lon { get; set; }
+    }
+
+    [XmlRoot(ElementName = "junctions", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Junctions
+    {
+        [XmlElement(ElementName = "gpxfile", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public List<string>? Gpxfile { get; set; }
+    }
+
+    [XmlRoot(ElementName = "trkpt", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Trkpt
+    {
+        [XmlElement(ElementName = "ele", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Ele { get; set; }
+
+        [XmlAttribute(AttributeName = "lat")]
+        public string? Lat { get; set; }
+
+        [XmlAttribute(AttributeName = "lon")]
+        public string? Lon { get; set; }
+    }
+
+    [XmlRoot(ElementName = "trkseg", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Trkseg
+    {
+        [XmlElement(ElementName = "trkpt", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public List<Trkpt>? Trkpt { get; set; }
+    }
+
+    [XmlRoot(ElementName = "trk", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class Trk
+    {
+        [XmlElement(ElementName = "name", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Name { get; set; }
+
+        [XmlElement(ElementName = "desc", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public string? Desc { get; set; }
+
+        [XmlElement(ElementName = "trkseg", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public Trkseg? Trkseg { get; set; }
+    }
+
+    [XmlRoot(ElementName = "gpx", Namespace = "http://www.topografix.com/GPX/1/1")]
+    public class XmlGpx
+    {
+        [XmlElement(ElementName = "metadata", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public Metadata? Metadata { get; set; }
+
+        [XmlElement(ElementName = "wpt", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public List<Wpt>? Wpt { get; set; }
+
+        [XmlElement(ElementName = "trk", Namespace = "http://www.topografix.com/GPX/1/1")]
+        public Trk? Trk { get; set; }
+
+        [XmlAttribute(AttributeName = "version")]
+        public string? Version { get; set; }
+
+        [XmlAttribute(AttributeName = "xsi", Namespace = "http://www.w3.org/2000/xmlns/")]
+        public string? Xsi { get; set; }
+
+        [XmlAttribute(AttributeName = "xmlns")]
+        public string? Xmlns { get; set; }
+
+        [XmlAttribute(
+            AttributeName = "schemaLocation",
+            Namespace = "http://www.w3.org/2001/XMLSchema-instance"
+        )]
+        public string? SchemaLocation { get; set; }
+
+        [XmlAttribute(AttributeName = "gpx_style", Namespace = "http://www.w3.org/2000/xmlns/")]
+        public string? Gpx_style { get; set; }
+
+        [XmlAttribute(AttributeName = "gpxtpx", Namespace = "http://www.w3.org/2000/xmlns/")]
+        public string? Gpxtpx { get; set; }
+
+        [XmlAttribute(AttributeName = "gpxx", Namespace = "http://www.w3.org/2000/xmlns/")]
+        public string? Gpxx { get; set; }
+
+        [XmlAttribute(AttributeName = "randonneur", Namespace = "http://www.w3.org/2000/xmlns/")]
+        public string? Randonneur { get; set; }
+
+        [XmlAttribute(AttributeName = "creator")]
+        public string? Creator { get; set; }
+    }
+
+    public class GPXFile
+    {
+        [XmlArray("wpt")]
+        [XmlArrayItem("wpt")]
+        public Wpt[]? Waypoints { get; set; }
+    }
+
+    public class TestWaypoint
+    {
+        public static void Dump(string xmlFile)
         {
-            PrintErr("Failed to open xml file.");
-            return false;
-        }
-        string xmlContent = file.GetAsText();
+            XmlGpx gpx = new();
+            xmlFile = ProjectSettings.GlobalizePath(xmlFile);
+            GD.Print($"xmlFile {xmlFile}");
 
-        // Load in XmlDocument through a string
-        xmlDoc.Load(new StringReader(xmlContent));
-
-        try
-        {
-            if (xmlDoc.FirstChild == null)
+            // Deserialize to object
+            XmlSerializer serializer = new(typeof(XmlGpx));
+            using (FileStream stream = File.OpenRead(xmlFile))
             {
-                GD.PushWarning($"${nameof(Load)}: xml file is empty");
-                return false;
-            }
-            XmlNode root = xmlDoc.FirstChild;
-            var namespaceManager = new XmlNamespaceManager(xmlDoc.NameTable);
-            namespaceManager.AddNamespace("a", "http://www.topografix.com/GPX/1/1");
+                gpx = (XmlGpx)serializer.Deserialize(stream)!;
+            } // Put a break-point here, then mouse-over dezerializedXML
 
-            /* Load waypoints */
-            XmlNodeList waypoints = xmlDoc.SelectNodes("//a:gpx/a:wpt", namespaceManager)!;
-            if (waypoints != null)
+            if (gpx.Wpt != null)
             {
-                foreach (XmlNode waypoint in waypoints)
+                foreach (Wpt waypoint in gpx.Wpt)
                 {
-                    var eleWaypoint = waypoint["ele"];
+                    GD.Print("Waypoint Name: " + waypoint.Name);
+                    GD.Print("Waypoint Ele: " + waypoint.Ele);
+                    GD.Print("Waypoint Extensions Type: " + waypoint.Extensions?.Type);
+
+                    if (waypoint.Extensions?.Junctions != null)
+                    {
+                        GD.Print("Waypoint Junctions GPX Files:");
+                        List<string>? gpxFiles = waypoint.Extensions.Junctions.Gpxfile;
+                        if (gpxFiles != null)
+                        {
+                            foreach (string gpxFileItem in gpxFiles)
+                            {
+                                GD.Print("Waypoint Junctions GPX File: " + gpxFileItem);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public enum Direction
+    {
+        E,
+        W,
+        N,
+        S,
+        NE,
+        NW,
+        SE,
+        SW,
+        NOWHERE,
+    }
+
+    public struct DMS
+    {
+        public int degree;
+        public int min;
+        public float sec;
+    }
+
+    public struct GpxProperties
+    {
+        public Vector2 coord { get; set; }
+        public float distanceToNext; // distance to next gps point (meter)
+        public DMS longDMS;
+        public DMS latDMS;
+        public Vector2 elevation { get; set; }
+        public int trailJunctionIndex;
+        public GpxWaypoint? Waypoint; // waypoint linked to this coordinate (can be null)
+    }
+
+    public struct GpxDestination
+    {
+        public string gpxFile;
+        public string name;
+        public float distance;
+        public Direction direction;
+        public string trail;
+    }
+
+    public partial class GpxTrailJunction : GodotObject
+    {
+        public string? name;
+        public List<GpxDestination> destinations = [];
+        internal float distance; // Distance from start (meter)
+    }
+
+    public class Gpx
+    {
+        // x : index, y : value
+        public GpxProperties[]? m_trackPoints { get; set; }
+
+        // waypoints from the gpx file
+        public readonly GpxWaypoints Waypoints = new();
+
+        public List<GpxTrailJunction>? m_trailJunctions;
+
+        internal float maxX; // length of the track (meters)
+
+        // Number of pixels by meter
+        public const float PixelMeter = 5.0f;
+
+        // Max elevation in meters
+        public const float ElevationMax = 10000.0f;
+
+        // Max elevation in pixels
+        public const float PixelElevationMax = ElevationMax * PixelMeter;
+
+        // Default name for a missing name
+        internal const string DefaultName = "Elsewhere...";
+
+        // Impossible value for a geographical coordinate
+        internal const float UnitializedCoord = 777.77f;
+
+        // Waypoint tag to describe a junction
+        internal const string JunctionType = "junction";
+
+        // Waypoint tag to describe a Point of View
+        internal const string PovType = "pov";
+
+        private Direction strToDirection(string directionStr)
+        {
+            Direction result;
+
+            switch (directionStr)
+            {
+                case "N":
+                    result = Direction.N;
+                    break;
+                case "S":
+                    result = Direction.S;
+                    break;
+                case "E":
+                    result = Direction.E;
+                    break;
+                case "W":
+                    result = Direction.W;
+                    break;
+                case "NE":
+                    result = Direction.NE;
+                    break;
+                case "NW":
+                    result = Direction.NW;
+                    break;
+                case "SE":
+                    result = Direction.SE;
+                    break;
+                case "SW":
+                    result = Direction.SW;
+                    break;
+                default:
+                    result = Direction.NOWHERE;
+                    break;
+            }
+
+            return result;
+        }
+
+        private (int degree, int min, float sec) getDMSFromDecimal(float coord)
+        {
+            float sec = (float)Math.Round(coord * 3600);
+            int deg = (int)sec / 3600;
+            sec = Math.Abs(sec % 3600);
+            int min = (int)sec / 60;
+            sec %= 60;
+
+            return (deg, min, sec);
+        }
+
+        /**
+            Retrieve distance in meter between two gps points.
+            Use of  System.Device.Location;
+
+            @param sLatitude  latitude of start point
+            @param sLongitude longitude of start point
+            @param sLatitude  latitude of end point
+            @param sLongitude longitude of end point
+
+            @return distance in meter
+        */
+        private float getDistance(
+            float sLatitude,
+            float sLongitude,
+            float eLatitude,
+            float eLongitude
+        )
+        {
+            var sCoord = new GeoCoordinate(sLatitude, sLongitude);
+            var eCoord = new GeoCoordinate(eLatitude, eLongitude);
+
+            return (float)sCoord.GetDistanceTo(eCoord);
+        }
+
+        public bool Load(string xmlFile)
+        {
+            XmlGpx gpx = new();
+            xmlFile = ProjectSettings.GlobalizePath(xmlFile);
+            GD.Print($"xmlFile {xmlFile}");
+
+            // Deserialize to object
+            XmlSerializer serializer = new(typeof(XmlGpx));
+            using (FileStream stream = File.OpenRead(xmlFile))
+            {
+                gpx = (XmlGpx)serializer.Deserialize(stream)!;
+            } // Put a break-point here, then mouse-over dezerializedXML
+
+            if (gpx.Wpt != null)
+            {
+                foreach (Wpt waypoint in gpx.Wpt)
+                {
+                    var ele = waypoint.Ele;
 
                     // if some data are corrupted, the waypoint is ignored
-                    if (eleWaypoint is null || waypoint.Attributes is null)
+                    if (waypoint.Ele is null)
                     {
                         GD.PushWarning(
-                            $"${nameof(Load)}: a waypoint of ${filePath} is corrupted, skip it."
+                            $"${nameof(Load)}: a waypoint of ${xmlFile} is corrupted, skip it."
                         );
                         continue;
                     }
 
                     // elevation
                     var elevation = float.Parse(
-                        eleWaypoint.InnerText,
+                        waypoint.Ele,
                         CultureInfo.InvariantCulture.NumberFormat
                     );
 
                     // coordinates
                     float longitude = UnitializedCoord;
                     float latitude = UnitializedCoord;
-                    var lonWaypoint = waypoint.Attributes["lon"];
-                    var latWaypoint = waypoint.Attributes["lat"];
 
-                    if (lonWaypoint is not null)
+                    if (waypoint.Lon is not null)
                         longitude = float.Parse(
-                            lonWaypoint.Value,
+                            waypoint.Lon,
                             CultureInfo.InvariantCulture.NumberFormat
                         );
 
-                    if (latWaypoint is not null)
+                    if (waypoint.Lat is not null)
                         latitude = float.Parse(
-                            latWaypoint.Value,
+                            waypoint.Lat,
                             CultureInfo.InvariantCulture.NumberFormat
                         );
 
                     if (longitude == UnitializedCoord || latitude == UnitializedCoord)
                     {
-                        GD.PushWarning($"${nameof(Load)}: wrong waypoint coords (${filePath}).");
+                        GD.PushWarning($"${nameof(Load)}: wrong waypoint coords (${xmlFile}).");
                         continue;
                     }
                     var coord = new Vector2(latitude, longitude);
 
                     // name (optional)
-                    var nameWaypoint = waypoint["name"];
-                    string name = DefaultName;
-                    if (nameWaypoint is not null)
-                        name = nameWaypoint.InnerText;
-                    Waypoints.Add(coord, elevation, name);
+                    string wptName = DefaultName;
+                    if (waypoint.Name is not null)
+                        wptName = waypoint.Name;
+                    Waypoints.Add(coord, elevation, wptName);
 
                     //GD.Print($"wpt : ${name}");
 
-                    if (name.Contains(TagJunction) == true)
+                    if (waypoint.Extensions != null)
                     {
-                        m_trailJunctions ??= [];
-                        GpxTrailJunction trailJunction = new()
+                        GD.Print($"extension type : {waypoint.Extensions.Type}");
+                        string? type = waypoint.Extensions.Type;
+                        if (type != null)
                         {
-                            name = name[(name.Find(TagJunction) + TagJunction.Length)..],
-                        };
-
-                        // desc section contains a list of connected traces (through their gpx file name)
-                        string desc = "";
-                        var descWaypoint = waypoint["desc"];
-                        if (descWaypoint is not null)
-                            desc = descWaypoint.InnerText;
-                        string[] connectedTraces = desc.Split(';');
-                        foreach (string trace in connectedTraces)
-                        {
-                            GpxDestination gpxDestination = new()
+                            switch (type)
                             {
-                                gpxFile = "res://data/Map1/" + trace,
-                            };
-                            trailJunction.destinations.Add(gpxDestination);
+                                case JunctionType:
+                                    m_trailJunctions ??= [];
+                                    GpxTrailJunction trailJunction = new() { name = wptName };
+                                    Junctions? junctions = waypoint.Extensions.Junctions;
+                                    if (junctions != null && junctions.Gpxfile != null)
+                                    {
+                                        foreach (string gpxFile in junctions.Gpxfile)
+                                        {
+                                            GD.Print($"gpxFile : {gpxFile}");
+                                            GpxDestination gpxDestination = new()
+                                            {
+                                                gpxFile = "res://data/Map1/" + gpxFile,
+                                            };
+                                            trailJunction.destinations.Add(gpxDestination);
+                                        }
+                                        m_trailJunctions.Add(trailJunction);
+                                    }
+                                    break;
+                                case PovType:
+                                    break;
+                            }
                         }
-                        m_trailJunctions.Add(trailJunction);
                     }
                 }
             }
 
-            int i = 0; // counter to store trackpoints
-
-            /* Load track points */
-            XmlNodeList trackpoints = xmlDoc.SelectNodes(
-                "//a:gpx/a:trk/a:trkseg/a:trkpt",
-                namespaceManager
-            )!;
-
             // no trackpoints? it's a problem
-            if (trackpoints is null)
+            if (gpx.Trk == null || gpx.Trk.Trkseg == null || gpx.Trk.Trkseg.Trkpt == null)
             {
                 Waypoints.Clear();
-                GD.PushError($"${nameof(Load)}: no trackpoint inside ${filePath}.");
+                GD.PushError($"${nameof(Load)}: no trackpoint inside ${xmlFile}.");
                 return false;
             }
 
-            m_trackPoints = new GpxProperties[trackpoints.Count];
+            /* Load track points */
+            m_trackPoints = new GpxProperties[gpx.Trk.Trkseg.Trkpt.Count];
 
-            i = 0; // counter to store trackpoints
+            int i = 0; // counter to store trackpoints
             float y_ele = 0.0f;
-            foreach (XmlNode trackpoint in trackpoints)
+            foreach (Trkpt trackpoint in gpx.Trk.Trkseg.Trkpt)
             {
-                var eleTrackpoint = trackpoint["ele"];
-
                 // if some data are corrupted, the waypoint is ignored
-                if (eleTrackpoint is null || trackpoint.Attributes is null)
+                if (trackpoint.Ele is null)
                 {
                     GD.PushWarning(
-                        $"${nameof(Load)}: a trackpoint of ${filePath} is corrupted, skip it."
+                        $"${nameof(Load)}: a trackpoint of ${xmlFile} is corrupted, skip it."
                     );
                     continue;
                 }
-                var lonTrackpoint = trackpoint.Attributes["lon"];
-                var latTrackpoint = trackpoint.Attributes["lat"];
                 m_trackPoints[i].trailJunctionIndex = -1;
                 float longitude = UnitializedCoord;
                 float latitude = 0.00f;
 
-                if (lonTrackpoint is not null)
+                if (trackpoint.Lon is not null)
                     longitude = float.Parse(
-                        lonTrackpoint.Value,
+                        trackpoint.Lon,
                         CultureInfo.InvariantCulture.NumberFormat
                     );
-                if (latTrackpoint is not null)
+                if (trackpoint.Lat is not null)
                     latitude = float.Parse(
-                        latTrackpoint.Value,
+                        trackpoint.Lat,
                         CultureInfo.InvariantCulture.NumberFormat
                     );
 
                 if (longitude == UnitializedCoord || latitude == UnitializedCoord)
                 {
-                    GD.PushWarning($"${nameof(Load)}: wrong trackpoint coords (${filePath}).");
+                    GD.PushWarning($"${nameof(Load)}: wrong trackpoint coords (${xmlFile}).");
                     continue;
                 }
 
@@ -338,10 +551,8 @@ public class Gpx
                 y_ele =
                     (
                         (
-                            float.Parse(
-                                eleTrackpoint.InnerText,
-                                CultureInfo.InvariantCulture.NumberFormat
-                            ) * PixelMeter
+                            float.Parse(trackpoint.Ele, CultureInfo.InvariantCulture.NumberFormat)
+                            * PixelMeter
                         ) - PixelElevationMax
                     ) * -1; // y axis is inverted
                 // distance between previous point and current (stored in previous)
@@ -368,12 +579,7 @@ public class Gpx
                 }
                 i++;
             }
+            return true;
         }
-        catch (System.Exception e)
-        {
-            PrintErr("Failed to read XML: " + e.Message);
-            return false;
-        }
-        return true;
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Godot;
+using XmlGpx;
 using static Godot.GD;
 
 public partial class Sol : StaticBody2D

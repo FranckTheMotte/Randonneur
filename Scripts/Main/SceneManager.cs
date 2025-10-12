@@ -128,7 +128,7 @@ public partial class SceneManager : Node
             return;
         }
 
-        GD.Print("ChangeLevel");
+        GD.Print($"ChangeLevel {GpxFile}");
 
         // try to find the level in the dictionary
         if (Scenes.TryGetValue(GpxFile, out Level? level))

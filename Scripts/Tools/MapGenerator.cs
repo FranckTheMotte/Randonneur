@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Godot;
+using XmlGpx;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
