@@ -108,18 +108,18 @@ public partial class MapGenerator : Node
             Gpx trail;
             /* Generate a profil from a gpx file */
             trail = new Gpx();
-            if (trail.Load(gpxFileName) == true && trail.m_trackPoints is not null)
+            if (trail.Load(gpxFileName) == true && trail.TrackPoints is not null)
             {
-                foreach (GpxProperties gpxPoint in trail.m_trackPoints)
+                foreach (GpxProperties gpxPoint in trail.TrackPoints)
                 {
-                    if (minLatitude > gpxPoint.coord.X)
-                        minLatitude = gpxPoint.coord.X;
-                    if (minLongitude > gpxPoint.coord.Y)
-                        minLongitude = gpxPoint.coord.Y;
-                    if (maxLatitude < gpxPoint.coord.X)
-                        maxLatitude = gpxPoint.coord.X;
-                    if (maxLongitude < gpxPoint.coord.Y)
-                        maxLongitude = gpxPoint.coord.Y;
+                    if (minLatitude > gpxPoint.Coord.X)
+                        minLatitude = gpxPoint.Coord.X;
+                    if (minLongitude > gpxPoint.Coord.Y)
+                        minLongitude = gpxPoint.Coord.Y;
+                    if (maxLatitude < gpxPoint.Coord.X)
+                        maxLatitude = gpxPoint.Coord.X;
+                    if (maxLongitude < gpxPoint.Coord.Y)
+                        maxLongitude = gpxPoint.Coord.Y;
                 }
             }
             else
@@ -145,17 +145,17 @@ public partial class MapGenerator : Node
             Gpx trail;
             /* Generate a profil from a gpx file */
             trail = new Gpx();
-            if (trail.Load(gpxFileName) == true && trail.m_trackPoints is not null)
+            if (trail.Load(gpxFileName) == true && trail.TrackPoints is not null)
             {
                 Line2D trailLine = new Line2D();
-                Vector2[] trace = new Vector2[trail.m_trackPoints.Length];
+                Vector2[] trace = new Vector2[trail.TrackPoints.Length];
                 int i = 0;
                 MapArea area = new();
                 string traceFileName = Path.GetFileName(gpxFileName);
 
-                foreach (GpxProperties gpxPoint in trail.m_trackPoints)
+                foreach (GpxProperties gpxPoint in trail.TrackPoints)
                 {
-                    GpsPoint gpsPoint = new GpsPoint(gpxPoint.coord.X, gpxPoint.coord.Y);
+                    GpsPoint gpsPoint = new GpsPoint(gpxPoint.Coord.X, gpxPoint.Coord.Y);
                     trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
                     /*GD.Print(
                         $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.Waypoint}"

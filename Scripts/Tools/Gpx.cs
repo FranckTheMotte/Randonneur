@@ -201,46 +201,6 @@ namespace XmlGpx
         public Wpt[]? Waypoints { get; set; }
     }
 
-    public class TestWaypoint
-    {
-        public static void Dump(string xmlFile)
-        {
-            XmlGpx gpx = new();
-            xmlFile = ProjectSettings.GlobalizePath(xmlFile);
-            GD.Print($"xmlFile {xmlFile}");
-
-            // Deserialize to object
-            XmlSerializer serializer = new(typeof(XmlGpx));
-            using (FileStream stream = File.OpenRead(xmlFile))
-            {
-                gpx = (XmlGpx)serializer.Deserialize(stream)!;
-            } // Put a break-point here, then mouse-over dezerializedXML
-
-            if (gpx.Wpt != null)
-            {
-                foreach (Wpt waypoint in gpx.Wpt)
-                {
-                    GD.Print("Waypoint Name: " + waypoint.Name);
-                    GD.Print("Waypoint Ele: " + waypoint.Ele);
-                    GD.Print("Waypoint Extensions Type: " + waypoint.Extensions?.Type);
-
-                    if (waypoint.Extensions?.Junctions != null)
-                    {
-                        GD.Print("Waypoint Junctions GPX Files:");
-                        List<string>? gpxFiles = waypoint.Extensions.Junctions.Gpxfile;
-                        if (gpxFiles != null)
-                        {
-                            foreach (string gpxFileItem in gpxFiles)
-                            {
-                                GD.Print("Waypoint Junctions GPX File: " + gpxFileItem);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     public enum Direction
     {
         E,
@@ -254,51 +214,42 @@ namespace XmlGpx
         NOWHERE,
     }
 
-    public struct DMS
-    {
-        public int degree;
-        public int min;
-        public float sec;
-    }
-
     public struct GpxProperties
     {
-        public Vector2 coord { get; set; }
-        public float distanceToNext; // distance to next gps point (meter)
-        public DMS longDMS;
-        public DMS latDMS;
-        public Vector2 elevation { get; set; }
-        public int trailJunctionIndex;
+        public Vector2 Coord { get; set; }
+        public float DistanceToNext; // distance to next gps point (meter)
+        public Vector2 Elevation { get; set; }
+        public int TrailJunctionIndex;
         public GpxWaypoint? Waypoint; // waypoint linked to this coordinate (can be null)
     }
 
     public struct GpxDestination
     {
-        public string gpxFile;
-        public string name;
-        public float distance;
-        public Direction direction;
-        public string trail;
+        public string GpxFile;
+        public string Name;
+        public float Distance;
+        public Direction Direction;
+        public string Trail;
     }
 
     public partial class GpxTrailJunction : GodotObject
     {
-        public string? name;
-        public List<GpxDestination> destinations = [];
-        internal float distance; // Distance from start (meter)
+        public string? Name;
+        public List<GpxDestination> Destinations = [];
+        internal float Distance; // Distance from start (meter)
     }
 
     public class Gpx
     {
         // x : index, y : value
-        public GpxProperties[]? m_trackPoints { get; set; }
+        public GpxProperties[]? TrackPoints { get; set; }
 
         // waypoints from the gpx file
         public readonly GpxWaypoints Waypoints = new();
 
-        public List<GpxTrailJunction>? m_trailJunctions;
+        public List<GpxTrailJunction>? TrailJunctions;
 
-        internal float maxX; // length of the track (meters)
+        internal float MaxX; // length of the track (meters)
 
         // Number of pixels by meter
         public const float PixelMeter = 5.0f;
@@ -321,7 +272,17 @@ namespace XmlGpx
         // Waypoint tag to describe a Point of View
         internal const string PovType = "pov";
 
-        private Direction strToDirection(string directionStr)
+        /// <summary>
+        /// Convert a string representation of a direction to a Direction enum value.
+        /// </summary>
+        /// <param name="directionStr">String representation of a direction.</param>
+        /// <returns>Direction enum value corresponding to the input string.</returns>
+        /// <remarks>
+        /// Supported direction strings are:
+        ///     "N", "S", "E", "W", "NE", "NW", "SE", "SW".
+        ///     Any other string will result in Direction.NOWHERE being returned.
+        /// </remarks>
+        private static Direction StrToDirection(string directionStr)
         {
             Direction result;
 
@@ -359,29 +320,18 @@ namespace XmlGpx
             return result;
         }
 
-        private (int degree, int min, float sec) getDMSFromDecimal(float coord)
-        {
-            float sec = (float)Math.Round(coord * 3600);
-            int deg = (int)sec / 3600;
-            sec = Math.Abs(sec % 3600);
-            int min = (int)sec / 60;
-            sec %= 60;
-
-            return (deg, min, sec);
-        }
-
-        /**
-            Retrieve distance in meter between two gps points.
-            Use of  System.Device.Location;
-
-            @param sLatitude  latitude of start point
-            @param sLongitude longitude of start point
-            @param sLatitude  latitude of end point
-            @param sLongitude longitude of end point
-
-            @return distance in meter
-        */
-        private float getDistance(
+        /// <summary>
+        /// Retrieve distance in meter between two gps points.
+        /// </summary>
+        /// <param name="sLatitude">Latitude of start point</param>
+        /// <param name="sLongitude">Longitude of start point</param>
+        /// <param name="eLatitude">Latitude of end point</param>
+        /// <param name="eLongitude">Longitude of end point</param>
+        /// <returns>Distance in meter</returns>
+        /// <remarks>
+        /// Use of  System.Device.Location;
+        /// </remarks>
+        private static float GetDistance(
             float sLatitude,
             float sLongitude,
             float eLatitude,
@@ -394,18 +344,26 @@ namespace XmlGpx
             return (float)sCoord.GetDistanceTo(eCoord);
         }
 
+        /// <summary>
+        /// Load a gpx file.
+        /// </summary>
+        /// <param name="xmlFile">Full godot path to the gpx file.</param>
+        /// <returns>true if the gpx file is loaded successfully, false otherwise.</returns>
+        /// <remarks>
+        /// The gpx file is deserialized into an XmlGpx object.
+        /// The waypoints are then loaded into the Waypoints property.
+        /// </remarks>
         public bool Load(string xmlFile)
         {
             XmlGpx gpx = new();
             xmlFile = ProjectSettings.GlobalizePath(xmlFile);
-            GD.Print($"xmlFile {xmlFile}");
 
             // Deserialize to object
             XmlSerializer serializer = new(typeof(XmlGpx));
             using (FileStream stream = File.OpenRead(xmlFile))
             {
                 gpx = (XmlGpx)serializer.Deserialize(stream)!;
-            } // Put a break-point here, then mouse-over dezerializedXML
+            }
 
             if (gpx.Wpt != null)
             {
@@ -457,8 +415,7 @@ namespace XmlGpx
                         wptName = waypoint.Name;
                     Waypoints.Add(coord, elevation, wptName);
 
-                    //GD.Print($"wpt : ${name}");
-
+                    // Extensions specific to randonneur
                     if (waypoint.Extensions != null)
                     {
                         GD.Print($"extension type : {waypoint.Extensions.Type}");
@@ -468,8 +425,8 @@ namespace XmlGpx
                             switch (type)
                             {
                                 case JunctionType:
-                                    m_trailJunctions ??= [];
-                                    GpxTrailJunction trailJunction = new() { name = wptName };
+                                    TrailJunctions ??= [];
+                                    GpxTrailJunction trailJunction = new() { Name = wptName };
                                     Junctions? junctions = waypoint.Extensions.Junctions;
                                     if (junctions != null && junctions.Gpxfile != null)
                                     {
@@ -478,11 +435,11 @@ namespace XmlGpx
                                             GD.Print($"gpxFile : {gpxFile}");
                                             GpxDestination gpxDestination = new()
                                             {
-                                                gpxFile = "res://data/Map1/" + gpxFile,
+                                                GpxFile = "res://data/Map1/" + gpxFile,
                                             };
-                                            trailJunction.destinations.Add(gpxDestination);
+                                            trailJunction.Destinations.Add(gpxDestination);
                                         }
-                                        m_trailJunctions.Add(trailJunction);
+                                        TrailJunctions.Add(trailJunction);
                                     }
                                     break;
                                 case PovType:
@@ -502,7 +459,7 @@ namespace XmlGpx
             }
 
             /* Load track points */
-            m_trackPoints = new GpxProperties[gpx.Trk.Trkseg.Trkpt.Count];
+            TrackPoints = new GpxProperties[gpx.Trk.Trkseg.Trkpt.Count];
 
             int i = 0; // counter to store trackpoints
             float y_ele = 0.0f;
@@ -516,7 +473,7 @@ namespace XmlGpx
                     );
                     continue;
                 }
-                m_trackPoints[i].trailJunctionIndex = -1;
+                TrackPoints[i].TrailJunctionIndex = -1;
                 float longitude = UnitializedCoord;
                 float latitude = 0.00f;
 
@@ -537,16 +494,8 @@ namespace XmlGpx
                     continue;
                 }
 
-                var result = getDMSFromDecimal(longitude);
-                m_trackPoints[i].longDMS.degree = result.degree;
-                m_trackPoints[i].longDMS.min = result.min;
-                m_trackPoints[i].longDMS.sec = result.sec;
-                result = getDMSFromDecimal(latitude);
-                m_trackPoints[i].latDMS.degree = result.degree;
-                m_trackPoints[i].latDMS.min = result.min;
-                m_trackPoints[i].latDMS.sec = result.sec;
-                m_trackPoints[i].coord = new Vector2(latitude, longitude);
-                m_trackPoints[i].Waypoint = Waypoints.GetWaypoint(m_trackPoints[i].coord);
+                TrackPoints[i].Coord = new Vector2(latitude, longitude);
+                TrackPoints[i].Waypoint = Waypoints.GetWaypoint(TrackPoints[i].Coord);
 
                 y_ele =
                     (
@@ -558,24 +507,24 @@ namespace XmlGpx
                 // distance between previous point and current (stored in previous)
                 if (i > 0)
                 {
-                    m_trackPoints[i - 1].distanceToNext =
-                        getDistance(
-                            m_trackPoints[i - 1].coord.X,
-                            m_trackPoints[i - 1].coord.Y,
+                    TrackPoints[i - 1].DistanceToNext =
+                        GetDistance(
+                            TrackPoints[i - 1].Coord.X,
+                            TrackPoints[i - 1].Coord.Y,
                             latitude,
                             longitude
                         ) * PixelMeter;
                     //GD.Print($"distance {m_trackPoints[i-1].distanceToNext} maxX {maxX}");
-                    m_trackPoints[i].elevation = new Vector2(
-                        m_trackPoints[i - 1].elevation.X + m_trackPoints[i - 1].distanceToNext,
+                    TrackPoints[i].Elevation = new Vector2(
+                        TrackPoints[i - 1].Elevation.X + TrackPoints[i - 1].DistanceToNext,
                         y_ele
                     );
-                    maxX += m_trackPoints[i - 1].distanceToNext;
+                    MaxX += TrackPoints[i - 1].DistanceToNext;
                 }
                 else
                 {
                     // First coord, no distance to evaluate
-                    m_trackPoints[i].elevation = new Vector2(0, y_ele);
+                    TrackPoints[i].Elevation = new Vector2(0, y_ele);
                 }
                 i++;
             }

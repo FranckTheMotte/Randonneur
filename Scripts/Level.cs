@@ -54,16 +54,16 @@ namespace Randonneur.Scripts
             _startpoint = null;
 
             // get unique connected trace to this gpx file
-            List<GpxTrailJunction>? junctions = land.CurrentTrack?.m_trailJunctions;
+            List<GpxTrailJunction>? junctions = land.CurrentTrack?.TrailJunctions;
             if (junctions != null)
             {
                 foreach (var junction in junctions)
                 {
-                    if (junction.destinations != null)
+                    if (junction.Destinations != null)
                     {
-                        foreach (var destination in junction.destinations)
+                        foreach (var destination in junction.Destinations)
                         {
-                            connectedTraces[destination.gpxFile] = "";
+                            connectedTraces[destination.GpxFile] = "";
                         }
                     }
                 }

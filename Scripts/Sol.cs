@@ -51,7 +51,7 @@ public partial class Sol : StaticBody2D
             CurrentTrack = new Gpx();
             CurrentTrack.Load(gpxFile);
 
-            if (CurrentTrack.m_trackPoints == null)
+            if (CurrentTrack.TrackPoints == null)
             {
                 GD.PushWarning(
                     $"{nameof(generateGround)}: no track points in current gpx file ${gpxFile}"
@@ -60,13 +60,13 @@ public partial class Sol : StaticBody2D
                 return;
             }
             /* Add 2 points in order to display a solid ground */
-            Vector2[] ground = new Vector2[CurrentTrack.m_trackPoints.Length + 2];
+            Vector2[] ground = new Vector2[CurrentTrack.TrackPoints.Length + 2];
 
-            int solLength = CurrentTrack.m_trackPoints.Length;
+            int solLength = CurrentTrack.TrackPoints.Length;
             for (int i = 0; i < solLength; i++)
             {
-                ground[i] = CurrentTrack.m_trackPoints[i].elevation;
-                var Waypoint = CurrentTrack.m_trackPoints[i].Waypoint;
+                ground[i] = CurrentTrack.TrackPoints[i].Elevation;
+                var Waypoint = CurrentTrack.TrackPoints[i].Waypoint;
                 if (Waypoint != null)
                 {
                     // TODO: here only to display a graphic object for junction
@@ -91,7 +91,7 @@ public partial class Sol : StaticBody2D
                 }
             }
 
-            ground[solLength].X = CurrentTrack.maxX;
+            ground[solLength].X = CurrentTrack.MaxX;
             ground[solLength].Y = Gpx.PixelElevationMax;
             ground[solLength + 1].X = 0.00f;
             ground[solLength + 1].Y = Gpx.PixelElevationMax;
@@ -110,7 +110,7 @@ public partial class Sol : StaticBody2D
             Player.Position = position;
 
             /* player limit */
-            Player.worldLimit = new Vector2(CurrentTrack.maxX, 0);
+            Player.worldLimit = new Vector2(CurrentTrack.MaxX, 0);
             GD.Print($"world limit X : {Player.worldLimit.X}");
         }
         /* TODO put default value if no Gpx is provided */

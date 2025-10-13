@@ -16,14 +16,14 @@ public partial class DestinationsList : VBoxContainer
     public void populateDestination(GpxTrailJunction trailJunction)
     {
         // Sanity checks
-        if (Location == null || Destination == null || trailJunction.destinations == null)
+        if (Location == null || Destination == null || trailJunction.Destinations == null)
         {
             GD.PushWarning($"${nameof(populateDestination)}: sanity checks failed");
             return;
         }
 
         // Sign title
-        Location.Text = trailJunction.name;
+        Location.Text = trailJunction.Name;
 
         // Clean previous destinations
         for (int i = 0; i < this.GetChildCount(); i++)
@@ -32,17 +32,17 @@ public partial class DestinationsList : VBoxContainer
         }
 
         // Populate with new ones
-        foreach (GpxDestination destination in trailJunction.destinations)
+        foreach (GpxDestination destination in trailJunction.Destinations)
         {
             HBoxContainer newDest = (HBoxContainer)Destination.Duplicate();
             DestinationButton destButton = (DestinationButton)newDest.GetChild(0);
-            destButton.Text = destination.name;
-            destButton.GpxFile = destination.gpxFile;
+            destButton.Text = destination.Name;
+            destButton.GpxFile = destination.GpxFile;
             GD.Print($"dest button : {destButton.Text}");
             Label distanceLabel = (Label)newDest.GetChild(1);
-            distanceLabel.Text = destination.distance.ToString() + " km";
+            distanceLabel.Text = destination.Distance.ToString() + " km";
             Label trailLabel = (Label)newDest.GetChild(3);
-            trailLabel.Text = destination.trail;
+            trailLabel.Text = destination.Trail;
             newDest.Show();
             this.AddChild(newDest);
         }
@@ -54,7 +54,7 @@ public partial class DestinationsList : VBoxContainer
         HBoxContainer dest = (HBoxContainer)this.GetChild(1);
         // margin H up + margin H low + title Height + nb dest * Height TODO remove hardcoded values
         float height =
-            (15 * 2) + 32 + (trailJunction.destinations.Count + 1) * dest.CustomMinimumSize.Y;
+            (15 * 2) + 32 + (trailJunction.Destinations.Count + 1) * dest.CustomMinimumSize.Y;
         backgroundSign.CustomMinimumSize = new Vector2(256, height);
     }
 
