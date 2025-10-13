@@ -179,7 +179,7 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
             GD.PushError("No scene manager");
             return;
         }
-        string startingTraceFile = Global.DefautlMapDirectory + "TraceB.gpx";
+        string startingTraceFile = Global.DefautlMapDirectory + "traceB.gpx";
         sceneManager.LoadScenes(startingTraceFile);
         sceneManager.ChangeLevel(startingTraceFile);
     }

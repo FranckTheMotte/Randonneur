@@ -79,6 +79,11 @@ public class GpxWaypoints
         _gpxWayPoints.Clear();
     }
 
+    /// <summary>
+    /// Set the landmark of a waypoint.
+    /// </summary>
+    /// <param name="Coord">Coordinate of the waypoint.</param>
+    /// <param name="Landmark">ColorRect of the landmark.</param>
     internal void SetWaypointLandmark(Vector2 Coord, ColorRect Landmark)
     {
         foreach (GpxWaypoint waypoint in _gpxWayPoints)
@@ -87,6 +92,19 @@ public class GpxWaypoints
             {
                 waypoint.Landmark = Landmark;
             }
+        }
+    }
+
+    /// <summary>
+    /// Set the visibility of all waypoints' landmarks.
+    /// </summary>
+    /// <param name="value">true to show all landmarks, false to hide them.</param>
+    internal void SetAllLandmarkVisibility(bool value)
+    {
+        foreach (GpxWaypoint waypoint in _gpxWayPoints)
+        {
+            if (waypoint.Landmark != null)
+                waypoint.Landmark.Visible = value;
         }
     }
 }

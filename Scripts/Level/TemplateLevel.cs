@@ -25,7 +25,7 @@ public partial class TemplateLevel : Node2D
 
     private AnimationPlayer? _fadeAnimation;
 
-    public Hashtable? Trails { get; private set; }
+    public Dictionary<string, Gpx>? Trails { get; private set; }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -62,7 +62,7 @@ public partial class TemplateLevel : Node2D
         GD.Print($"map W H {mapWidth} {mapHeight}");
         MapGenerator mapGenerator = new(mapWidth, mapHeight);
 
-        var (TrailsNodes, TrailsGpx) = mapGenerator.generateMap(pathToMap);
+        var (TrailsNodes, TrailsGpx) = mapGenerator.GenerateMap(pathToMap);
         List<Area2D>? trails = TrailsNodes;
         Trails = TrailsGpx;
 
@@ -106,11 +106,30 @@ public partial class TemplateLevel : Node2D
         label.Text = txt;
     }
 
+    /// <summary>
+    /// Show or hide the map.
+    /// </summary>
+    /// <param name="Visible">true to show the map, false to hide it.</param>
+    /// <remarks>
+    /// When the map is visible, all landmarks are hidden.
+    /// </remarks>
     public void MapVisible(bool Visible)
     {
         GD.Print($"MAP VISIBLE {Visible}");
         WorldMap map = GetNodeOrNull<WorldMap>("WorldMap");
         map?.Disable(!Visible);
+
+        // Hide all landmark when the map is displayed.
+        if (Visible && Trails != null)
+        {
+            foreach (KeyValuePair<string, Gpx> trail in Trails)
+            {
+                if (trail.Value.TrailJunctions != null)
+                {
+                    trail.Value.Waypoints.SetAllLandmarkVisibility(false);
+                }
+            }
+        }
     }
 
     /**
@@ -152,7 +171,7 @@ public partial class TemplateLevel : Node2D
 
         MapVisible(false);
         // TODO: POC: force a trace
-        gpxFile = Global.DefautlMapDirectory + "TraceG.gpx";
+        gpxFile = Global.DefautlMapDirectory + "traceG.gpx";
         SceneManager.instance?.ChangeLevel(gpxFile);
 
         _fadeAnimation.Play("fade_in");
@@ -161,18 +180,18 @@ public partial class TemplateLevel : Node2D
         Sleep(500);
     }
 
-    /**
-      Display the junction choice through the map.
-
-      @param TrackName Contains the name of the gpx file.
-      @param Coord     Coordinate of the triggered waypoint.
-    */
+    ///  <summary>
+    ///  Display the junction choice through the map.
+    ///  </summary>
+    ///  <param name="TrackName">Contains the name of the gpx file.</param>
+    ///  <param name="Coord">Coordinate of the triggered waypoint.</param>
     public void JunctionChoice(string TrackName, Vector2 Coord)
     {
         MapPositionUpdate();
         MapVisible(true);
 
-        /* TODO highlight the matched waypoint, unlight others */
+        // if possible put a marker on the map to display the player position
+        // all landmarks are not visible by default
         Gpx? trail = (Gpx?)Trails?[TrackName];
         if (trail != null)
         {
@@ -183,6 +202,7 @@ public partial class TemplateLevel : Node2D
                 if (landmark is not null)
                 {
                     landmark.Color = Colors.Black;
+                    landmark.Visible = true;
                 }
             }
         }

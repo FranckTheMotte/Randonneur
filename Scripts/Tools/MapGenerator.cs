@@ -70,15 +70,12 @@ public partial class MapGenerator : Node
         return new Vector2(screenX, screenY);
     }
 
-    /**
-        Generate Nodes from all gpx files in specified directory.
-
-        @param      dir    Location of gpx files.
-
-        @return TrailsNodes a list of area2d where each one contains Nodes for a trail.
-                TrailsGpx   an hashtable of trails gpx items.
-    */
-    public (List<Area2D>? TrailsNodes, Hashtable? TrailsGpx) generateMap(string dir)
+    /// <summary>
+    /// Generate Nodes from all gpx files in specified directory.
+    /// </summary>
+    /// <param name="dir">Location of gpx files.</param>
+    /// <returns>A tuple containing a list of area2d where each one contains Nodes for a trail, and an Hashtable of trails gpx items.</returns>
+    public (List<Area2D>? TrailsNodes, Dictionary<string, Gpx>? TrailsGpx) GenerateMap(string dir)
     {
         // pour chaque fichier dans dir:
         // - parser le xml
@@ -92,7 +89,7 @@ public partial class MapGenerator : Node
         // x1(long, lat) 45.7907840 - 6.9719600 => 45° 47' 26.822" - 6° 58' 19.056"
         // x2(long, lat) 45.790742 - 6.971974 => 45° 47' 26.671" - 6° 58' 19.106"
         List<Area2D> areasList = new();
-        Hashtable Trails = [];
+        Dictionary<string, Gpx> Trails = [];
 
         /* First run to get min and max values for longitude and latiture*/
         string[] gpxFiles = Directory.GetFiles(ProjectSettings.GlobalizePath(dir));
@@ -127,7 +124,7 @@ public partial class MapGenerator : Node
             }
             else
             {
-                GD.PushWarning($"${nameof(generateMap)}: Failure in gpx file : ${gpxFileName}");
+                GD.PushWarning($"${nameof(GenerateMap)}: Failure in gpx file : ${gpxFileName}");
                 return (null, null);
             }
         }
@@ -178,7 +175,16 @@ public partial class MapGenerator : Node
                         // This marker can only be add now because the
                         // lat/lon to screen coord conversion is done here.
                         JunctionArea junctionArea = new(trace[i], waypoint.Name, traceFileName);
-                        //trail.Waypoints.SetWaypointLandmark(waypoint.Coord, colorRect);
+                        // Put a black rect for the player position
+                        ColorRect landmark = new()
+                        {
+                            Position = trace[i],
+                            Size = new Vector2(10, 10),
+                            Visible = false,
+                            ZIndex = 5,
+                        };
+                        trail.Waypoints.SetWaypointLandmark(waypoint.Coord, landmark);
+                        area.AddChild(landmark);
                         area.AddChild(waypointLabel);
                         area.AddChild(junctionArea);
                     }
@@ -206,7 +212,7 @@ public partial class MapGenerator : Node
             }
             else
             {
-                GD.PushWarning($"${nameof(generateMap)}: (2) Failure in gpx file : ${gpxFileName}");
+                GD.PushWarning($"${nameof(GenerateMap)}: (2) Failure in gpx file : ${gpxFileName}");
                 return (null, null);
             }
         }
