@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Godot;
+using Randonneur;
 using XmlGpx;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
@@ -10,6 +11,8 @@ using Vector2 = Godot.Vector2;
 public partial class MapGenerator : Node
 {
     public const int TrailLineWidth = 10;
+
+    public Color TrailLinceColor = Colors.Orange;
 
     public const string TrailCollisionFilterName = "trail";
 
@@ -182,13 +185,10 @@ public partial class MapGenerator : Node
                     i++;
                 }
 
-                // TODO This default name must be public and global
-                trailLine.Name = "TrailLine2D";
-
+                trailLine.Name = Global.TrailLineName;
                 trailLine.Points = trace;
                 trailLine.Width = TrailLineWidth;
-                // TODO This default color must be public and global
-                trailLine.DefaultColor = Colors.Orange;
+                trailLine.DefaultColor = TrailLinceColor;
 
                 // Area2D for collisions detection
                 area.Name = traceFileName;

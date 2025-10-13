@@ -18,6 +18,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using Godot;
+using Randonneur;
 using static Godot.GD;
 
 namespace XmlGpx
@@ -435,7 +436,7 @@ namespace XmlGpx
                                             GD.Print($"gpxFile : {gpxFile}");
                                             GpxDestination gpxDestination = new()
                                             {
-                                                GpxFile = "res://data/Map1/" + gpxFile,
+                                                GpxFile = Global.DefautlMapDirectory + gpxFile,
                                             };
                                             trailJunction.Destinations.Add(gpxDestination);
                                         }

@@ -1,4 +1,5 @@
 using Godot;
+using Randonneur;
 
 public partial class MapArea : Area2D
 {
@@ -31,7 +32,7 @@ public partial class MapArea : Area2D
         WorldMap worldMap = WorldMap.Instance;
 
         // Retrieve the line
-        _trailLine = area.GetNode<Line2D>("TrailLine2D");
+        _trailLine = area.GetNode<Line2D>(Global.TrailLineName);
         GD.Print($"trail selection {area.Name}");
 
         if (selected)

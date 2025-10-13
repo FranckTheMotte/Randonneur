@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
+using Randonneur;
 using XmlGpx;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
@@ -151,7 +152,7 @@ public partial class TemplateLevel : Node2D
 
         MapVisible(false);
         // TODO: POC: force a trace
-        gpxFile = "res://data/Map1/TraceG.gpx";
+        gpxFile = Global.DefautlMapDirectory + "TraceG.gpx";
         SceneManager.instance?.ChangeLevel(gpxFile);
 
         _fadeAnimation.Play("fade_in");

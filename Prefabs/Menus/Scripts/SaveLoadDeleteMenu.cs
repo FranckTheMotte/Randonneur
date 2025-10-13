@@ -1,4 +1,5 @@
 using Godot;
+using Randonneur;
 
 public partial class SaveLoadDeleteMenu : CanvasLayer
 {
@@ -178,7 +179,7 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
             GD.PushError("No scene manager");
             return;
         }
-        string startingTraceFile = "res://data/Map1/TraceB.gpx";
+        string startingTraceFile = Global.DefautlMapDirectory + "TraceB.gpx";
         sceneManager.LoadScenes(startingTraceFile);
         sceneManager.ChangeLevel(startingTraceFile);
     }
