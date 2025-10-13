@@ -38,8 +38,8 @@
     <extensions>
         <type>junction</type>
         <junctions>
-            <gpxfile>TraceG.gpx</gpxfile>
-            <gpxfile>TraceD.gpx</gpxfile>
+            <gpxfile>traceG.gpx</gpxfile>
+            <gpxfile>traceD.gpx</gpxfile>
         </junctions>
         <start>true</start>
     </extensions>
