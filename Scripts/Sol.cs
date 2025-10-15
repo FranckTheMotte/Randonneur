@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Godot;
+using Randonneur;
 using XmlGpx;
 using static Godot.GD;
 
@@ -65,19 +66,24 @@ public partial class Sol : StaticBody2D
             int solLength = CurrentTrack.TrackPoints.Length;
             for (int i = 0; i < solLength; i++)
             {
+                // Put the display coord
                 ground[i] = CurrentTrack.TrackPoints[i].Elevation;
-                var Waypoint = CurrentTrack.TrackPoints[i].Waypoint;
-                if (Waypoint != null)
+                // Display a waypoint
+                Waypoint? waypoint = CurrentTrack.TrackPoints[i].Waypoint;
+                if (waypoint != null)
                 {
                     // TODO: here only to display a graphic object for junction
                     Vector2 junctionPosition = ground[i];
                     _trailJunctions.Add(junctionPosition);
 
-                    Area2D junctionArea = new() { Position = ground[i] };
-                    junctionArea.Name = Path.GetFileName(gpxFile);
+                    Area2D junctionArea = new()
+                    {
+                        Position = ground[i],
+                        Name = Path.GetFileName(gpxFile),
+                    };
                     junctionArea.BodyEntered += delegate
                     {
-                        JunctionHandler(Path.GetFileName(gpxFile), Waypoint.Coord);
+                        JunctionHandler(Path.GetFileName(gpxFile), waypoint.GeographicCoord);
                     };
                     // Use the junction collision layer
                     junctionArea.SetCollisionLayerValue(1, false);
@@ -126,8 +132,8 @@ public partial class Sol : StaticBody2D
     */
     private void JunctionHandler(string TrackName, Vector2 Coord)
     {
-        GpxWaypoint? Waypoint = CurrentTrack?.Waypoints.GetWaypoint(Coord);
-        if (Waypoint is not null)
+        Waypoint? waypoint = CurrentTrack?.XWaypoints.GetWaypoint(Coord);
+        if (waypoint is not null)
         {
             Player?.DisplayJunction(TrackName, Coord);
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Godot;
 using Randonneur;
@@ -111,22 +112,46 @@ public partial class TemplateLevel : Node2D
     /// </summary>
     /// <param name="Visible">true to show the map, false to hide it.</param>
     /// <remarks>
+    /// </summary>
+    /// <param name="Waypoint">optional, indice the player location.</param>
+    /// <remarks>
     /// When the map is visible, all landmarks are hidden.
     /// </remarks>
-    public void MapVisible(bool Visible)
+    public void MapVisible(bool Visible, Waypoint? Waypoint = null)
     {
         GD.Print($"MAP VISIBLE {Visible}");
         WorldMap map = GetNodeOrNull<WorldMap>("WorldMap");
         map?.Disable(!Visible);
 
-        // Hide all landmark when the map is displayed.
-        if (Visible && Trails != null)
+        if (Visible)
         {
-            foreach (KeyValuePair<string, Gpx> trail in Trails)
+            // Hide all landmark when the map is displayed.
+            if (Trails != null)
             {
-                if (trail.Value.TrailJunctions != null)
+                foreach (KeyValuePair<string, Gpx> trail in Trails)
                 {
-                    trail.Value.Waypoints.SetAllLandmarkVisibility(false);
+                    if (trail.Value.TrailJunctions != null)
+                    {
+                        trail.Value.XWaypoints.SetAllLandmarkVisibility(false);
+                    }
+                }
+            }
+            // Put Blue the reachable waypoints.
+            Waypoints waypoints = Waypoints.Instance;
+            // try to find the level in the dictionary
+            if (Waypoint != null)
+            {
+                string key = Waypoint.TraceName + Waypoint.Name;
+                if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
+                {
+                    foreach (Waypoint waypoint in links.ConnectedWaypoints)
+                    {
+                        if (waypoint.JunctionGfx != null)
+                        {
+                            JunctionArea area = waypoint.JunctionGfx;
+                            area.SetColor(Colors.AntiqueWhite);
+                        }
+                    }
                 }
             }
         }
@@ -170,8 +195,7 @@ public partial class TemplateLevel : Node2D
         }
 
         MapVisible(false);
-        // TODO: POC: force a trace
-        gpxFile = Global.DefautlMapDirectory + "traceG.gpx";
+        gpxFile = Global.DefautlMapDirectory + gpxFile;
         SceneManager.instance?.ChangeLevel(gpxFile);
 
         _fadeAnimation.Play("fade_in");
@@ -187,15 +211,13 @@ public partial class TemplateLevel : Node2D
     ///  <param name="Coord">Coordinate of the triggered waypoint.</param>
     public void JunctionChoice(string TrackName, Vector2 Coord)
     {
-        MapPositionUpdate();
-        MapVisible(true);
-
+        Waypoint? waypoint = null;
         // if possible put a marker on the map to display the player position
         // all landmarks are not visible by default
         Gpx? trail = (Gpx?)Trails?[TrackName];
         if (trail != null)
         {
-            GpxWaypoint? waypoint = trail.Waypoints.GetWaypoint(Coord);
+            waypoint = trail.XWaypoints.GetWaypoint(Coord);
             if (waypoint is not null)
             {
                 ColorRect? landmark = waypoint.Landmark;
@@ -206,5 +228,8 @@ public partial class TemplateLevel : Node2D
                 }
             }
         }
+
+        MapPositionUpdate();
+        MapVisible(true, waypoint);
     }
 }

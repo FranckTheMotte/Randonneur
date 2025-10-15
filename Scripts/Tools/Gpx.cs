@@ -82,7 +82,7 @@ namespace XmlGpx
     }
 
     [XmlRoot(ElementName = "wpt", Namespace = "http://www.topografix.com/GPX/1/1")]
-    public class Wpt
+    public class XmlWpt
     {
         [XmlElement(ElementName = "ele", Namespace = "http://www.topografix.com/GPX/1/1")]
         public string? Ele { get; set; }
@@ -159,7 +159,7 @@ namespace XmlGpx
         public Metadata? Metadata { get; set; }
 
         [XmlElement(ElementName = "wpt", Namespace = "http://www.topografix.com/GPX/1/1")]
-        public List<Wpt>? Wpt { get; set; }
+        public List<XmlWpt>? Wpt { get; set; }
 
         [XmlElement(ElementName = "trk", Namespace = "http://www.topografix.com/GPX/1/1")]
         public Trk? Trk { get; set; }
@@ -199,7 +199,7 @@ namespace XmlGpx
     {
         [XmlArray("wpt")]
         [XmlArrayItem("wpt")]
-        public Wpt[]? Waypoints { get; set; }
+        public XmlWpt[]? Waypoints { get; set; }
     }
 
     public enum Direction
@@ -221,7 +221,7 @@ namespace XmlGpx
         public float DistanceToNext; // distance to next gps point (meter)
         public Vector2 Elevation { get; set; }
         public int TrailJunctionIndex;
-        public GpxWaypoint? Waypoint; // waypoint linked to this coordinate (can be null)
+        public Waypoint? Waypoint; // waypoint linked to this coordinate (can be null)
     }
 
     public struct GpxDestination
@@ -233,10 +233,8 @@ namespace XmlGpx
         public string Trail;
     }
 
-    public partial class GpxTrailJunction : GodotObject
+    public class Junction : Waypoint
     {
-        public string? Name;
-        public List<GpxDestination> Destinations = [];
         internal float Distance; // Distance from start (meter)
     }
 
@@ -246,9 +244,10 @@ namespace XmlGpx
         public GpxProperties[]? TrackPoints { get; set; }
 
         // waypoints from the gpx file
-        public readonly GpxWaypoints Waypoints = new();
+        public readonly GpxWaypoints XWaypoints = new();
 
-        public List<GpxTrailJunction>? TrailJunctions;
+        // Keep all junctions of a single trace
+        public List<Junction>? TrailJunctions;
 
         internal float MaxX; // length of the track (meters)
 
@@ -324,23 +323,16 @@ namespace XmlGpx
         /// <summary>
         /// Retrieve distance in meter between two gps points.
         /// </summary>
-        /// <param name="sLatitude">Latitude of start point</param>
-        /// <param name="sLongitude">Longitude of start point</param>
-        /// <param name="eLatitude">Latitude of end point</param>
-        /// <param name="eLongitude">Longitude of end point</param>
+        /// <param name="start">Latitude, Longitude of start point</param>
+        /// <param name="end">Latitude, Longitude of end point</param>
         /// <returns>Distance in meter</returns>
         /// <remarks>
         /// Use of  System.Device.Location;
         /// </remarks>
-        private static float GetDistance(
-            float sLatitude,
-            float sLongitude,
-            float eLatitude,
-            float eLongitude
-        )
+        public static float GetDistance(Vector2 start, Vector2 end)
         {
-            var sCoord = new GeoCoordinate(sLatitude, sLongitude);
-            var eCoord = new GeoCoordinate(eLatitude, eLongitude);
+            var sCoord = new GeoCoordinate(start.X, start.Y);
+            var eCoord = new GeoCoordinate(end.X, end.Y);
 
             return (float)sCoord.GetDistanceTo(eCoord);
         }
@@ -352,7 +344,7 @@ namespace XmlGpx
         /// <returns>true if the gpx file is loaded successfully, false otherwise.</returns>
         /// <remarks>
         /// The gpx file is deserialized into an XmlGpx object.
-        /// The waypoints are then loaded into the Waypoints property.
+        /// The waypoints are then loaded into the XWaypoints property.
         /// </remarks>
         public bool Load(string xmlFile)
         {
@@ -368,7 +360,7 @@ namespace XmlGpx
 
             if (gpx.Wpt != null)
             {
-                foreach (Wpt waypoint in gpx.Wpt)
+                foreach (XmlWpt waypoint in gpx.Wpt)
                 {
                     var ele = waypoint.Ele;
 
@@ -414,7 +406,7 @@ namespace XmlGpx
                     string wptName = DefaultName;
                     if (waypoint.Name is not null)
                         wptName = waypoint.Name;
-                    Waypoints.Add(coord, elevation, wptName);
+                    XWaypoints.Add(coord, elevation, wptName, Path.GetFileName(xmlFile));
 
                     // Extensions specific to randonneur
                     if (waypoint.Extensions != null)
@@ -423,11 +415,20 @@ namespace XmlGpx
                         string? type = waypoint.Extensions.Type;
                         if (type != null)
                         {
+                            Waypoints links = Waypoints.Instance;
+                            string traceFileName = Path.GetFileName(xmlFile);
+
                             switch (type)
                             {
                                 case JunctionType:
                                     TrailJunctions ??= [];
-                                    GpxTrailJunction trailJunction = new() { Name = wptName };
+                                    Junction trailJunction = new()
+                                    {
+                                        Name = wptName,
+                                        TraceName = traceFileName,
+                                        GeographicCoord = coord,
+                                        Elevation = elevation,
+                                    };
                                     Junctions? junctions = waypoint.Extensions.Junctions;
                                     if (junctions != null && junctions.Gpxfile != null)
                                     {
@@ -442,8 +443,18 @@ namespace XmlGpx
                                         }
                                         TrailJunctions.Add(trailJunction);
                                     }
+
+                                    links.Add(trailJunction);
                                     break;
                                 case PovType:
+                                    PoV aPov = new()
+                                    {
+                                        Name = wptName,
+                                        TraceName = traceFileName,
+                                        GeographicCoord = coord,
+                                        Elevation = elevation,
+                                    };
+                                    links.Add(aPov);
                                     break;
                             }
                         }
@@ -454,7 +465,7 @@ namespace XmlGpx
             // no trackpoints? it's a problem
             if (gpx.Trk == null || gpx.Trk.Trkseg == null || gpx.Trk.Trkseg.Trkpt == null)
             {
-                Waypoints.Clear();
+                XWaypoints.Clear();
                 GD.PushError($"${nameof(Load)}: no trackpoint inside ${xmlFile}.");
                 return false;
             }
@@ -496,7 +507,7 @@ namespace XmlGpx
                 }
 
                 TrackPoints[i].Coord = new Vector2(latitude, longitude);
-                TrackPoints[i].Waypoint = Waypoints.GetWaypoint(TrackPoints[i].Coord);
+                TrackPoints[i].Waypoint = XWaypoints.GetWaypoint(TrackPoints[i].Coord);
 
                 y_ele =
                     (
@@ -509,12 +520,7 @@ namespace XmlGpx
                 if (i > 0)
                 {
                     TrackPoints[i - 1].DistanceToNext =
-                        GetDistance(
-                            TrackPoints[i - 1].Coord.X,
-                            TrackPoints[i - 1].Coord.Y,
-                            latitude,
-                            longitude
-                        ) * PixelMeter;
+                        GetDistance(TrackPoints[i - 1].Coord, TrackPoints[i].Coord) * PixelMeter;
                     //GD.Print($"distance {m_trackPoints[i-1].distanceToNext} maxX {maxX}");
                     TrackPoints[i].Elevation = new Vector2(
                         TrackPoints[i - 1].Elevation.X + TrackPoints[i - 1].DistanceToNext,

@@ -161,7 +161,7 @@ public partial class MapGenerator : Node
                         $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.Waypoint}"
                     );
                     GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");*/
-                    GpxWaypoint? waypoint = gpxPoint.Waypoint;
+                    Waypoint? waypoint = gpxPoint.Waypoint;
                     if (waypoint != null)
                     {
                         Label waypointLabel = new Label();
@@ -183,10 +183,19 @@ public partial class MapGenerator : Node
                             Visible = false,
                             ZIndex = 5,
                         };
-                        trail.Waypoints.SetWaypointLandmark(waypoint.Coord, landmark);
+                        trail.XWaypoints.SetWaypointLandmark(waypoint.GeographicCoord, landmark);
                         area.AddChild(landmark);
                         area.AddChild(waypointLabel);
                         area.AddChild(junctionArea);
+
+                        // Complete the waypoint with graphics
+                        Waypoints waypoints = Waypoints.Instance;
+                        string key = waypoint.TraceName + waypoint.Name;
+                        if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
+                        {
+                            Waypoint connectedWaypoint = links.Waypoint;
+                            connectedWaypoint.JunctionGfx = junctionArea;
+                        }
                     }
                     i++;
                 }

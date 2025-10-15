@@ -25,7 +25,7 @@ namespace Randonneur.Scripts
         /// <value>
         /// Field <c>_startpoint</c> stores a junction included in gpx file which defines the startpoint.
         /// </value>
-        private GpxTrailJunction? _startpoint;
+        private Junction? _startpoint;
 
         /// <summary>
         /// Create the level by loading the gpx file.
@@ -53,8 +53,8 @@ namespace Randonneur.Scripts
             // TODO define start point in gpx file
             _startpoint = null;
 
-            // get unique connected trace to this gpx file
-            List<GpxTrailJunction>? junctions = land.CurrentTrack?.TrailJunctions;
+            // get unique connected traces to this gpx file
+            List<Junction>? junctions = land.CurrentTrack?.TrailJunctions;
             if (junctions != null)
             {
                 foreach (var junction in junctions)

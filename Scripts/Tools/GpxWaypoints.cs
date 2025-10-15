@@ -2,35 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Godot;
+using Randonneur;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
-
-/**
-  Describe a gps waypoint from a gpx file.
-*/
-public class GpxWaypoint
-{
-    // X as latitude, Y as longitude
-    public Vector2 Coord { get; set; }
-
-    // elevation in meter
-    public float Elevation { get; set; }
-
-    // Graphical node of the waypoint
-    public ColorRect? Landmark;
-
-    // litteral name (optional)
-    public string Name = "";
-}
 
 /**
   Describe a list of gps waypoints.
 */
 public class GpxWaypoints
 {
-    private readonly List<GpxWaypoint> _gpxWayPoints = [];
+    private readonly List<Waypoint> _gpxWayPoints = [];
 
-    private GpxWaypoint? noWaypoint = null;
+    private Waypoint? noWaypoint = null;
 
     /**
         Retrieve waypoint with a latitude/longitude coordinate.
@@ -40,11 +23,11 @@ public class GpxWaypoints
 
         @return waypoint if found, null otherwise.
     */
-    public GpxWaypoint? GetWaypoint(Vector2 Coord)
+    public Waypoint? GetWaypoint(Vector2 Coord)
     {
-        foreach (GpxWaypoint waypoint in _gpxWayPoints)
+        foreach (Waypoint waypoint in _gpxWayPoints)
         {
-            if (waypoint.Coord == Coord)
+            if (waypoint.GeographicCoord == Coord)
             {
                 return waypoint;
             }
@@ -53,20 +36,22 @@ public class GpxWaypoints
         return null;
     }
 
-    /**
-        Store a new waypoint.
-
-        @param coord     latitude and longitude
-        @param elevation elevation in meter
-        @param name      litteral string
-    */
-    internal void Add(Vector2 Coord, float Elevation, string Name)
+    /// <summary>
+    /// Store a new waypoint.
+    /// </summary>
+    /// <param name="coord">latitude and longitude</param>
+    /// <param name="elevation">elevation in meter</param>
+    /// <param name="name">litteral string</param>
+    /// <param name="traceName">name of the trace (gpx file)</param>
+    internal void Add(Vector2 Coord, float Elevation, string Name, string TraceName)
     {
-        GpxWaypoint waypoint = new();
-
-        waypoint.Coord = Coord;
-        waypoint.Elevation = Elevation;
-        waypoint.Name = Name;
+        Waypoint waypoint = new()
+        {
+            GeographicCoord = Coord,
+            Elevation = Elevation,
+            Name = Name,
+            TraceName = TraceName,
+        };
 
         _gpxWayPoints.Add(waypoint);
     }
@@ -86,9 +71,9 @@ public class GpxWaypoints
     /// <param name="Landmark">ColorRect of the landmark.</param>
     internal void SetWaypointLandmark(Vector2 Coord, ColorRect Landmark)
     {
-        foreach (GpxWaypoint waypoint in _gpxWayPoints)
+        foreach (Waypoint waypoint in _gpxWayPoints)
         {
-            if (waypoint.Coord == Coord)
+            if (waypoint.GeographicCoord == Coord)
             {
                 waypoint.Landmark = Landmark;
             }
@@ -101,7 +86,7 @@ public class GpxWaypoints
     /// <param name="value">true to show all landmarks, false to hide them.</param>
     internal void SetAllLandmarkVisibility(bool value)
     {
-        foreach (GpxWaypoint waypoint in _gpxWayPoints)
+        foreach (Waypoint waypoint in _gpxWayPoints)
         {
             if (waypoint.Landmark != null)
                 waypoint.Landmark.Visible = value;
