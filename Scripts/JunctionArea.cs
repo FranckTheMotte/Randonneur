@@ -1,8 +1,13 @@
 using Godot;
 
 /**
-  Class to handle behavior of the junction Area2D.
-*/
+ * <summary>
+ * Class to handle behavior of the junction Area2D.
+ * </summary>
+ * <remarks>
+ * This class is used to create a visual representation of a junction in the map.
+ * </remarks>
+ */
 public partial class JunctionArea : Area2D
 {
     public const string JunctionArea2DFilterName = "junction";
@@ -65,6 +70,19 @@ public partial class JunctionArea : Area2D
         // Trigger actions when mouse go over/out a trail
         Connect("TrailSelection", new Callable(this, nameof(OnTrailSelection)));
         InputPickable = true;
+    }
+
+    /// <summary>
+    /// Set the color of the junction square.
+    /// </summary>
+    /// <param name="color">The color to set.</param>
+    public void SetColor(Color color)
+    {
+        // Retrieve the rect
+        ColorRect? junctionRect = GetNodeOrNull<ColorRect>(SquareName);
+        if (junctionRect == null)
+            return;
+        junctionRect.Color = color;
     }
 
     /**
