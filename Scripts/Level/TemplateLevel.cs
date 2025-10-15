@@ -121,7 +121,7 @@ public partial class TemplateLevel : Node2D
     {
         GD.Print($"MAP VISIBLE {Visible}");
         WorldMap map = GetNodeOrNull<WorldMap>("WorldMap");
-        map?.Disable(!Visible);
+        map?.CollisionStatus(Visible);
 
         if (Visible)
         {

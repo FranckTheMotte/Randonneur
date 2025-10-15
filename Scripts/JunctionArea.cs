@@ -110,12 +110,12 @@ public partial class JunctionArea : Area2D
         {
             junctionRect.Color = SelectedColor;
             // Selection of a trail means that the junction is now the destination
-            worldMap.m_selectedTrail = (string)area.GetMeta("TraceName");
+            worldMap.SelectedTrail = (string)area.GetMeta("TraceName");
         }
         else
         {
             junctionRect.Color = UnselectedColor;
-            worldMap.m_selectedTrail = null;
+            worldMap.SelectedTrail = null;
         }
     }
 }

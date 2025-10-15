@@ -38,12 +38,12 @@ public partial class MapArea : Area2D
         if (selected)
         {
             setColorTrail(Colors.Red);
-            worldMap.m_selectedTrail = (string)area.GetMeta("TraceName");
+            worldMap.SelectedTrail = (string)area.GetMeta("TraceName");
         }
         else
         {
             setColorTrail(Colors.Orange);
-            worldMap.m_selectedTrail = null;
+            worldMap.SelectedTrail = null;
         }
     }
 

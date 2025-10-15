@@ -3,24 +3,34 @@ using Godot;
 
 public partial class WorldMap : Control
 {
-    // Godot path to MapRect (contains trail Line2D and CollisionShape2D)
+    /// <summary>
+    /// Godot path to MapRect (contains trail Line2D and CollisionShape2D)
+    /// </summary>
     private const string MapRectPath = "BgMargin/BgNinePathRect/MapMargin/MapRect";
 
-    // flag storing that middle mouse button is currently pressed
+    /// <summary>
+    /// Storing that middle mouse button is currently pressed.
+    /// </summary>
     private bool _middleButton = false;
 
-    // Container which store the map
+    /// <summary>
+    /// Container which store the map.
+    /// </summary>
     private MarginContainer? _margin;
 
-    // local position of mouse cursor when clicking on middle button
+    /// <summary>
+    /// local position of mouse cursor when clicking on middle button.
+    /// </summary>
     private Vector2 _dragPosition;
 
-    // name of the current trail (node name of the Area2D)
-    public string? m_selectedTrail = null;
+    /// <summary>
+    /// name of the current trail (node name of the Area2D).
+    /// </summary>
+    public string? SelectedTrail = null;
 
-    // Wolrd map Singleton
+    // World map Singleton
+    private static readonly Lazy<WorldMap> lazy = new(() => new WorldMap());
 
-    private static readonly Lazy<WorldMap> lazy = new Lazy<WorldMap>(() => new WorldMap());
     public static WorldMap Instance
     {
         get { return lazy.Value; }
@@ -46,18 +56,20 @@ public partial class WorldMap : Control
             if (
                 mouseEvent.ButtonIndex == MouseButton.Left
                 && mouseEvent.Pressed
-                && Instance.m_selectedTrail != null
+                && Instance.SelectedTrail != null
             )
             {
-                GD.Print($"WorldMap Button pressed {Instance.m_selectedTrail}");
+                // Left mouse button to select a junction destination
+                GD.Print($"WorldMap Button pressed {Instance.SelectedTrail}");
                 Player.Instance.EmitSignal(
                     Player.SignalName.TrailJunctionChoice,
-                    Instance.m_selectedTrail
+                    Instance.SelectedTrail
                 );
-                Instance.m_selectedTrail = null;
+                Instance.SelectedTrail = null;
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)
             {
+                // Middle mouse button to move the map window
                 GD.Print($"Middle {mouseEvent.Pressed}");
                 _middleButton = false;
                 if (mouseEvent.Pressed)
@@ -67,7 +79,6 @@ public partial class WorldMap : Control
                     {
                         _middleButton = true;
                         _dragPosition = new Vector2(mousePosition.X, mousePosition.Y);
-                        GD.Print($"decalage X {_dragPosition.X} Y {_dragPosition.Y}");
                     }
                 }
             }
@@ -82,36 +93,38 @@ public partial class WorldMap : Control
     }
 
     /**
-        Hide and disable collision detection for the map
-
-        @param value true to disable, false to enable
-    */
-    public void Disable(bool value)
+     * <summary>
+     * Hide and disable collision detection for the map
+     * </summary>
+     * <param name="value">true to disable, false to enable</param>
+     */
+    public void CollisionStatus(bool value)
     {
-        // Hide or show
-        Visible = !value;
+        // Hide or show the map
+        Visible = value;
 
-        // enable or disable all trails collisions shapes
+        // Enable or disable all trails collisions shapes
         ColorRect mapRect = GetNode<ColorRect>(MapRectPath);
         foreach (var child in mapRect.GetChildren())
         {
             foreach (var subchild in child.GetChildren())
             {
-                // line collision shapes
+                // Line collision shapes
                 if (subchild.Name.ToString().StartsWith(MapGenerator.TrailCollisionFilterName))
                 {
+                    // Disable collision detection for line collision shapes
                     CollisionShape2D collision = (CollisionShape2D)subchild;
-                    // put it as deferred, because it can be called during collision signal
-                    collision.SetDeferred("disabled", value);
+                    collision.SetDeferred("disabled", !value);
                 }
-                // junction collision shapes
+                // Junction collision shapes
                 else if (subchild.Name.ToString().StartsWith(JunctionArea.JunctionArea2DFilterName))
                 {
+                    // Disable collision detection for junction collision shapes
                     CollisionShape2D collision = subchild.GetNodeOrNull<CollisionShape2D>(
                         JunctionArea.JunctionCollisionFilterName
                     );
-                    collision?.SetDeferred("disabled", value);
-                    GD.Print($"collision Name {collision?.Name} {value}");
+                    collision?.SetDeferred("disabled", !value);
+                    GD.Print($"collision Name {collision?.Name} {!value}");
                 }
             }
         }
