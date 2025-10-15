@@ -4,6 +4,22 @@
     <name>traceG</name>
     <desc>G</desc>
   </metadata>
+  <wpt lat="42.765510" lon="1.482871">
+    <ele>730.7</ele>
+    <name>Col de l'embarqué</name>
+    <cmt></cmt>
+    <desc></desc>
+    <sym>Where</sym>
+    <type>Roadbook</type>
+    <extensions>
+        <type>junction</type>
+        <junctions>
+            <gpxfile>traceB.gpx</gpxfile>
+            <gpxfile>traceD.gpx</gpxfile>
+        </junctions>
+        <start>true</start>
+    </extensions>
+  </wpt>
   <trk>
     <trkseg>
       <trkpt lat="42.765510" lon="1.482871">

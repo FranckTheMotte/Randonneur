@@ -38,11 +38,27 @@
     <extensions>
         <type>junction</type>
         <junctions>
-            <gpxfile>traceG.gpx</gpxfile>
-            <gpxfile>traceD.gpx</gpxfile>
+            <gpxfile>traceC.gpx</gpxfile>
+            <gpxfile>traceF.gpx</gpxfile>
         </junctions>
         <start>true</start>
     </extensions>
+</wpt>
+<wpt lat="42.765508" lon="1.482857">
+<ele>730.7</ele>
+<name>Col de l'embarqué</name>
+<cmt></cmt>
+<desc></desc>
+<sym>Where</sym>
+<type>Roadbook</type>
+<extensions>
+    <type>junction</type>
+    <junctions>
+        <gpxfile>traceG.gpx</gpxfile>
+        <gpxfile>traceD.gpx</gpxfile>
+    </junctions>
+    <start>true</start>
+</extensions>
 </wpt>
 <trk>
     <name>traceB_GhLLH</name>

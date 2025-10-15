@@ -4,6 +4,20 @@
     <name>traceE</name>
     <desc>E</desc>
   </metadata>
+  <wpt lat="42.766390" lon="1.478470">
+    <ele>737</ele>
+    <name>Dave the diver</name>
+    <cmt></cmt>
+    <desc></desc>
+    <sym>Where</sym>
+    <type>Roadbook</type>
+    <extensions>
+        <type>junction</type>
+        <junctions>
+        </junctions>
+        <start>false</start>
+    </extensions>
+  </wpt>
   <trk>
     <trkseg>
       <trkpt lat="42.766349" lon="1.480166">
