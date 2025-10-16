@@ -47,9 +47,15 @@ namespace Randonneur
         public ColorRect? Landmark;
     }
 
+    /// <summary>
+    /// Store the connected waypoints of a waypoint.
+    /// </summary>
     internal class WaypointsLinks
     {
         public required Waypoint Waypoint;
+        /// <summary>
+        /// Connected waypoints, can be empty.
+        /// </summary>
         public List<Waypoint> ConnectedWaypoints = [];
     }
 
@@ -73,20 +79,26 @@ namespace Randonneur
         /// </summary>
         public List<Waypoint>? ReachableWaypoints { get; set; }
 
+        /// <summary>
+        /// Singleton.
+        /// </summary>
         private static Waypoints? _instance;
 
         public static Waypoints Instance
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new Waypoints();
-                }
+                _instance ??= new Waypoints();
                 return _instance;
             }
         }
 
+        /// <summary>
+        /// Add a new waypoint to the list of connections.
+        /// If the waypoint already exists, do nothing.
+        /// Otherwise, add the new waypoint to the list of connections and update the existing links.
+        /// </summary>
+        /// <param name="newWaypoint">The new waypoint to add.</param>
         internal void Add(Waypoint newWaypoint)
         {
             string key = newWaypoint.TraceName + newWaypoint.Name;
