@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Godot;
 using Randonneur;
 using XmlGpx;
@@ -18,6 +19,9 @@ public partial class Sol : StaticBody2D
     [Export]
     public string? GpxFile;
 
+    // Godot group of all wyapoints
+    private const string _WaypointsGroup = "Waypoints";
+
     public override void _Draw()
     {
         foreach (Vector2 trailJunction in _trailJunctions)
@@ -27,6 +31,10 @@ public partial class Sol : StaticBody2D
         base._Draw();
     }
 
+    /// <summary>
+    /// Generate a solid ground from a gpx file.
+    /// <param name="gpxFile">Full godot path to the gpx file.</param>
+    /// </summary>
     public void generateGround(string gpxFile)
     {
         // Sanity checks
@@ -81,10 +89,6 @@ public partial class Sol : StaticBody2D
                         Position = ground[i],
                         Name = Path.GetFileName(gpxFile),
                     };
-                    junctionArea.BodyEntered += delegate
-                    {
-                        JunctionHandler(Path.GetFileName(gpxFile), waypoint.GeographicCoord);
-                    };
                     // Use the junction collision layer
                     junctionArea.SetCollisionLayerValue(1, false);
                     junctionArea.SetCollisionLayerValue(5, true);
@@ -92,6 +96,15 @@ public partial class Sol : StaticBody2D
                     junctionArea.SetCollisionMaskValue(5, true);
                     RectangleShape2D rectangle = new() { Size = new Vector2(20, 20) };
                     CollisionShape2D junctionCollision = new() { Shape = rectangle };
+                    junctionCollision.AddToGroup(_WaypointsGroup);
+                    junctionArea.BodyEntered += delegate
+                    {
+                        JunctionHandler(
+                            junctionCollision,
+                            Path.GetFileName(gpxFile),
+                            waypoint.GeographicCoord
+                        );
+                    };
                     junctionArea.AddChild(junctionCollision);
                     AddChild(junctionArea);
                 }
@@ -124,18 +137,39 @@ public partial class Sol : StaticBody2D
         Print($"Ground creation Time: {watch.ElapsedMilliseconds} ms");
     }
 
-    /**
-      "BodyEntered" signal Handler.
-
-      @param TrackName Contains the name of the gpx file.
-      @param Coord     Coordinate of the triggered waypoint.
-    */
-    private void JunctionHandler(string TrackName, Vector2 Coord)
+    /// <summary>
+    /// "BodyEntered" signal Handler. Triggered when player enter in a level junction.
+    /// </summary>
+    /// <param name="JunctionCollision">Collision shape of the triggered junction.</param>
+    /// <param name="TrackName">Contains the name of the gpx file.</param>
+    /// <param name="Coord">Geographical coord of the waypoint (key to retrieve waypoint).</param>
+    private void JunctionHandler(
+        CollisionShape2D JunctionCollision,
+        string TrackName,
+        Vector2 Coord
+    )
     {
+        /* Reenable collisions of Waypoints group.
+           Maybe there is a better method but as the collision can occurs several
+           times when player go accross the shape, it is:
+           - 1) disable when triggered
+           - 2) reenable when next trigger occurs
+        */
+        foreach (
+            CollisionShape2D collision in GetTree()
+                .GetNodesInGroup(_WaypointsGroup)
+                .Cast<CollisionShape2D>()
+        )
+        {
+            collision.SetDeferred("disabled", false);
+        }
+
         Waypoint? waypoint = CurrentTrack?.XWaypoints.GetWaypoint(Coord);
         if (waypoint is not null)
         {
             Player?.DisplayJunction(TrackName, Coord);
+            // avoid useless collisions.
+            JunctionCollision.SetDeferred("disabled", true);
         }
     }
 }
