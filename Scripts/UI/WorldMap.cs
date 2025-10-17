@@ -117,11 +117,13 @@ public partial class WorldMap : Control
                     collision.SetDeferred("disabled", !value);
                 }
                 // Junction collision shapes
-                else if (subchild.Name.ToString().StartsWith(JunctionArea.JunctionArea2DFilterName))
+                else if (
+                    subchild.Name.ToString().StartsWith(MapJunctionArea.JunctionAreaFilterName)
+                )
                 {
                     // Disable collision detection for junction collision shapes
                     CollisionShape2D collision = subchild.GetNodeOrNull<CollisionShape2D>(
-                        JunctionArea.JunctionCollisionFilterName
+                        MapJunctionArea.JunctionCollisionFilterName
                     );
                     collision?.SetDeferred("disabled", !value);
                     GD.Print($"collision Name {collision?.Name} {!value}");

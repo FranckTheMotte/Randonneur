@@ -174,7 +174,7 @@ public partial class MapGenerator : Node
                         // TEST: just to check where waypoints are located on map
                         // This marker can only be add now because the
                         // lat/lon to screen coord conversion is done here.
-                        JunctionArea junctionArea = new(trace[i], waypoint.Name, traceFileName);
+                        MapJunctionArea junctionArea = new(trace[i], waypoint.Name, traceFileName);
                         // Put a black rect for the player position
                         ColorRect landmark = new()
                         {
@@ -194,7 +194,7 @@ public partial class MapGenerator : Node
                         if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
                         {
                             Waypoint connectedWaypoint = links.Waypoint;
-                            connectedWaypoint.JunctionGfx = junctionArea;
+                            connectedWaypoint.MapJunctionGfx = junctionArea;
                         }
                     }
                     i++;

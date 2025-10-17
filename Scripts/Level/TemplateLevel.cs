@@ -146,9 +146,9 @@ public partial class TemplateLevel : Node2D
                 {
                     foreach (Waypoint waypoint in links.ConnectedWaypoints)
                     {
-                        if (waypoint.JunctionGfx != null)
+                        if (waypoint.MapJunctionGfx != null)
                         {
-                            JunctionArea area = waypoint.JunctionGfx;
+                            MapJunctionArea area = waypoint.MapJunctionGfx;
                             area.SetColor(Colors.AntiqueWhite);
                         }
                     }

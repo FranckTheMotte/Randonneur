@@ -8,9 +8,9 @@ using Godot;
  * This class is used to create a visual representation of a junction in the map.
  * </remarks>
  */
-public partial class JunctionArea : Area2D
+public partial class MapJunctionArea : Area2D
 {
-    public const string JunctionArea2DFilterName = "junction";
+    public const string JunctionAreaFilterName = "junction";
     public const string JunctionCollisionFilterName = "junction";
     private const string SquareName = "Square2D";
     private const int SquareSize = 16;
@@ -30,7 +30,7 @@ public partial class JunctionArea : Area2D
     /// <param name="position">Middle position of the junction.</param>
     /// <param name="name">Literal name of junction.</param>
     /// <param name="traceName">Gpx file name which store this junction.</param>
-    public JunctionArea(Vector2 position, string name, string traceName)
+    public MapJunctionArea(Vector2 position, string name, string traceName)
     {
         // -- Setup the junction square
         ColorRect junctionRect = new()
@@ -43,7 +43,7 @@ public partial class JunctionArea : Area2D
         AddChild(junctionRect);
 
         // -- Setup area2D
-        Name = JunctionArea2DFilterName + " " + name;
+        Name = JunctionAreaFilterName + " " + name;
         // trace name stored in description as it will be kept raw
         SetMeta("TraceName", traceName);
         Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));

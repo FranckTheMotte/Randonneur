@@ -39,7 +39,7 @@ namespace Randonneur
         /// <summary>
         /// Gfx of junction (TODO unlock from junction type).
         /// </summary>
-        public JunctionArea? JunctionGfx;
+        public MapJunctionArea? MapJunctionGfx;
 
         /// <summary>
         /// Gfx of player marker.
