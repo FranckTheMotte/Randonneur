@@ -4,6 +4,36 @@
     <name>traceF</name>
     <desc>F</desc>
   </metadata>
+  <wpt lat="42.766763" lon="1.483046">
+      <ele>729.3</ele>
+      <name>Col du sanglier</name>
+      <cmt></cmt>
+      <desc></desc>
+      <sym>Where</sym>
+      <type>Roadbook</type>
+      <extensions>
+          <type>junction</type>
+          <junctions>
+              <gpxfile>traceB.gpx</gpxfile>
+              <gpxfile>traceC.gpx</gpxfile>
+          </junctions>
+          <start>true</start>
+      </extensions>
+  </wpt>
+  <wpt lat="42.767410" lon="1.487030">
+      <ele>731.2</ele>
+      <name>Prat d'Albi</name>
+      <cmt></cmt>
+      <desc></desc>
+      <sym>Where</sym>
+      <type>Roadbook</type>
+      <extensions>
+          <type>junction</type>
+          <junctions>
+          </junctions>
+          <start>true</start>
+      </extensions>
+  </wpt>
   <trk>
     <trkseg>
       <trkpt lat="42.766763" lon="1.483046">

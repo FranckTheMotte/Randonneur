@@ -4,6 +4,38 @@
     <name>traceC</name>
     <desc>C</desc>
   </metadata>
+  <wpt lat="42.766370" lon="1.480150">
+    <ele>733.5</ele>
+    <name>Port du C++</name>
+    <cmt></cmt>
+    <desc></desc>
+    <sym>Where</sym>
+    <type>Roadbook</type>
+    <extensions>
+        <type>junction</type>
+        <junctions>
+            <gpxfile>traceD.gpx</gpxfile>
+            <gpxfile>traceE.gpx</gpxfile>
+        </junctions>
+        <start>true</start>
+    </extensions>
+  </wpt>
+  <wpt lat="42.766775" lon="1.483046">
+      <ele>729.4</ele>
+      <name>Col du sanglier</name>
+      <cmt></cmt>
+      <desc></desc>
+      <sym>Where</sym>
+      <type>Roadbook</type>
+      <extensions>
+          <type>junction</type>
+          <junctions>
+              <gpxfile>traceB.gpx</gpxfile>
+              <gpxfile>traceF.gpx</gpxfile>
+          </junctions>
+          <start>true</start>
+      </extensions>
+  </wpt>
   <trk>
     <trkseg>
       <trkpt lat="42.766775" lon="1.483046">

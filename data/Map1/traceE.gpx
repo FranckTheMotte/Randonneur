@@ -6,7 +6,21 @@
   </metadata>
   <wpt lat="42.766390" lon="1.478470">
     <ele>737</ele>
-    <name>Dave the diver</name>
+    <name>Mantet</name>
+    <cmt></cmt>
+    <desc></desc>
+    <sym>Where</sym>
+    <type>Roadbook</type>
+    <extensions>
+        <type>junction</type>
+        <junctions>
+        </junctions>
+        <start>false</start>
+    </extensions>
+  </wpt>
+  <wpt lat="42.766349" lon="1.480166">
+    <ele>733.5</ele>
+    <name>Port du C++</name>
     <cmt></cmt>
     <desc></desc>
     <sym>Where</sym>

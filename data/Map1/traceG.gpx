@@ -20,6 +20,20 @@
         <start>true</start>
     </extensions>
   </wpt>
+  <wpt lat="42.766320" lon="1.485230">
+    <ele>727</ele>
+    <name>Lac du Salagou</name>
+    <cmt></cmt>
+    <desc></desc>
+    <sym>Where</sym>
+    <type>Roadbook</type>
+    <extensions>
+        <type>junction</type>
+        <junctions>
+        </junctions>
+        <start>true</start>
+    </extensions>
+  </wpt>
   <trk>
     <trkseg>
       <trkpt lat="42.765510" lon="1.482871">
