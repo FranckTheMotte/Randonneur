@@ -45,11 +45,10 @@ public class GpxWaypoints
     /// <param name="traceName">name of the trace (gpx file)</param>
     internal void Add(Vector2 Coord, float Elevation, string Name, string TraceName)
     {
-        Waypoint waypoint = new()
+        Waypoint waypoint = new(Name)
         {
             GeographicCoord = Coord,
             Elevation = Elevation,
-            Name = Name,
             TraceName = TraceName,
         };
 
@@ -65,22 +64,6 @@ public class GpxWaypoints
     }
 
     /// <summary>
-    /// Set the landmark of a waypoint.
-    /// </summary>
-    /// <param name="Coord">Coordinate of the waypoint.</param>
-    /// <param name="Landmark">ColorRect of the landmark.</param>
-    internal void SetWaypointLandmark(Vector2 Coord, ColorRect Landmark)
-    {
-        foreach (Waypoint waypoint in _gpxWayPoints)
-        {
-            if (waypoint.GeographicCoord == Coord)
-            {
-                waypoint.Landmark = Landmark;
-            }
-        }
-    }
-
-    /// <summary>
     /// Set the visibility of all waypoints' landmarks.
     /// </summary>
     /// <param name="value">true to show all landmarks, false to hide them.</param>
@@ -88,8 +71,7 @@ public class GpxWaypoints
     {
         foreach (Waypoint waypoint in _gpxWayPoints)
         {
-            if (waypoint.Landmark != null)
-                waypoint.Landmark.Visible = value;
+            waypoint.FocusLandmark(false);
         }
     }
 }

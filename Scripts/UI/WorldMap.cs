@@ -29,16 +29,26 @@ public partial class WorldMap : Control
     public string? SelectedTrail = null;
 
     // World map Singleton
-    private static readonly Lazy<WorldMap> lazy = new(() => new WorldMap());
-
-    public static WorldMap Instance
+    private static readonly Lazy<WorldMap> _lazyInstance = new(() =>
     {
-        get { return lazy.Value; }
-    }
+        // Charge la scène .tscn
+        GD.Print("LAZY WORLD MAP");
+        var scene = GD.Load<PackedScene>("res://Scenes/world_map.tscn");
+        var instance = scene.Instantiate<WorldMap>();
+        return instance;
+    });
+
+    public static WorldMap Instance => _lazyInstance.Value;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        Name = "worldMapControl";
+        GD.Print("Enfants de TOTO:");
+        foreach (Node child in GetChildren())
+        {
+            GD.Print($"  TOTO - {child.Name} ({child.GetType().Name})");
+        }
         _margin = GetNode<MarginContainer>("BgMargin");
     }
 

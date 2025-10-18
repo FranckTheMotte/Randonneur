@@ -18,19 +18,37 @@ public partial class MapJunctionArea : Area2D
     private static readonly Color UnselectedColor = Colors.CadetBlue;
     private static readonly Color SelectedColor = Colors.MediumOrchid;
 
+    /// <summary>
+    /// Gfx of player marker.
+    /// </summary>
+    public ColorRect? Landmark;
+
     [Signal]
     public delegate void TrailSelectionEventHandler();
 
     // Display of a junction
     private readonly ColorRect _junctionRect = new();
 
+    public MapJunctionArea()
+    {
+        // player marker is initialize without position and invisible.
+        Landmark = new()
+        {
+            Size = new Vector2(10, 10),
+            Visible = false,
+            ZIndex = 5,
+        };
+
+        AddChild(Landmark);
+    }
+
     /// <summary>
-    /// Constructor to create a JunctionArea
+    /// Setup the JunctionArea.
     /// </summary>
     /// <param name="position">Middle position of the junction.</param>
     /// <param name="name">Literal name of junction.</param>
     /// <param name="traceName">Gpx file name which store this junction.</param>
-    public MapJunctionArea(Vector2 position, string name, string traceName)
+    public void Setup(Vector2 position, string name, string traceName)
     {
         // -- Setup the junction square
         ColorRect junctionRect = new()

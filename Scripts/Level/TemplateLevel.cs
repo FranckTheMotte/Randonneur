@@ -39,13 +39,23 @@ public partial class TemplateLevel : Node2D
         }
 
         /* Create the map */
-        Control worldMapSign = GetNode<Control>("WorldMap");
+        //WorldMap worldMap = WorldMap.Instance;
+        Viewport root = GetTree().Root;
+        GD.Print("Enfants de TUTU:");
+        foreach (Node child in root.GetChildren())
+        {
+            GD.Print($"  TUTU - {child.Name} ({child.GetType().Name})");
+        }
+        GD.Print($"WorldMap.Instance.Name {WorldMap.Instance.Name}");
+        WorldMap worldMap = (WorldMap)root.FindChild("worldMapControl");
+/*        if (FindChild(worldMap.Name) == null)
+            AddChild(worldMap);*/
 
         /* Set world map size */
-        MarginContainer bgMargin = worldMapSign.GetNode<MarginContainer>("BgMargin");
+        MarginContainer bgMargin = worldMap.GetNode<MarginContainer>("BgMargin");
         MarginContainer mapMargin = bgMargin.GetNode<MarginContainer>("BgNinePathRect/MapMargin");
         ColorRect mapRect = mapMargin.GetNode<ColorRect>("MapRect");
-        worldMapSign.Position = new Vector2(50, 500);
+        worldMap.Position = new Vector2(50, 500);
 
         /* TODO: compute with margins */
         float mapWidth =
@@ -120,7 +130,7 @@ public partial class TemplateLevel : Node2D
     public void MapVisible(bool Visible, Waypoint? Waypoint = null)
     {
         GD.Print($"MAP VISIBLE {Visible}");
-        WorldMap map = GetNodeOrNull<WorldMap>("WorldMap");
+        WorldMap map = WorldMap.Instance;
         map?.CollisionStatus(Visible);
 
         if (Visible)
@@ -141,7 +151,7 @@ public partial class TemplateLevel : Node2D
             // try to find the level in the dictionary
             if (Waypoint != null)
             {
-                string key = Waypoint.TraceName + Waypoint.Name;
+                string key = Waypoint.Name;
                 if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
                 {
                     foreach (Waypoint waypoint in links.ConnectedWaypoints)
@@ -169,7 +179,7 @@ public partial class TemplateLevel : Node2D
             return;
         }
 
-        Control map = GetNode<Control>("WorldMap");
+        WorldMap map = WorldMap.Instance;
         map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 100);
     }
 
@@ -220,12 +230,7 @@ public partial class TemplateLevel : Node2D
             waypoint = trail.XWaypoints.GetWaypoint(Coord);
             if (waypoint is not null)
             {
-                ColorRect? landmark = waypoint.Landmark;
-                if (landmark is not null)
-                {
-                    landmark.Color = Colors.Black;
-                    landmark.Visible = true;
-                }
+                waypoint.FocusLandmark(true);
             }
         }
 
