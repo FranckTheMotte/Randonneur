@@ -39,12 +39,23 @@ namespace Randonneur
         /// <summary>
         /// Gfx of junction (TODO unlock from junction type).
         /// </summary>
-        public MapJunctionArea? MapJunctionGfx;
+        public MapJunctionArea MapJunctionGfx = new();
 
-        /// <summary>
-        /// Gfx of player marker.
-        /// </summary>
-        public ColorRect? Landmark;
+        public readonly Label Label = new();
+
+        public Waypoint(string Name)
+        {
+            // Configure a label without X,Y position
+            this.Name = Name;
+            Label.Name = Label.Text = Name;
+            Label.ZIndex = 2;
+            Label.LabelSettings = new LabelSettings { FontColor = Colors.Black };
+        }
+
+        internal void FocusLandmark(bool value)
+        {
+            //TODO
+        }
     }
 
     /// <summary>
@@ -53,6 +64,7 @@ namespace Randonneur
     internal class WaypointsLinks
     {
         public required Waypoint Waypoint;
+
         /// <summary>
         /// Connected waypoints, can be empty.
         /// </summary>
@@ -101,7 +113,7 @@ namespace Randonneur
         /// <param name="newWaypoint">The new waypoint to add.</param>
         internal void Add(Waypoint newWaypoint)
         {
-            string key = newWaypoint.TraceName + newWaypoint.Name;
+            string key = newWaypoint.Name;
 
             // try to find the junction in the dictionary
             if (Links.ContainsKey(key))
@@ -109,9 +121,10 @@ namespace Randonneur
                 // nothing to do
                 return;
             }
-            WaypointsLinks newWaypointsLinks = new() { Waypoint = newWaypoint };
 
             // Update the existing links
+            WaypointsLinks newWaypointsLinks = new() { Waypoint = newWaypoint };
+
             foreach (KeyValuePair<string, WaypointsLinks> link in Links)
             {
                 WaypointsLinks currentLink = link.Value;

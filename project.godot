@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+WorldMap="res://Scenes/world_map.tscn"
 SceneManager="*res://Scripts/Main/SceneManager.cs"
 GameMaster="*res://Scripts/Main/GameMaster.cs"
 
