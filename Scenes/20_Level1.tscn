@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://be11snw13ct0b"]
+[gd_scene load_steps=9 format=3 uid="uid://be11snw13ct0b"]
 
 [ext_resource type="Script" uid="uid://b24uweoh1uvry" path="res://Scripts/Level/TemplateLevel.cs" id="1_3wch0"]
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
@@ -8,7 +8,6 @@
 [ext_resource type="Script" uid="uid://dkmqx0q07t5vd" path="res://Scripts/Actions.cs" id="6_8bbqd"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
-[ext_resource type="PackedScene" uid="uid://b4tnu5fp0rn6w" path="res://Scenes/world_map.tscn" id="9_upnc5"]
 
 [node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d", "player")]
 y_sort_enabled = true
@@ -83,10 +82,6 @@ offset_top = -2140.0
 offset_right = -4030.0
 offset_bottom = -2140.0
 scale = Vector2(10, 10)
-
-[node name="WorldMap" parent="." instance=ExtResource("9_upnc5")]
-visible = false
-z_index = 3
 
 [node name="SceneTransitionAnimation" parent="." instance=ExtResource("8_bsps8")]
 position = Vector2(-31.999998, -1380)

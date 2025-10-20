@@ -8,6 +8,11 @@ public partial class MapArea : Area2D
     [Signal]
     public delegate void TrailSelectionEventHandler();
 
+    /// <summary>
+    /// Reference to the world map.
+    /// </summary>
+    internal WorldMap? Map;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -15,6 +20,14 @@ public partial class MapArea : Area2D
         // TODO : it's disabled but keep it.
         // Connect("TrailSelection", new Callable(this, nameof(_on_trail_selection)));
         InputPickable = true;
+
+        Viewport root = GetTree().Root;
+        Map = root.GetNode<WorldMap>("worldMapControl");
+        if (Map is null)
+        {
+            GD.PushError($"${nameof(_Ready)}: fail to find world map");
+            return;
+        }
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -29,7 +42,11 @@ public partial class MapArea : Area2D
     */
     private void _on_trail_selection(Area2D area, bool selected)
     {
-        WorldMap worldMap = WorldMap.Instance;
+        if (Map == null)
+        {
+            GD.PushError("Map is not available.");
+            return;
+        }
 
         // Retrieve the line
         _trailLine = area.GetNode<Line2D>(Global.TrailLineName);
@@ -38,12 +55,12 @@ public partial class MapArea : Area2D
         if (selected)
         {
             setColorTrail(Colors.Red);
-            worldMap.SelectedTrail = (string)area.GetMeta("TraceName");
+            Map.SelectedTrail = (string)area.GetMeta("TraceName");
         }
         else
         {
             setColorTrail(Colors.Orange);
-            worldMap.SelectedTrail = null;
+            Map.SelectedTrail = null;
         }
     }
 
