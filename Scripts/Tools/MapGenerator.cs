@@ -150,12 +150,12 @@ public partial class MapGenerator : Node
                 Line2D trailLine = new Line2D();
                 Vector2[] trace = new Vector2[trail.TrackPoints.Length];
                 int i = 0;
-                MapArea area = new();
+                MapArea mapTracearea = new();
                 string traceFileName = Path.GetFileName(gpxFileName);
 
                 foreach (GpxProperties gpxPoint in trail.TrackPoints)
                 {
-                    GpsPoint gpsPoint = new GpsPoint(gpxPoint.Coord.X, gpxPoint.Coord.Y);
+                    GpsPoint gpsPoint = new(gpxPoint.Coord.X, gpxPoint.Coord.Y);
                     trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
                     /*GD.Print(
                         $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.Waypoint}"
@@ -164,37 +164,28 @@ public partial class MapGenerator : Node
                     Waypoint? waypoint = gpxPoint.Waypoint;
                     if (waypoint != null)
                     {
-                        Label waypointLabel = new Label();
-                        waypointLabel.Name = waypointLabel.Text = waypoint.Name;
-                        waypointLabel.Position = trace[i];
-                        waypointLabel.ZIndex = 2;
-                        waypointLabel.LabelSettings = new LabelSettings();
-                        waypointLabel.LabelSettings.FontColor = Colors.Black;
-
-                        // TEST: just to check where waypoints are located on map
-                        // This marker can only be add now because the
-                        // lat/lon to screen coord conversion is done here.
-                        MapJunctionArea junctionArea = new(trace[i], waypoint.Name, traceFileName);
-                        // Put a black rect for the player position
-                        ColorRect landmark = new()
-                        {
-                            Position = trace[i],
-                            Size = new Vector2(10, 10),
-                            Visible = false,
-                            ZIndex = 5,
-                        };
-                        trail.XWaypoints.SetWaypointLandmark(waypoint.GeographicCoord, landmark);
-                        area.AddChild(landmark);
-                        area.AddChild(waypointLabel);
-                        area.AddChild(junctionArea);
-
-                        // Complete the waypoint with graphics
+                        // Complete the waypoint with graphical position
                         Waypoints waypoints = Waypoints.Instance;
-                        string key = waypoint.TraceName + waypoint.Name;
+                        string key = waypoint.Name;
                         if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
                         {
                             Waypoint connectedWaypoint = links.Waypoint;
-                            connectedWaypoint.MapJunctionGfx = junctionArea;
+                            connectedWaypoint.Label.Position = trace[i];
+                            connectedWaypoint.MapJunctionGfx.Setup(
+                                trace[i],
+                                connectedWaypoint.Name,
+                                connectedWaypoint.TraceName
+                            );
+
+                            // waypoint already added
+                            if (
+                                mapTracearea.FindChild(waypoint.Name) == null
+                                && connectedWaypoint.Label.GetParent() == null
+                            )
+                            {
+                                mapTracearea.AddChild(connectedWaypoint.Label);
+                                mapTracearea.AddChild(connectedWaypoint.MapJunctionGfx);
+                            }
                         }
                     }
                     i++;
@@ -206,17 +197,17 @@ public partial class MapGenerator : Node
                 trailLine.DefaultColor = TrailLinceColor;
 
                 // Area2D for collisions detection
-                area.Name = traceFileName;
-                area.SetMeta("TraceName", traceFileName);
-                area.AddChild(trailLine);
-                area.SetCollisionLayerValue(1, false);
-                area.SetCollisionLayerValue(4, true);
-                area.ZIndex = 2;
+                mapTracearea.Name = traceFileName;
+                mapTracearea.SetMeta("TraceName", traceFileName);
+                mapTracearea.AddChild(trailLine);
+                mapTracearea.SetCollisionLayerValue(1, false);
+                mapTracearea.SetCollisionLayerValue(4, true);
+                mapTracearea.ZIndex = 2;
 
                 // Add collisions
-                CreateSegmentCollisions(area, trailLine);
+                CreateSegmentCollisions(mapTracearea, trailLine);
 
-                areasList.Add(area);
+                areasList.Add(mapTracearea);
                 Trails.Add(traceFileName, trail);
             }
             else
