@@ -28,17 +28,10 @@ public partial class WorldMap : Control
     /// </summary>
     public string? SelectedTrail = null;
 
-    // World map Singleton
-    private static readonly Lazy<WorldMap> lazy = new(() => new WorldMap());
-
-    public static WorldMap Instance
-    {
-        get { return lazy.Value; }
-    }
-
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        Name = "worldMapControl";
         _margin = GetNode<MarginContainer>("BgMargin");
     }
 
@@ -56,16 +49,15 @@ public partial class WorldMap : Control
             if (
                 mouseEvent.ButtonIndex == MouseButton.Left
                 && mouseEvent.Pressed
-                && Instance.SelectedTrail != null
-            )
+                && SelectedTrail != null)
             {
                 // Left mouse button to select a junction destination
-                GD.Print($"WorldMap Button pressed {Instance.SelectedTrail}");
+                GD.Print($"WorldMap Button pressed {SelectedTrail}");
                 Player.Instance.EmitSignal(
                     Player.SignalName.TrailJunctionChoice,
-                    Instance.SelectedTrail
+                    SelectedTrail
                 );
-                Instance.SelectedTrail = null;
+                SelectedTrail = null;
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)
             {

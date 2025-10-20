@@ -28,24 +28,34 @@ public partial class TemplateLevel : Node2D
 
     public Dictionary<string, Gpx>? Trails { get; private set; }
 
+    /// <summary>
+    /// Reference to the world map.
+    /// </summary>
+    internal WorldMap? Map;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         // Sanity checks
-        if (pathToMap == null)
+        if (pathToMap == null || player == null)
         {
             GD.PushWarning($"${nameof(_Ready)}: sanity checks failed");
             return;
         }
 
-        /* Create the map */
-        Control worldMapSign = GetNode<Control>("WorldMap");
+        Viewport root = GetTree().Root;
+        Map = root.GetNode<WorldMap>("worldMapControl");
+        if (Map is null)
+        {
+            GD.PushError($"${nameof(_Ready)}: fail to find world map");
+            return;
+        }
 
         /* Set world map size */
-        MarginContainer bgMargin = worldMapSign.GetNode<MarginContainer>("BgMargin");
+        MarginContainer bgMargin = Map.GetNode<MarginContainer>("BgMargin");
         MarginContainer mapMargin = bgMargin.GetNode<MarginContainer>("BgNinePathRect/MapMargin");
         ColorRect mapRect = mapMargin.GetNode<ColorRect>("MapRect");
-        worldMapSign.Position = new Vector2(50, 500);
+        MapPositionUpdate();
 
         /* TODO: compute with margins */
         float mapWidth =
@@ -110,7 +120,7 @@ public partial class TemplateLevel : Node2D
     /// <summary>
     /// Show or hide the map.
     /// </summary>
-    /// <param name="Visible">true to show the map, false to hide it.</param>
+    /// <param name="Visible">true to show the map, false to hide.</param>
     /// <remarks>
     /// </summary>
     /// <param name="Waypoint">optional, indice the player location.</param>
@@ -119,9 +129,15 @@ public partial class TemplateLevel : Node2D
     /// </remarks>
     public void MapVisible(bool Visible, Waypoint? Waypoint = null)
     {
-        GD.Print($"MAP VISIBLE {Visible}");
-        WorldMap map = GetNodeOrNull<WorldMap>("WorldMap");
-        map?.CollisionStatus(Visible);
+        if (Map is null)
+        {
+            GD.PushError("Map is not instancied.");
+            return;
+        }
+        GD.Print($"MAP ${Map.Name} VISIBLE {Map.Visible} (set to {Visible})");
+
+        Map.Visible = Visible;
+        Map?.CollisionStatus(Visible);
 
         if (Visible)
         {
@@ -141,7 +157,7 @@ public partial class TemplateLevel : Node2D
             // try to find the level in the dictionary
             if (Waypoint != null)
             {
-                string key = Waypoint.TraceName + Waypoint.Name;
+                string key = Waypoint.Name;
                 if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
                 {
                     foreach (Waypoint waypoint in links.ConnectedWaypoints)
@@ -163,14 +179,13 @@ public partial class TemplateLevel : Node2D
     private void MapPositionUpdate()
     {
         // Sanity checks
-        if (player == null)
+        if (player == null || Map == null)
         {
             GD.PushWarning($"${nameof(_PhysicsProcess)}: sanity checks failed");
             return;
         }
 
-        Control map = GetNode<Control>("WorldMap");
-        map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 100);
+        Map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 100);
     }
 
     public void TrailSignVisible(bool Visible)
@@ -220,12 +235,7 @@ public partial class TemplateLevel : Node2D
             waypoint = trail.XWaypoints.GetWaypoint(Coord);
             if (waypoint is not null)
             {
-                ColorRect? landmark = waypoint.Landmark;
-                if (landmark is not null)
-                {
-                    landmark.Color = Colors.Black;
-                    landmark.Visible = true;
-                }
+                waypoint.FocusLandmark(true);
             }
         }
 

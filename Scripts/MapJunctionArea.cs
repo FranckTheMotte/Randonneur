@@ -29,6 +29,11 @@ public partial class MapJunctionArea : Area2D
     // Display of a junction
     private readonly ColorRect _junctionRect = new();
 
+    /// <summary>
+    /// Reference to the world map.
+    /// </summary>
+    internal WorldMap? Map;
+
     public MapJunctionArea()
     {
         // player marker is initialize without position and invisible.
@@ -88,6 +93,14 @@ public partial class MapJunctionArea : Area2D
         // Trigger actions when mouse go over/out a trail
         Connect("TrailSelection", new Callable(this, nameof(OnTrailSelection)));
         InputPickable = true;
+
+        Viewport root = GetTree().Root;
+        Map = root.GetNode<WorldMap>("worldMapControl");
+        if (Map is null)
+        {
+            GD.PushError($"${nameof(_Ready)}: fail to find world map");
+            return;
+        }
     }
 
     /// <summary>
@@ -116,7 +129,11 @@ public partial class MapJunctionArea : Area2D
     */
     private void OnTrailSelection(Area2D area, bool selected)
     {
-        WorldMap worldMap = WorldMap.Instance;
+        if (Map == null)
+        {
+            GD.PushError("Map is not available.");
+            return;
+        }
 
         // Retrieve the rect
         ColorRect? junctionRect = area.GetNodeOrNull<ColorRect>(SquareName);
@@ -128,12 +145,12 @@ public partial class MapJunctionArea : Area2D
         {
             junctionRect.Color = SelectedColor;
             // Selection of a trail means that the junction is now the destination
-            worldMap.SelectedTrail = (string)area.GetMeta("TraceName");
+            Map.SelectedTrail = (string)area.GetMeta("TraceName");
         }
         else
         {
             junctionRect.Color = UnselectedColor;
-            worldMap.SelectedTrail = null;
+            Map.SelectedTrail = null;
         }
     }
 }
