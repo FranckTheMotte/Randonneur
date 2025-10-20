@@ -233,7 +233,7 @@ namespace XmlGpx
         public string Trail;
     }
 
-    public class Junction : Waypoint
+    public class Junction(string Name) : Waypoint(Name)
     {
         internal float Distance; // Distance from start (meter)
     }
@@ -422,9 +422,8 @@ namespace XmlGpx
                             {
                                 case JunctionType:
                                     TrailJunctions ??= [];
-                                    Junction trailJunction = new()
+                                    Junction trailJunction = new(wptName)
                                     {
-                                        Name = wptName,
                                         TraceName = traceFileName,
                                         GeographicCoord = coord,
                                         Elevation = elevation,
@@ -447,9 +446,8 @@ namespace XmlGpx
                                     links.Add(trailJunction);
                                     break;
                                 case PovType:
-                                    PoV aPov = new()
+                                    PoV aPov = new(wptName)
                                     {
-                                        Name = wptName,
                                         TraceName = traceFileName,
                                         GeographicCoord = coord,
                                         Elevation = elevation,
