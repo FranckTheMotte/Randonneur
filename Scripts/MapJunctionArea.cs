@@ -55,6 +55,12 @@ public partial class MapJunctionArea : Area2D
     /// <param name="traceName">Gpx file name which store this junction.</param>
     public void Setup(Vector2 position, string name, string traceName)
     {
+        // To avoid multiple area on same waypoint (comes from differents gpx)
+        if (GetNodeOrNull(SquareName) != null)
+        {
+            GD.Print("Setup already done");
+            return;
+        }
         // -- Setup the junction square
         ColorRect junctionRect = new()
         {
