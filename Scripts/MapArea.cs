@@ -55,7 +55,7 @@ public partial class MapArea : Area2D
         if (selected)
         {
             setColorTrail(Colors.Red);
-            Map.SelectedTrail = (string)area.GetMeta("TraceName");
+            Map.SelectedTrail = (string)area.GetMeta(Global.MetaTraceName);
         }
         else
         {

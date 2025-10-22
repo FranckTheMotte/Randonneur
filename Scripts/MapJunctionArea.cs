@@ -1,4 +1,5 @@
 using Godot;
+using Randonneur;
 
 /**
  * <summary>
@@ -74,7 +75,7 @@ public partial class MapJunctionArea : Area2D
         // -- Setup area2D
         Name = JunctionAreaFilterName + " " + name;
         // trace name stored in description as it will be kept raw
-        SetMeta("TraceName", traceName);
+        SetMeta(Global.MetaTraceName, traceName);
         Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));
         // Collision with mouse cursor
         SetCollisionLayerValue(1, false);
@@ -151,7 +152,7 @@ public partial class MapJunctionArea : Area2D
         {
             junctionRect.Color = SelectedColor;
             // Selection of a trail means that the junction is now the destination
-            Map.SelectedTrail = (string)area.GetMeta("TraceName");
+            Map.SelectedTrail = (string)area.GetMeta(Global.MetaTraceName);
         }
         else
         {

@@ -8,7 +8,7 @@ using XmlGpx;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
-public partial class MapGenerator : Node
+public partial class MapGenerator(float width, float height) : Node
 {
     public const int TrailLineWidth = 10;
 
@@ -16,16 +16,10 @@ public partial class MapGenerator : Node
 
     public const string TrailCollisionFilterName = "trail";
 
-    public struct GpsPoint
+    public struct GpsPoint(double lat, double lon)
     {
-        public double Latitude; // -90 à +90 (South To North)
-        public double Longitude; // -180 à +180 (West to East)
-
-        public GpsPoint(double lat, double lon)
-        {
-            Latitude = lat;
-            Longitude = lon;
-        }
+        public double Latitude = lat; // -90 à +90 (South To North)
+        public double Longitude = lon; // -180 à +180 (West to East)
     }
 
     // Geographic area
@@ -46,12 +40,7 @@ public partial class MapGenerator : Node
     }
 
     /* TODO: make this dynamic */
-    public Vector2 displaySize { get; }
-
-    public MapGenerator(float width, float height)
-    {
-        displaySize = new Vector2(width, height);
-    }
+    public Vector2 DisplaySize { get; } = new Vector2(width, height);
 
     public static Vector2 GpsToScreenLinear(GpsPoint gpsPoint, GeoBounds bounds, Vector2 screenSize)
     {
@@ -77,21 +66,10 @@ public partial class MapGenerator : Node
     /// <returns>A tuple containing a list of area2d where each one contains Nodes for a trail, and an Hashtable of trails gpx items.</returns>
     public (List<Area2D>? TrailsNodes, Dictionary<string, Gpx>? TrailsGpx) GenerateMap(string dir)
     {
-        // pour chaque fichier dans dir:
-        // - parser le xml
-        // - récupérer lat/long/ele
-        // - transcrire lat/long to x,y coord :
-        //    - faire une line avec la liaison entre chaque point consécutif, avec une épaisseur.
-        //      Un polygone de collision identique pour checker le passage du curseur de la souris.
-        // - ele => TODO
-
-        // ex DMS coord of x1 & x2 (2 consecutive points)
-        // x1(long, lat) 45.7907840 - 6.9719600 => 45° 47' 26.822" - 6° 58' 19.056"
-        // x2(long, lat) 45.790742 - 6.971974 => 45° 47' 26.671" - 6° 58' 19.106"
-        List<Area2D> areasList = new();
+        List<Area2D> areasList = [];
         Dictionary<string, Gpx> Trails = [];
 
-        /* First run to get min and max values for longitude and latiture*/
+        // First run to get min and max values for longitude and latiture
         string[] gpxFiles = Directory.GetFiles(ProjectSettings.GlobalizePath(dir));
         double minLatitude,
             maxLatitude;
@@ -103,10 +81,11 @@ public partial class MapGenerator : Node
         maxLatitude = -90;
         maxLongitude = 0;
 
+        // Get bounds of all gpx files
         foreach (string gpxFileName in gpxFiles)
         {
             Gpx trail;
-            /* Generate a profil from a gpx file */
+            // Generate a profil from a gpx file
             trail = new Gpx();
             if (trail.Load(gpxFileName) == true && trail.TrackPoints is not null)
             {
@@ -129,11 +108,7 @@ public partial class MapGenerator : Node
             }
         }
 
-        GD.Print(
-            $"minLatitude {minLatitude} maxLatitude {maxLatitude} minLongitude {minLongitude} maxLongitude {maxLongitude}"
-        );
-
-        GeoBounds mapBounds = new GeoBounds(
+        GeoBounds mapBounds = new(
             minLat: minLatitude,
             maxLat: maxLatitude, // South To North
             minLon: minLongitude,
@@ -142,12 +117,11 @@ public partial class MapGenerator : Node
 
         foreach (string gpxFileName in gpxFiles)
         {
-            Gpx trail;
-            /* Generate a profil from a gpx file */
-            trail = new Gpx();
+            Gpx trail = new();
+            // Generate a profil from a gpx file
             if (trail.Load(gpxFileName) == true && trail.TrackPoints is not null)
             {
-                Line2D trailLine = new Line2D();
+                Line2D trailLine = new();
                 Vector2[] trace = new Vector2[trail.TrackPoints.Length];
                 int i = 0;
                 MapArea mapTracearea = new();
@@ -156,11 +130,7 @@ public partial class MapGenerator : Node
                 foreach (GpxProperties gpxPoint in trail.TrackPoints)
                 {
                     GpsPoint gpsPoint = new(gpxPoint.Coord.X, gpxPoint.Coord.Y);
-                    trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, displaySize);
-                    /*GD.Print(
-                        $" gpxPoint.coord.X: {gpxPoint.coord.X} gpxPoint.coord.Y:  {gpxPoint.coord.Y} gpx.waypoint {gpxPoint.Waypoint}"
-                    );
-                    GD.Print($" X: {trace[i].X} Y:  {trace[i].Y}");*/
+                    trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, DisplaySize);
                     Waypoint? waypoint = gpxPoint.Waypoint;
                     if (waypoint != null)
                     {
@@ -177,7 +147,7 @@ public partial class MapGenerator : Node
                                 connectedWaypoint.TraceName
                             );
 
-                            // waypoint already added
+                            // waypoint already added (Waypoint.Name is also the label Name)
                             if (
                                 mapTracearea.FindChild(waypoint.Name) == null
                                 && connectedWaypoint.Label.GetParent() == null
@@ -198,7 +168,7 @@ public partial class MapGenerator : Node
 
                 // Area2D for collisions detection
                 mapTracearea.Name = traceFileName;
-                mapTracearea.SetMeta("TraceName", traceFileName);
+                mapTracearea.SetMeta(Global.MetaTraceName, traceFileName);
                 mapTracearea.AddChild(trailLine);
                 mapTracearea.SetCollisionLayerValue(1, false);
                 mapTracearea.SetCollisionLayerValue(4, true);
@@ -219,16 +189,24 @@ public partial class MapGenerator : Node
         return (areasList, Trails);
     }
 
+    /// <summary>
+    /// Create collisions for each line segment of the given Line2D.
+    /// </summary>
+    /// <param name="area">The Area2D to which the collisions will be added.</param>
+    /// <param name="line">The Line2D from which the collisions will be generated.</param>
+    /// <remarks>
+    /// The collisions will be named according to the format "TrailCollisionFilterName#i" where i is the index of the line segment.
+    /// </remarks>
     private void CreateSegmentCollisions(Area2D area, Line2D line)
     {
-        // Create collition for each line segment
+        // Create collision for each line segment
         for (int i = 0; i < line.Points.Length - 1; i++)
         {
             Vector2 start = line.Points[i];
             Vector2 end = line.Points[i + 1];
 
-            CollisionShape2D collision = new CollisionShape2D();
-            RectangleShape2D rectangle = new RectangleShape2D();
+            CollisionShape2D collision = new();
+            RectangleShape2D rectangle = new();
 
             // Length and segment angle
             Vector2 direction = end - start;
