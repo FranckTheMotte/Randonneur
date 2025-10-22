@@ -55,12 +55,12 @@ public partial class MapArea : Area2D
         if (selected)
         {
             setColorTrail(Colors.Red);
-            Map.SelectedTrail = (string)area.GetMeta(Global.MetaTraceName);
+            Map.SelectedWaypoint = (string)area.GetMeta(Global.MetaWaypointName);
         }
         else
         {
             setColorTrail(Colors.Orange);
-            Map.SelectedTrail = null;
+            Map.SelectedWaypoint = null;
         }
     }
 

@@ -74,8 +74,8 @@ public partial class MapJunctionArea : Area2D
 
         // -- Setup area2D
         Name = JunctionAreaFilterName + " " + name;
-        // trace name stored in description as it will be kept raw
-        SetMeta(Global.MetaTraceName, traceName);
+        // name stored in description as it will be kept raw
+        SetMeta(Global.MetaWaypointName, name);
         Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));
         // Collision with mouse cursor
         SetCollisionLayerValue(1, false);
@@ -152,12 +152,12 @@ public partial class MapJunctionArea : Area2D
         {
             junctionRect.Color = SelectedColor;
             // Selection of a trail means that the junction is now the destination
-            Map.SelectedTrail = (string)area.GetMeta(Global.MetaTraceName);
+            Map.SelectedWaypoint = (string)area.GetMeta(Global.MetaWaypointName);
         }
         else
         {
             junctionRect.Color = UnselectedColor;
-            Map.SelectedTrail = null;
+            Map.SelectedWaypoint = null;
         }
     }
 }

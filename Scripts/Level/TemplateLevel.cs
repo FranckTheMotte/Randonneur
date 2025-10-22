@@ -29,6 +29,11 @@ public partial class TemplateLevel : Node2D
     public Dictionary<string, Gpx>? Trails { get; private set; }
 
     /// <summary>
+    /// Last waypoint reached by the player when the map is displayed.
+    /// </summary>
+    public Waypoint? LastReachedWaypoint { get; private set; }
+
+    /// <summary>
     /// Reference to the world map.
     /// </summary>
     internal WorldMap? Map;
@@ -172,6 +177,10 @@ public partial class TemplateLevel : Node2D
                         {
                             area.SetColor(Colors.AntiqueWhite);
                         }
+                        else
+                        {
+                            area.SetColor(Colors.CadetBlue);
+                        }
                     }
                 }
             }
@@ -205,23 +214,34 @@ public partial class TemplateLevel : Node2D
         await Task.Delay(TimeSpan.FromMilliseconds(value));
     }
 
-    private void _on_trail_junction_choice_done(string gpxFile)
+    private void _on_trail_junction_choice_done(string waypointName)
     {
+        Waypoints waypoints = Waypoints.Instance;
+
         // Sanity checks
-        if (_fadeAnimation == null)
+        if (_fadeAnimation == null || waypoints == null)
         {
             GD.PushWarning($"${nameof(_on_trail_junction_choice_done)}: sanity checks failed");
             return;
         }
 
-        MapVisible(false);
-        gpxFile = Global.DefautlMapDirectory + gpxFile;
-        SceneManager.instance?.ChangeLevel(gpxFile);
+        if (waypoints.Links.TryGetValue(waypointName, out WaypointsLinks? links))
+        {
+            Waypoint waypoint = links.Waypoint;
+            MapVisible(false, LastReachedWaypoint);
 
-        _fadeAnimation.Play("fade_in");
-        Sleep(500);
-        _fadeAnimation.Play("fade_out");
-        Sleep(500);
+            // left the current waypoint
+            if (Player.Instance is not null)
+                Player.Instance.CurrentWaypoint = null;
+
+            string gpxFile = Global.DefautlMapDirectory + waypoint.TraceName;
+            SceneManager.instance?.ChangeLevel(gpxFile);
+
+            _fadeAnimation.Play("fade_in");
+            Sleep(500);
+            _fadeAnimation.Play("fade_out");
+            Sleep(500);
+        }
     }
 
     ///  <summary>
@@ -244,10 +264,13 @@ public partial class TemplateLevel : Node2D
             }
         }
 
+        if (Player.Instance is not null)
+            Player.Instance.CurrentWaypoint = waypoint;
+
         MapPositionUpdate();
         MapVisible(true, waypoint);
 
-        Waypoints toto = Waypoints.Instance;
-        toto.DisplayLinks();
+        // keep the location where player comes from.
+        LastReachedWaypoint = waypoint;
     }
 }

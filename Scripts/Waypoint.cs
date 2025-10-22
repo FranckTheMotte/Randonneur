@@ -104,11 +104,6 @@ namespace Randonneur
         }
 
         /// <summary>
-        /// Store the currently selected waypoint.
-        /// </summary>
-        public Waypoint? SelectedWaypoint { get; set; }
-
-        /// <summary>
         /// Temporary dictionnaries to get reacheable waypoints by waypoint.
         /// </summary>
         private Dictionary<string, Dictionary<string, Waypoint>> _WbT = [];

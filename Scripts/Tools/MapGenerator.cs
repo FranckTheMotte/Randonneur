@@ -168,7 +168,7 @@ public partial class MapGenerator(float width, float height) : Node
 
                 // Area2D for collisions detection
                 mapTracearea.Name = traceFileName;
-                mapTracearea.SetMeta(Global.MetaTraceName, traceFileName);
+                mapTracearea.SetMeta(Global.MetaWaypointName, traceFileName);
                 mapTracearea.AddChild(trailLine);
                 mapTracearea.SetCollisionLayerValue(1, false);
                 mapTracearea.SetCollisionLayerValue(4, true);

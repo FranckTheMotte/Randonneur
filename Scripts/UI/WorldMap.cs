@@ -24,9 +24,9 @@ public partial class WorldMap : Control
     private Vector2 _dragPosition;
 
     /// <summary>
-    /// name of the current trail (node name of the Area2D).
+    /// name of the selected waypoint.
     /// </summary>
-    public string? SelectedTrail = null;
+    public string? SelectedWaypoint = null;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -49,15 +49,13 @@ public partial class WorldMap : Control
             if (
                 mouseEvent.ButtonIndex == MouseButton.Left
                 && mouseEvent.Pressed
-                && SelectedTrail != null)
+                && SelectedWaypoint != null
+            )
             {
                 // Left mouse button to select a junction destination
-                GD.Print($"WorldMap Button pressed {SelectedTrail}");
-                Player.Instance.EmitSignal(
-                    Player.SignalName.TrailJunctionChoice,
-                    SelectedTrail
-                );
-                SelectedTrail = null;
+                GD.Print($"WorldMap Button pressed {SelectedWaypoint}");
+                Player.Instance.EmitSignal(Player.SignalName.TrailJunctionChoice, SelectedWaypoint);
+                SelectedWaypoint = null;
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)
             {

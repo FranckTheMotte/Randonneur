@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using Randonneur;
 
 public partial class Player : CharacterBody2D
 {
@@ -20,6 +21,8 @@ public partial class Player : CharacterBody2D
     public Godot.Vector2 worldLimit;
 
     public static Player? Instance { get; private set; }
+
+    public Waypoint? CurrentWaypoint = null;
 
     public override void _Ready()
     {
@@ -53,15 +56,16 @@ public partial class Player : CharacterBody2D
         MoveAndSlide();
     }
 
-    private void _on_trail_junction_choice(string gpxFile)
+    private void _on_trail_junction_choice(string waypointName)
     {
         // Sanity checks
         if (level == null || sol == null)
             return;
 
-        if (sol.GpxFile != gpxFile)
+        // impossible to move on the same waypoint where the player is
+        if (CurrentWaypoint != null && CurrentWaypoint.Name != waypointName)
         {
-            level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, gpxFile);
+            level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, waypointName);
         }
         // TODO comment faire passer à travers la collison de la junction?
         SetCollisionLayerValue(5, true);
