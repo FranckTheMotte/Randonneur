@@ -68,7 +68,7 @@ namespace Randonneur
         /// <summary>
         /// Connected waypoints, can be empty.
         /// </summary>
-        public List<Waypoint> ConnectedWaypoints = [];
+        public Dictionary<string, Waypoint> ConnectedWaypoints = [];
     }
 
     /// <summary>
@@ -82,14 +82,37 @@ namespace Randonneur
         internal Dictionary<string, WaypointsLinks> Links { get; } = [];
 
         /// <summary>
+        /// Display all waypoints name and the related connected waypoints
+        /// </summary>
+        public void DisplayLinks()
+        {
+            GD.Print($"======================================");
+            foreach (KeyValuePair<string, WaypointsLinks> link in Links)
+            {
+                GD.Print($"Waypoint {link.Key} connected to: ");
+                foreach (
+                    KeyValuePair<
+                        string,
+                        Waypoint
+                    > connectedWaypoint in link.Value.ConnectedWaypoints
+                )
+                {
+                    GD.Print($"({connectedWaypoint.Value.TraceName}) - {connectedWaypoint.Key}");
+                }
+            }
+            GD.Print($"======================================");
+        }
+
+        /// <summary>
         /// Store the currently selected waypoint.
         /// </summary>
         public Waypoint? SelectedWaypoint { get; set; }
 
         /// <summary>
-        /// List of all reachable waypoints from the currently selected waypoint.
+        /// Temporary dictionnaries to get reacheable waypoints by waypoint.
         /// </summary>
-        public List<Waypoint>? ReachableWaypoints { get; set; }
+        private Dictionary<string, Dictionary<string, Waypoint>> _WbT = [];
+        private Dictionary<string, Dictionary<string, Waypoint>> _TbW = [];
 
         /// <summary>
         /// Singleton.
@@ -111,53 +134,81 @@ namespace Randonneur
         /// Otherwise, add the new waypoint to the list of connections and update the existing links.
         /// </summary>
         /// <param name="newWaypoint">The new waypoint to add.</param>
-        internal void Add(Waypoint newWaypoint)
+        public void Add(Waypoint newWaypoint)
         {
-            string key = newWaypoint.Name;
+            Dictionary<string, int> traceProcessed = [];
 
-            // try to find the junction in the dictionary
-            if (Links.ContainsKey(key))
+            /* new waypoint is add to Trace by Waypoint and
+               Waypoint by Trace dictionnaries.
+            */
+            if (!_TbW.ContainsKey(newWaypoint.Name))
+                _TbW[newWaypoint.Name] = [];
+            _TbW[newWaypoint.Name][newWaypoint.TraceName] = newWaypoint;
+            if (!_WbT.ContainsKey(newWaypoint.TraceName))
+                _WbT[newWaypoint.TraceName] = [];
+            _WbT[newWaypoint.TraceName][newWaypoint.Name] = newWaypoint;
+
+            // update waypoints connection with the new waypoint
+            foreach (KeyValuePair<string, Dictionary<string, Waypoint>> trace in _TbW)
             {
-                // nothing to do
-                return;
-            }
+                // List of traces
+                Dictionary<string, Waypoint> traces = trace.Value;
 
-            // Update the existing links
-            WaypointsLinks newWaypointsLinks = new() { Waypoint = newWaypoint };
-
-            foreach (KeyValuePair<string, WaypointsLinks> link in Links)
-            {
-                WaypointsLinks currentLink = link.Value;
-                Waypoint waypoint = link.Value.Waypoint;
-                /* Does the new waypoint is close to the fetched?
-                Too close (less than 10 meters), means it's the same
-                waypoint.
-                */
-                if (Gpx.GetDistance(newWaypoint.GeographicCoord, waypoint.GeographicCoord) > 10.0)
+                foreach (KeyValuePair<string, Waypoint> aTrace in traces)
                 {
-                    // Is it on the same trace?
-                    if (newWaypoint.TraceName == waypoint.TraceName)
+                    // already used?
+                    if (traceProcessed.ContainsKey(aTrace.Key) == false)
                     {
-                        // new link
-                        newWaypointsLinks.ConnectedWaypoints.Add(waypoint);
-                        // add new junction to the existing list
-                        currentLink.ConnectedWaypoints.Add(newWaypoint);
-                    }
-                    // Is the new junction Trace connected to the fetched waypoint?
-                    foreach (GpxDestination newDestination in newWaypoint.Destinations)
-                    {
-                        if (Path.GetFileName(newDestination.GpxFile) == waypoint.TraceName)
+                        // does the new waypoint is on this trace?
+                        if (newWaypoint.TraceName == aTrace.Key)
                         {
-                            // connect both junctions
-                            currentLink.ConnectedWaypoints.Add(newWaypoint);
-                            newWaypointsLinks.ConnectedWaypoints.Add(waypoint);
+                            foreach (
+                                KeyValuePair<string, Waypoint> wpt in _WbT[newWaypoint.TraceName]
+                            )
+                            {
+                                // Try to add reachable waypoint except itself
+                                if (wpt.Key != newWaypoint.Name)
+                                {
+                                    Dictionary<string, Waypoint> connectedWpts;
+                                    string wptName;
+
+                                    // Don't add over existing connection
+                                    if (!Links.ContainsKey(wpt.Key))
+                                    {
+                                        Links[wpt.Key] = new WaypointsLinks()
+                                        {
+                                            Waypoint = wpt.Value,
+                                        };
+                                    }
+                                    connectedWpts = Links[wpt.Key].ConnectedWaypoints;
+                                    if (!connectedWpts.ContainsKey(newWaypoint.Name))
+                                    {
+                                        connectedWpts[newWaypoint.Name] = newWaypoint;
+                                    }
+
+                                    // new ?
+                                    if (!Links.ContainsKey(newWaypoint.Name))
+                                    {
+                                        Links[newWaypoint.Name] = new WaypointsLinks()
+                                        {
+                                            Waypoint = newWaypoint,
+                                        };
+                                    }
+                                    connectedWpts = Links[newWaypoint.Name].ConnectedWaypoints;
+                                    wptName = Links[wpt.Key].Waypoint.Name;
+                                    if (!connectedWpts.ContainsKey(wptName))
+                                    {
+                                        connectedWpts[wptName] = Links[wpt.Key].Waypoint;
+                                    }
+
+                                    // to avoid useless loop
+                                    traceProcessed[newWaypoint.TraceName] = 0;
+                                }
+                            }
                         }
                     }
                 }
             }
-
-            // Add the new junction
-            Links[key] = newWaypointsLinks;
         }
     }
 }

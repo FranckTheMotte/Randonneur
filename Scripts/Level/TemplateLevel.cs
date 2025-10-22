@@ -152,19 +152,24 @@ public partial class TemplateLevel : Node2D
                     }
                 }
             }
-            // Put Blue the reachable waypoints.
-            Waypoints waypoints = Waypoints.Instance;
-            // try to find the level in the dictionary
-            if (Waypoint != null)
+        }
+        // Put White the reachable waypoints.
+        Waypoints waypoints = Waypoints.Instance;
+        if (Waypoint != null)
+        {
+            string key = Waypoint.Name;
+            if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
             {
-                string key = Waypoint.Name;
-                if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
+                foreach (
+                    KeyValuePair<string, Waypoint> connectedWaypoint in links.ConnectedWaypoints
+                )
                 {
-                    foreach (Waypoint waypoint in links.ConnectedWaypoints)
+                    Waypoint waypoint = connectedWaypoint.Value;
+                    if (waypoint.MapJunctionGfx != null)
                     {
-                        if (waypoint.MapJunctionGfx != null)
+                        MapJunctionArea area = waypoint.MapJunctionGfx;
+                        if (Visible)
                         {
-                            MapJunctionArea area = waypoint.MapJunctionGfx;
                             area.SetColor(Colors.AntiqueWhite);
                         }
                     }
@@ -241,5 +246,8 @@ public partial class TemplateLevel : Node2D
 
         MapPositionUpdate();
         MapVisible(true, waypoint);
+
+        Waypoints toto = Waypoints.Instance;
+        toto.DisplayLinks();
     }
 }
