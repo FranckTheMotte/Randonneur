@@ -9,7 +9,7 @@ using static Godot.GD;
 
 public partial class Sol : StaticBody2D
 {
-    private List<Vector2> _trailJunctions = [];
+    private List<Waypoint> _trailJunctions = [];
 
     public Gpx? CurrentTrack;
 
@@ -24,9 +24,12 @@ public partial class Sol : StaticBody2D
 
     public override void _Draw()
     {
-        foreach (Vector2 trailJunction in _trailJunctions)
+        foreach (Waypoint wpt in _trailJunctions)
         {
-            DrawCircle(trailJunction, 10.0f, Colors.Blue);
+            DrawCircle(wpt.LevelCoord, 10.0f, Colors.Blue);
+            Font defaultFont = ThemeDB.FallbackFont;
+            int defaultFontSize = ThemeDB.FallbackFontSize;
+            DrawString(defaultFont, wpt.LevelCoord, wpt.Name, modulate: new Color(200, 0, 0));
         }
         base._Draw();
     }
@@ -81,8 +84,8 @@ public partial class Sol : StaticBody2D
                 if (waypoint != null)
                 {
                     // TODO: here only to display a graphic object for junction
-                    Vector2 junctionPosition = ground[i];
-                    _trailJunctions.Add(junctionPosition);
+                    waypoint.LevelCoord = ground[i];
+                    _trailJunctions.Add(waypoint);
 
                     Area2D junctionArea = new()
                     {

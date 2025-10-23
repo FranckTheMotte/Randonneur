@@ -27,6 +27,11 @@ namespace Randonneur
         public Vector2 GeographicCoord;
 
         /// <summary>
+        /// Level coordinates (x, y)
+        /// </summary>
+        public Vector2 LevelCoord;
+
+        /// <summary>
         /// Elevation in meter.
         /// </summary>
         public required float Elevation { get; set; }
