@@ -18,6 +18,12 @@ public partial class MapJunctionArea : Area2D
     private const int SquareZindex = 4; // Front of map
     private static readonly Color UnselectedColor = Colors.CadetBlue;
     private static readonly Color SelectedColor = Colors.MediumOrchid;
+    private static readonly Color ReachableColor = Colors.White;
+
+    /// <summary>
+    /// Whether the junction is reachable from the current waypoint.
+    /// </summary>
+    public bool Reachable { get; set; } = false;
 
     /// <summary>
     /// Gfx of player marker.
@@ -51,13 +57,14 @@ public partial class MapJunctionArea : Area2D
     /// <summary>
     /// Setup collision mask and layer for the junction area.
     /// </summary>
-    public void SetupCollision()
+    /// <param name="state">Enable of disable collision.</param>
+    public void SetupCollision(bool state)
     {
         // Collision with mouse cursor
         SetCollisionLayerValue(1, false);
-        SetCollisionLayerValue(Global.MapLayer, true);
+        SetCollisionLayerValue(Global.MapLayer, state);
         SetCollisionMaskValue(1, false);
-        SetCollisionMaskValue(Global.MapLayer, true);
+        SetCollisionMaskValue(Global.MapLayer, state);
     }
 
     /// <summary>
@@ -89,7 +96,7 @@ public partial class MapJunctionArea : Area2D
         // name stored in description as it will be kept raw
         SetMeta(Global.MetaWaypointName, name);
         Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));
-        SetupCollision();
+        SetupCollision(true);
 
         // Add a collision shape
         RectangleShape2D rectangle = new() { Size = new Vector2(SquareSize, SquareSize) };
@@ -164,7 +171,7 @@ public partial class MapJunctionArea : Area2D
         }
         else
         {
-            junctionRect.Color = UnselectedColor;
+            junctionRect.Color = Reachable ? ReachableColor : UnselectedColor;
             Map.SelectedWaypoint = null;
         }
     }

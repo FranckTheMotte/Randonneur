@@ -129,6 +129,18 @@ namespace Randonneur
         }
 
         /// <summary>
+        /// Disable collision of all waypoints connected to a waypoint.
+        /// </summary>
+        public void DisableCollision()
+        {
+            foreach (KeyValuePair<string, WaypointsLinks> link in Links)
+            {
+                Waypoint waypoint = link.Value.Waypoint;
+                waypoint.MapJunctionGfx.SetupCollision(false);
+            }
+        }
+
+        /// <summary>
         /// Add a new waypoint to the list of connections.
         /// If the waypoint already exists, do nothing.
         /// Otherwise, add the new waypoint to the list of connections and update the existing links.

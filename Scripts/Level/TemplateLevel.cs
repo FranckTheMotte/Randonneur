@@ -158,8 +158,13 @@ public partial class TemplateLevel : Node2D
                 }
             }
         }
-        // Put White the reachable waypoints.
+
         Waypoints waypoints = Waypoints.Instance;
+
+        // by default nothing can be selected
+        waypoints.DisableCollision();
+
+        // Put White on  the reachable waypoints.
         if (Waypoint != null)
         {
             string key = Waypoint.Name;
@@ -170,16 +175,19 @@ public partial class TemplateLevel : Node2D
                 )
                 {
                     Waypoint waypoint = connectedWaypoint.Value;
-                    if (waypoint.MapJunctionGfx != null)
+                    MapJunctionArea junctionArea = waypoint.MapJunctionGfx;
+                    if (junctionArea != null)
                     {
-                        MapJunctionArea area = waypoint.MapJunctionGfx;
                         if (Visible)
                         {
-                            area.SetColor(Colors.AntiqueWhite);
+                            junctionArea.Reachable = true;
+                            junctionArea.SetupCollision(true);
+                            junctionArea.SetColor(Colors.AntiqueWhite);
                         }
                         else
                         {
-                            area.SetColor(Colors.CadetBlue);
+                            junctionArea.Reachable = false;
+                            junctionArea.SetColor(Colors.CadetBlue);
                         }
                     }
                 }
