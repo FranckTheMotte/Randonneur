@@ -94,9 +94,9 @@ public partial class Sol : StaticBody2D
                     };
                     // Use the junction collision layer
                     junctionArea.SetCollisionLayerValue(1, false);
-                    junctionArea.SetCollisionLayerValue(5, true);
+                    junctionArea.SetCollisionLayerValue(Global.SolJunctionLayer, true);
                     junctionArea.SetCollisionMaskValue(1, false);
-                    junctionArea.SetCollisionMaskValue(5, true);
+                    junctionArea.SetCollisionMaskValue(Global.SolJunctionLayer, true);
                     RectangleShape2D rectangle = new() { Size = new Vector2(20, 20) };
                     CollisionShape2D junctionCollision = new() { Shape = rectangle };
                     junctionCollision.AddToGroup(_WaypointsGroup);

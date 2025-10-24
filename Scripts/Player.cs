@@ -68,8 +68,8 @@ public partial class Player : CharacterBody2D
             level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, waypointName);
         }
         // TODO comment faire passer à travers la collison de la junction?
-        SetCollisionLayerValue(5, true);
-        SetCollisionMaskValue(5, true);
+        SetCollisionLayerValue(Global.SolJunctionLayer, true);
+        SetCollisionMaskValue(Global.SolJunctionLayer, true);
         Walk = 1;
     }
 
@@ -84,8 +84,8 @@ public partial class Player : CharacterBody2D
         if (level == null)
             return;
         Walk = 0;
-        SetCollisionLayerValue(5, false);
-        SetCollisionMaskValue(5, false);
+        SetCollisionLayerValue(Global.SolJunctionLayer, false);
+        SetCollisionMaskValue(Global.SolJunctionLayer, false);
         level.JunctionChoice(Trace, Coord);
     }
 }

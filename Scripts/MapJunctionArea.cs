@@ -49,6 +49,18 @@ public partial class MapJunctionArea : Area2D
     }
 
     /// <summary>
+    /// Setup collision mask and layer for the junction area.
+    /// </summary>
+    public void SetupCollision()
+    {
+        // Collision with mouse cursor
+        SetCollisionLayerValue(1, false);
+        SetCollisionLayerValue(Global.MapLayer, true);
+        SetCollisionMaskValue(1, false);
+        SetCollisionMaskValue(Global.MapLayer, true);
+    }
+
+    /// <summary>
     /// Setup the JunctionArea.
     /// </summary>
     /// <param name="position">Middle position of the junction.</param>
@@ -77,11 +89,7 @@ public partial class MapJunctionArea : Area2D
         // name stored in description as it will be kept raw
         SetMeta(Global.MetaWaypointName, name);
         Position = new Vector2(position.X - (SquareSize / 2), position.Y - (SquareSize / 2));
-        // Collision with mouse cursor
-        SetCollisionLayerValue(1, false);
-        SetCollisionLayerValue(5, true);
-        SetCollisionMaskValue(1, false);
-        SetCollisionMaskValue(5, true);
+        SetupCollision();
 
         // Add a collision shape
         RectangleShape2D rectangle = new() { Size = new Vector2(SquareSize, SquareSize) };
