@@ -87,6 +87,13 @@ public partial class Sol : StaticBody2D
                     waypoint.LevelCoord = ground[i];
                     _trailJunctions.Add(waypoint);
 
+                    // Level order is the same as ground point index
+                    Waypoint? TargetWaypoint = Waypoints.Instance.GetWaypoint(waypoint.Name);
+                    if (TargetWaypoint != null)
+                    {
+                        TargetWaypoint.LevelOrder[waypoint.TraceName] = i;
+                    }
+
                     Area2D junctionArea = new()
                     {
                         Position = ground[i],

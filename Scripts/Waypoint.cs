@@ -48,6 +48,13 @@ namespace Randonneur
 
         public readonly Label Label = new();
 
+        /// <summary>
+        /// Order of waypoints by trace.
+        /// Key: trace name
+        /// Value: integer, lower value = close from start
+        /// </summary>
+        public Dictionary<string, int> LevelOrder { get; set; } = [];
+
         public Waypoint(string Name)
         {
             // Configure a label without X,Y position
@@ -141,6 +148,16 @@ namespace Randonneur
         }
 
         /// <summary>
+        /// Get a Waypoint from WaypointsLinks with a waypoint name.
+        /// </summary>
+        /// <param name="waypointName">The name of the waypoint to retrieve.</param>
+        /// <returns>The Waypoint if found, null otherwise.</returns>
+        public Waypoint? GetWaypoint(string waypointName)
+        {
+            return Links[waypointName].Waypoint;
+        }
+
+        /// <summary>
         /// Add a new waypoint to the list of connections.
         /// If the waypoint already exists, do nothing.
         /// Otherwise, add the new waypoint to the list of connections and update the existing links.
@@ -155,10 +172,13 @@ namespace Randonneur
             */
             if (!_TbW.ContainsKey(newWaypoint.Name))
                 _TbW[newWaypoint.Name] = [];
-            _TbW[newWaypoint.Name][newWaypoint.TraceName] = newWaypoint;
+            if (!_TbW[newWaypoint.Name].ContainsKey(newWaypoint.TraceName))
+                _TbW[newWaypoint.Name][newWaypoint.TraceName] = newWaypoint;
+
             if (!_WbT.ContainsKey(newWaypoint.TraceName))
                 _WbT[newWaypoint.TraceName] = [];
-            _WbT[newWaypoint.TraceName][newWaypoint.Name] = newWaypoint;
+            if (!_WbT[newWaypoint.TraceName].ContainsKey(newWaypoint.Name))
+                _WbT[newWaypoint.TraceName][newWaypoint.Name] = newWaypoint;
 
             // update waypoints connection with the new waypoint
             foreach (KeyValuePair<string, Dictionary<string, Waypoint>> trace in _TbW)

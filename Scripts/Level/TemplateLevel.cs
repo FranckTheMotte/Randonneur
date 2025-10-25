@@ -238,10 +238,6 @@ public partial class TemplateLevel : Node2D
             Waypoint waypoint = links.Waypoint;
             MapVisible(false, LastReachedWaypoint);
 
-            // left the current waypoint
-            if (Player.Instance is not null)
-                Player.Instance.CurrentWaypoint = null;
-
             string gpxFile = Global.DefautlMapDirectory + waypoint.TraceName;
             SceneManager.instance?.ChangeLevel(gpxFile);
 

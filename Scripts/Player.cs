@@ -56,21 +56,45 @@ public partial class Player : CharacterBody2D
         MoveAndSlide();
     }
 
+    /// <summary>
+    /// Called when the player has chosen a new trail.
+    /// </summary>
+    /// <param name="waypointName">The name of the waypoint chosen.</param>
+    /// <remarks>
+    /// This method is called when the player has chosen a new trail.
+    /// It will enable the collision layer and mask of the junction
+    /// and move the player forward (or backward if the player is moving
+    /// backwards).
+    /// </remarks>
     private void _on_trail_junction_choice(string waypointName)
     {
         // Sanity checks
-        if (level == null || sol == null)
+        if (level == null || sol == null || CurrentWaypoint == null)
             return;
 
         // impossible to move on the same waypoint where the player is
-        if (CurrentWaypoint != null && CurrentWaypoint.Name != waypointName)
+        if (CurrentWaypoint.Name != waypointName)
         {
             level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, waypointName);
         }
         // TODO comment faire passer à travers la collison de la junction?
         SetCollisionLayerValue(Global.SolJunctionLayer, true);
         SetCollisionMaskValue(Global.SolJunctionLayer, true);
+
+        // move forward (default)
         Walk = 1;
+        Waypoint? TargetWaypoint = Waypoints.Instance.GetWaypoint(waypointName);
+        //CurrentWaypoint = Waypoints.Instance.GetWaypoint(CurrentWaypoint.Name);
+        if (TargetWaypoint != null && CurrentWaypoint != null)
+        {
+            string traceName = TargetWaypoint.TraceName;
+            // order of waypoints in the target trace determine the direction
+            if (TargetWaypoint.LevelOrder[traceName] < CurrentWaypoint.LevelOrder[traceName])
+            {
+                Walk = -1;
+            }
+        }
+        CurrentWaypoint = null;
     }
 
     /**
