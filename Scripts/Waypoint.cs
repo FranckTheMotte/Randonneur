@@ -71,6 +71,15 @@ namespace Randonneur
     }
 
     /// <summary>
+    /// Store the connected waypoint with trace used.
+    /// </summary>
+    internal class ConnectedWaypoint
+    {
+        public required string TraceName;
+        public required Waypoint Waypoint;
+    }
+
+    /// <summary>
     /// Store the connected waypoints of a waypoint.
     /// </summary>
     internal class WaypointsLinks
@@ -78,9 +87,9 @@ namespace Randonneur
         public required Waypoint Waypoint;
 
         /// <summary>
-        /// Connected waypoints, can be empty.
+        /// Connected waypoints with linked trace, can be empty.
         /// </summary>
-        public Dictionary<string, Waypoint> ConnectedWaypoints = [];
+        public Dictionary<string, ConnectedWaypoint> ConnectedWaypoints = [];
     }
 
     /// <summary>
@@ -105,21 +114,28 @@ namespace Randonneur
                 foreach (
                     KeyValuePair<
                         string,
-                        Waypoint
+                        ConnectedWaypoint
                     > connectedWaypoint in link.Value.ConnectedWaypoints
                 )
                 {
-                    GD.Print($"({connectedWaypoint.Value.TraceName}) - {connectedWaypoint.Key}");
+                    GD.Print(
+                        $"(Use {connectedWaypoint.Value.TraceName}) to go from {link.Key} to {connectedWaypoint.Key}"
+                    );
                 }
             }
             GD.Print($"======================================");
         }
 
         /// <summary>
-        /// Temporary dictionnaries to get reacheable waypoints by waypoint.
+        /// Temporary dictionaries to get reacheable waypoints by waypoint.
         /// </summary>
         private Dictionary<string, Dictionary<string, Waypoint>> _WbT = [];
         private Dictionary<string, Dictionary<string, Waypoint>> _TbW = [];
+
+        // From xml it can exist several waypoint from different traces, but for
+        // world map, we just need to have a single waypoint.
+        // First waypoint inserted IS the reference.
+        private Dictionary<string, Waypoint> _AggregateWaypoint = [];
 
         /// <summary>
         /// Singleton.
@@ -167,9 +183,8 @@ namespace Randonneur
         {
             Dictionary<string, int> traceProcessed = [];
 
-            /* new waypoint is add to Trace by Waypoint and
-               Waypoint by Trace dictionnaries.
-            */
+            /* new waypoint is added to Trace by Waypoint and
+               Waypoint by Trace dictionnaries. */
             if (!_TbW.ContainsKey(newWaypoint.Name))
                 _TbW[newWaypoint.Name] = [];
             if (!_TbW[newWaypoint.Name].ContainsKey(newWaypoint.TraceName))
@@ -179,6 +194,12 @@ namespace Randonneur
                 _WbT[newWaypoint.TraceName] = [];
             if (!_WbT[newWaypoint.TraceName].ContainsKey(newWaypoint.Name))
                 _WbT[newWaypoint.TraceName][newWaypoint.Name] = newWaypoint;
+
+            // Only one waypoint can be kept
+            if (!_AggregateWaypoint.ContainsKey(newWaypoint.Name))
+                _AggregateWaypoint[newWaypoint.Name] = newWaypoint;
+
+            Waypoint aggregateWaypoint = _AggregateWaypoint[newWaypoint.Name];
 
             // update waypoints connection with the new waypoint
             foreach (KeyValuePair<string, Dictionary<string, Waypoint>> trace in _TbW)
@@ -201,36 +222,47 @@ namespace Randonneur
                                 // Try to add reachable waypoint except itself
                                 if (wpt.Key != newWaypoint.Name)
                                 {
-                                    Dictionary<string, Waypoint> connectedWpts;
+                                    Dictionary<string, ConnectedWaypoint> connectedWpts;
                                     string wptName;
 
                                     // Don't add over existing connection
                                     if (!Links.ContainsKey(wpt.Key))
                                     {
-                                        Links[wpt.Key] = new WaypointsLinks()
-                                        {
-                                            Waypoint = wpt.Value,
-                                        };
+                                        Links[wpt.Key] = new() { Waypoint = wpt.Value };
                                     }
                                     connectedWpts = Links[wpt.Key].ConnectedWaypoints;
                                     if (!connectedWpts.ContainsKey(newWaypoint.Name))
                                     {
-                                        connectedWpts[newWaypoint.Name] = newWaypoint;
+                                        ConnectedWaypoint connWaypoint = new()
+                                        {
+                                            // required to use the trace of target to
+                                            // join the linked waypoint
+                                            TraceName = newWaypoint.TraceName,
+                                            Waypoint = aggregateWaypoint,
+                                        };
+                                        connectedWpts[newWaypoint.Name] = connWaypoint;
                                     }
 
                                     // new ?
                                     if (!Links.ContainsKey(newWaypoint.Name))
                                     {
-                                        Links[newWaypoint.Name] = new WaypointsLinks()
+                                        Links[newWaypoint.Name] = new()
                                         {
-                                            Waypoint = newWaypoint,
+                                            Waypoint = aggregateWaypoint,
                                         };
                                     }
                                     connectedWpts = Links[newWaypoint.Name].ConnectedWaypoints;
                                     wptName = Links[wpt.Key].Waypoint.Name;
                                     if (!connectedWpts.ContainsKey(wptName))
                                     {
-                                        connectedWpts[wptName] = Links[wpt.Key].Waypoint;
+                                        ConnectedWaypoint connWaypoint = new()
+                                        {
+                                            // required to use the trace of target to
+                                            // join the linked waypoint
+                                            TraceName = newWaypoint.TraceName,
+                                            Waypoint = Links[wpt.Key].Waypoint,
+                                        };
+                                        connectedWpts[wptName] = connWaypoint;
                                     }
 
                                     // to avoid useless loop

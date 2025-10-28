@@ -59,23 +59,23 @@ public partial class Player : CharacterBody2D
     /// <summary>
     /// Called when the player has chosen a new trail.
     /// </summary>
-    /// <param name="waypointName">The name of the waypoint chosen.</param>
+    /// <param name="destWaypointName">The name of the waypoint chosen.</param>
     /// <remarks>
     /// This method is called when the player has chosen a new trail.
     /// It will enable the collision layer and mask of the junction
     /// and move the player forward (or backward if the player is moving
     /// backwards).
     /// </remarks>
-    private void _on_trail_junction_choice(string waypointName)
+    private void _on_trail_junction_choice(string destWaypointName)
     {
         // Sanity checks
         if (level == null || sol == null || CurrentWaypoint == null)
             return;
 
         // impossible to move on the same waypoint where the player is
-        if (CurrentWaypoint.Name != waypointName)
+        if (CurrentWaypoint.Name != destWaypointName)
         {
-            level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, waypointName);
+            level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, destWaypointName);
         }
         // TODO comment faire passer à travers la collison de la junction?
         SetCollisionLayerValue(Global.SolJunctionLayer, true);
@@ -83,15 +83,20 @@ public partial class Player : CharacterBody2D
 
         // move forward (default)
         Walk = 1;
-        Waypoint? TargetWaypoint = Waypoints.Instance.GetWaypoint(waypointName);
-        //CurrentWaypoint = Waypoints.Instance.GetWaypoint(CurrentWaypoint.Name);
-        if (TargetWaypoint != null && CurrentWaypoint != null)
+
+        Waypoints waypoints = Waypoints.Instance;
+        if (waypoints.Links.TryGetValue(CurrentWaypoint.Name, out WaypointsLinks? links))
         {
-            string traceName = TargetWaypoint.TraceName;
-            // order of waypoints in the target trace determine the direction
-            if (TargetWaypoint.LevelOrder[traceName] < CurrentWaypoint.LevelOrder[traceName])
+            string traceName = links.ConnectedWaypoints[destWaypointName].TraceName;
+            Waypoint? TargetWaypoint = waypoints.GetWaypoint(destWaypointName);
+            CurrentWaypoint = waypoints.GetWaypoint(CurrentWaypoint.Name);
+            if (TargetWaypoint != null && CurrentWaypoint != null)
             {
-                Walk = -1;
+                // order of waypoints in the target trace determine the direction
+                if (TargetWaypoint.LevelOrder[traceName] < CurrentWaypoint.LevelOrder[traceName])
+                {
+                    Walk = -1;
+                }
             }
         }
         CurrentWaypoint = null;

@@ -31,7 +31,7 @@ public partial class TemplateLevel : Node2D
     /// <summary>
     /// Last waypoint reached by the player when the map is displayed.
     /// </summary>
-    public Waypoint? LastReachedWaypoint { get; private set; }
+    public Waypoint? CurrentWaypoint { get; private set; }
 
     /// <summary>
     /// Reference to the world map.
@@ -140,7 +140,7 @@ public partial class TemplateLevel : Node2D
             return;
         }
         GD.Print($"MAP ${Map.Name} VISIBLE {Map.Visible} (set to {Visible})");
-
+        Waypoints.Instance.DisplayLinks();
         Map.Visible = Visible;
         Map?.CollisionStatus(Visible);
 
@@ -171,10 +171,13 @@ public partial class TemplateLevel : Node2D
             if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
             {
                 foreach (
-                    KeyValuePair<string, Waypoint> connectedWaypoint in links.ConnectedWaypoints
+                    KeyValuePair<
+                        string,
+                        ConnectedWaypoint
+                    > connectedWaypoint in links.ConnectedWaypoints
                 )
                 {
-                    Waypoint waypoint = connectedWaypoint.Value;
+                    Waypoint waypoint = connectedWaypoint.Value.Waypoint;
                     MapJunctionArea junctionArea = waypoint.MapJunctionGfx;
                     if (junctionArea != null)
                     {
@@ -222,29 +225,34 @@ public partial class TemplateLevel : Node2D
         await Task.Delay(TimeSpan.FromMilliseconds(value));
     }
 
-    private void _on_trail_junction_choice_done(string waypointName)
+    private void _on_trail_junction_choice_done(string destWaypointName)
     {
         Waypoints waypoints = Waypoints.Instance;
 
         // Sanity checks
-        if (_fadeAnimation == null || waypoints == null)
+        if (_fadeAnimation == null || waypoints == null || CurrentWaypoint == null)
         {
             GD.PushWarning($"${nameof(_on_trail_junction_choice_done)}: sanity checks failed");
             return;
         }
 
-        if (waypoints.Links.TryGetValue(waypointName, out WaypointsLinks? links))
+        if (waypoints.Links.TryGetValue(CurrentWaypoint.Name, out WaypointsLinks? links))
         {
-            Waypoint waypoint = links.Waypoint;
-            MapVisible(false, LastReachedWaypoint);
+            MapVisible(false, CurrentWaypoint);
 
-            string gpxFile = Global.DefautlMapDirectory + waypoint.TraceName;
-            SceneManager.instance?.ChangeLevel(gpxFile);
+            string traceName = links.ConnectedWaypoints[destWaypointName].TraceName;
+            string gpxFile = Global.DefautlMapDirectory + traceName;
 
-            _fadeAnimation.Play("fade_in");
-            Sleep(500);
-            _fadeAnimation.Play("fade_out");
-            Sleep(500);
+            // need to change the scene?
+            if (traceName != CurrentWaypoint.TraceName)
+            {
+                SceneManager.instance?.ChangeLevel(gpxFile);
+
+                _fadeAnimation.Play("fade_in");
+                Sleep(500);
+                _fadeAnimation.Play("fade_out");
+                Sleep(500);
+            }
         }
     }
 
@@ -275,6 +283,6 @@ public partial class TemplateLevel : Node2D
         MapVisible(true, waypoint);
 
         // keep the location where player comes from.
-        LastReachedWaypoint = waypoint;
+        CurrentWaypoint = waypoint;
     }
 }

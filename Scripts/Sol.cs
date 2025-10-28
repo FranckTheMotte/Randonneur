@@ -74,6 +74,8 @@ public partial class Sol : StaticBody2D
             /* Add 2 points in order to display a solid ground */
             Vector2[] ground = new Vector2[CurrentTrack.TrackPoints.Length + 2];
 
+            string traceName = Path.GetFileName(gpxFile);
+
             int solLength = CurrentTrack.TrackPoints.Length;
             for (int i = 0; i < solLength; i++)
             {
@@ -91,14 +93,10 @@ public partial class Sol : StaticBody2D
                     Waypoint? TargetWaypoint = Waypoints.Instance.GetWaypoint(waypoint.Name);
                     if (TargetWaypoint != null)
                     {
-                        TargetWaypoint.LevelOrder[waypoint.TraceName] = i;
+                        TargetWaypoint.LevelOrder[traceName] = i;
                     }
 
-                    Area2D junctionArea = new()
-                    {
-                        Position = ground[i],
-                        Name = Path.GetFileName(gpxFile),
-                    };
+                    Area2D junctionArea = new() { Position = ground[i], Name = traceName };
                     // Use the junction collision layer
                     junctionArea.SetCollisionLayerValue(1, false);
                     junctionArea.SetCollisionLayerValue(Global.SolJunctionLayer, true);
@@ -109,11 +107,7 @@ public partial class Sol : StaticBody2D
                     junctionCollision.AddToGroup(_WaypointsGroup);
                     junctionArea.BodyEntered += delegate
                     {
-                        JunctionHandler(
-                            junctionCollision,
-                            Path.GetFileName(gpxFile),
-                            waypoint.GeographicCoord
-                        );
+                        JunctionHandler(junctionCollision, traceName, waypoint.GeographicCoord);
                     };
                     junctionArea.AddChild(junctionCollision);
                     AddChild(junctionArea);
