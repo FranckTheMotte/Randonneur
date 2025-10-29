@@ -16,4 +16,7 @@
   <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Randonneur.csproj" />
+  </ItemGroup>
 </Project>
