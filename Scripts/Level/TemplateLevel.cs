@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Godot;
 using Randonneur;
-using XmlGpx;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
@@ -134,7 +133,7 @@ public partial class TemplateLevel : Node2D
     /// </remarks>
     public void MapVisible(bool Visible, Waypoint? Waypoint = null)
     {
-        if (Map is null)
+        if (Map == null)
         {
             GD.PushError("Map is not instancied.");
             return;
@@ -162,7 +161,7 @@ public partial class TemplateLevel : Node2D
         Waypoints waypoints = Waypoints.Instance;
 
         // by default nothing can be selected
-        waypoints.DisableCollision();
+        Map?.DisableCollision();
 
         // Put White on  the reachable waypoints.
         if (Waypoint != null)
@@ -177,8 +176,8 @@ public partial class TemplateLevel : Node2D
                     > connectedWaypoint in links.ConnectedWaypoints
                 )
                 {
-                    Waypoint waypoint = connectedWaypoint.Value.Waypoint;
-                    MapJunctionArea junctionArea = waypoint.MapJunctionGfx;
+                    GfxWaypoint gfxWaypoint = (GfxWaypoint)connectedWaypoint.Value.Waypoint;
+                    MapJunctionArea junctionArea = gfxWaypoint.MapJunctionGfx;
                     if (junctionArea != null)
                     {
                         if (Visible)

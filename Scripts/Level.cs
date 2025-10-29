@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Godot;
-using XmlGpx;
 
 namespace Randonneur.Scripts
 {

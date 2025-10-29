@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using Godot;
 using Randonneur;
-using XmlGpx;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
@@ -139,7 +138,7 @@ public partial class MapGenerator(float width, float height) : Node
                         string key = waypoint.Name;
                         if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
                         {
-                            Waypoint connectedWaypoint = links.Waypoint;
+                            GfxWaypoint connectedWaypoint = (GfxWaypoint)links.Waypoint;
                             connectedWaypoint.Label.Position = trace[i];
                             connectedWaypoint.MapJunctionGfx.Setup(
                                 trace[i],

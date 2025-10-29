@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Godot;
-using XmlGpx;
 
 namespace Randonneur
 {
@@ -42,13 +41,6 @@ namespace Randonneur
         public List<GpxDestination> Destinations = [];
 
         /// <summary>
-        /// Gfx of junction (TODO unlock from junction type).
-        /// </summary>
-        public MapJunctionArea MapJunctionGfx = new();
-
-        public readonly Label Label = new();
-
-        /// <summary>
         /// Order of waypoints by trace.
         /// Key: trace name
         /// Value: integer, lower value = close from start
@@ -59,9 +51,6 @@ namespace Randonneur
         {
             // Configure a label without X,Y position
             this.Name = Name;
-            Label.Name = Label.Text = Name;
-            Label.ZIndex = 2;
-            Label.LabelSettings = new LabelSettings { FontColor = Colors.Black };
         }
 
         internal void FocusLandmark(bool value)
@@ -148,18 +137,6 @@ namespace Randonneur
             {
                 _instance ??= new Waypoints();
                 return _instance;
-            }
-        }
-
-        /// <summary>
-        /// Disable collision of all waypoints connected to a waypoint.
-        /// </summary>
-        public void DisableCollision()
-        {
-            foreach (KeyValuePair<string, WaypointsLinks> link in Links)
-            {
-                Waypoint waypoint = link.Value.Waypoint;
-                waypoint.MapJunctionGfx.SetupCollision(false);
             }
         }
 

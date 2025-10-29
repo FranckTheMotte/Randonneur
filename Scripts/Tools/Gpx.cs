@@ -21,7 +21,7 @@ using Godot;
 using Randonneur;
 using static Godot.GD;
 
-namespace XmlGpx
+namespace Randonneur
 {
     [XmlRoot(ElementName = "copyright", Namespace = "http://www.topografix.com/GPX/1/1")]
     public class Copyright
@@ -231,11 +231,6 @@ namespace XmlGpx
         public float Distance;
         public Direction Direction;
         public string Trail;
-    }
-
-    public class Junction(string Name) : Waypoint(Name)
-    {
-        internal float Distance; // Distance from start (meter)
     }
 
     public class Gpx

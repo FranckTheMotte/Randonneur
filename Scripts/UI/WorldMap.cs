@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using Randonneur;
 
 public partial class WorldMap : Control
 {
@@ -119,6 +120,20 @@ public partial class WorldMap : Control
                     GD.Print($"collision Name {collision?.Name} {!value}");
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Disable collision of all waypoints connected to a waypoint.
+    /// </summary>
+    public void DisableCollision()
+    {
+        Waypoints waypoints = Waypoints.Instance;
+
+        foreach (KeyValuePair<string, WaypointsLinks> link in waypoints.Links)
+        {
+            GfxWaypoint waypoint = (GfxWaypoint)link.Value.Waypoint;
+            waypoint.MapJunctionGfx.SetupCollision(false);
         }
     }
 }

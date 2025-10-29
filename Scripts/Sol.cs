@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Godot;
 using Randonneur;
-using XmlGpx;
 using static Godot.GD;
 
 public partial class Sol : StaticBody2D
