@@ -62,7 +62,7 @@ namespace Randonneur
     /// <summary>
     /// Store the connected waypoint with trace used.
     /// </summary>
-    internal class ConnectedWaypoint
+    public class ConnectedWaypoint
     {
         public required string TraceName;
         public required Waypoint Waypoint;
@@ -71,7 +71,7 @@ namespace Randonneur
     /// <summary>
     /// Store the connected waypoints of a waypoint.
     /// </summary>
-    internal class WaypointsLinks
+    public class WaypointsLinks
     {
         public required Waypoint Waypoint;
 
@@ -89,7 +89,7 @@ namespace Randonneur
         /// <summary>
         /// Store all possible connections between waypoints.
         /// </summary>
-        internal Dictionary<string, WaypointsLinks> Links { get; } = [];
+        public Dictionary<string, WaypointsLinks> Links { get; } = [];
 
         /// <summary>
         /// Display all waypoints name and the related connected waypoints
