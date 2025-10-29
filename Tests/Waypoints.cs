@@ -9,6 +9,7 @@ public class Tests
     // Default values
     static readonly float DefaultElevation = 0.0f;
     static readonly Godot.Vector2 DefaultGeographicCoord = new(1, 1);
+    static readonly Godot.Vector2 DefaultLevelCoord = new(10, 10);
 
     // Simple constants
     static readonly string SimpleName = "Simple";
@@ -18,6 +19,19 @@ public class Tests
     static readonly string TemplateName = "Simple";
     static readonly string TemplateTraceName = "Trace";
 
+    // traces
+    static readonly string TraceAName = TemplateTraceName + "A";
+
+    // Waypoint 1
+    static readonly Godot.Vector2[] WaypointLevelCoord = [new(10, 10), new(100, 100)];
+    static readonly Dictionary<string, int>[] WaypointLevelOrder =
+    {
+        new() { [TraceAName] = 1 },
+        new() { [TraceAName] = 2 },
+    };
+
+    static readonly Dictionary<string, int> Waypoint2LevelOrder = new() { [TraceAName] = 2 };
+
     [SetUp]
     public void Setup()
     {
@@ -26,6 +40,7 @@ public class Tests
         {
             Elevation = DefaultElevation,
             GeographicCoord = DefaultGeographicCoord,
+            LevelCoord = DefaultLevelCoord,
             TraceName = SimpleTraceName,
         };
 
@@ -34,14 +49,18 @@ public class Tests
         {
             Elevation = DefaultElevation,
             GeographicCoord = DefaultGeographicCoord,
-            TraceName = TemplateTraceName + "A",
+            LevelCoord = WaypointLevelCoord[0],
+            LevelOrder = WaypointLevelOrder[0],
+            TraceName = TraceAName,
         };
 
         Waypoint Waypoint2 = new(TemplateName + "2")
         {
             Elevation = DefaultElevation,
             GeographicCoord = DefaultGeographicCoord,
-            TraceName = TemplateTraceName + "A",
+            LevelCoord = WaypointLevelCoord[1],
+            LevelOrder = WaypointLevelOrder[1],
+            TraceName = TraceAName,
         };
         Waypoints links = Waypoints.Instance;
         links.Add(Waypoint1);
@@ -57,6 +76,7 @@ public class Tests
         Assert.That(SimpleWaypoint, Is.Not.Null);
         Assert.That(SimpleWaypoint?.Elevation, Is.EqualTo(DefaultElevation));
         Assert.That(SimpleWaypoint?.GeographicCoord, Is.EqualTo(DefaultGeographicCoord));
+        Assert.That(SimpleWaypoint?.LevelCoord, Is.EqualTo(DefaultLevelCoord));
         Assert.That(SimpleWaypoint?.Name, Is.EqualTo(SimpleName));
         Assert.That(SimpleWaypoint?.TraceName, Is.EqualTo(SimpleTraceName));
     }
@@ -76,6 +96,8 @@ public class Tests
             Waypoint currentWaypoint = link.Value.Waypoint;
             Assert.That(currentWaypoint?.Elevation, Is.EqualTo(DefaultElevation));
             Assert.That(currentWaypoint?.GeographicCoord, Is.EqualTo(DefaultGeographicCoord));
+            Assert.That(currentWaypoint?.LevelCoord, Is.EqualTo(WaypointLevelCoord[i - 1]));
+            Assert.That(currentWaypoint?.LevelOrder, Is.EqualTo(WaypointLevelOrder[i - 1]));
             Assert.That(currentWaypoint?.Name, Is.EqualTo(TemplateName + i));
             Assert.That(currentWaypoint?.TraceName, Is.EqualTo(TemplateTraceName + "A"));
 
@@ -93,9 +115,13 @@ public class Tests
                 switch (i)
                 {
                     case 1:
+                        Assert.That(destWaypoint.LevelCoord, Is.EqualTo(WaypointLevelCoord[1]));
+                        Assert.That(destWaypoint.LevelOrder, Is.EqualTo(WaypointLevelOrder[1]));
                         Assert.That(destWaypoint.Name, Is.EqualTo(TemplateName + 2));
                         break;
                     case 2:
+                        Assert.That(destWaypoint.LevelCoord, Is.EqualTo(WaypointLevelCoord[0]));
+                        Assert.That(destWaypoint.LevelOrder, Is.EqualTo(WaypointLevelOrder[0]));
                         Assert.That(destWaypoint.Name, Is.EqualTo(TemplateName + 1));
                         break;
                 }
