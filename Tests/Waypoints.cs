@@ -2,35 +2,43 @@
 
 namespace TestWaypoints;
 
-public class Tests
+// Default values
+file static class Default
+{
+    // Generic waypoint constants
+    public static readonly string TemplateName = "Simple";
+    public static readonly string TemplateTraceName = "Trace";
+
+    public static readonly float Elevation = 0.0f;
+    public static readonly Godot.Vector2 GeographicCoord = new(1, 1);
+    public static readonly Godot.Vector2 LevelCoord = new(10, 10);
+
+    // traces
+    public static readonly string TraceAName = Default.TemplateTraceName + "A";
+    public static readonly string TraceBName = Default.TemplateTraceName + "B";
+
+}
+
+public class SimpleTests
 {
     Waypoint? SimpleWaypoint;
-
-    // Default values
-    static readonly float DefaultElevation = 0.0f;
-    static readonly Godot.Vector2 DefaultGeographicCoord = new(1, 1);
-    static readonly Godot.Vector2 DefaultLevelCoord = new(10, 10);
 
     // Simple constants
     static readonly string SimpleName = "Simple";
     static readonly string SimpleTraceName = "TraceA";
 
-    // Generic waypoint constants
-    static readonly string TemplateName = "Simple";
-    static readonly string TemplateTraceName = "Trace";
-
-    // traces
-    static readonly string TraceAName = TemplateTraceName + "A";
-
-    // Waypoint 1
+    // Level reference
     static readonly Godot.Vector2[] WaypointLevelCoord = [new(10, 10), new(100, 100)];
     static readonly Dictionary<string, int>[] WaypointLevelOrder =
     {
-        new() { [TraceAName] = 1 },
-        new() { [TraceAName] = 2 },
+        new() { [Default.TraceAName] = 1 },
+        new() { [Default.TraceAName] = 2 },
     };
 
-    static readonly Dictionary<string, int> Waypoint2LevelOrder = new() { [TraceAName] = 2 };
+    static readonly Dictionary<string, int> Waypoint2LevelOrder = new()
+    {
+        [Default.TraceAName] = 2,
+    };
 
     [SetUp]
     public void Setup()
@@ -38,29 +46,29 @@ public class Tests
         // simple test
         SimpleWaypoint = new(SimpleName)
         {
-            Elevation = DefaultElevation,
-            GeographicCoord = DefaultGeographicCoord,
-            LevelCoord = DefaultLevelCoord,
+            Elevation = Default.Elevation,
+            GeographicCoord = Default.GeographicCoord,
+            LevelCoord = Default.LevelCoord,
             TraceName = SimpleTraceName,
         };
 
         // a trace two waypoints
-        Waypoint Waypoint1 = new(TemplateName + "1")
+        Waypoint Waypoint1 = new(Default.TemplateName + "1")
         {
-            Elevation = DefaultElevation,
-            GeographicCoord = DefaultGeographicCoord,
+            Elevation = Default.Elevation,
+            GeographicCoord = Default.GeographicCoord,
             LevelCoord = WaypointLevelCoord[0],
             LevelOrder = WaypointLevelOrder[0],
-            TraceName = TraceAName,
+            TraceName = Default.TraceAName,
         };
 
-        Waypoint Waypoint2 = new(TemplateName + "2")
+        Waypoint Waypoint2 = new(Default.TemplateName + "2")
         {
-            Elevation = DefaultElevation,
-            GeographicCoord = DefaultGeographicCoord,
+            Elevation = Default.Elevation,
+            GeographicCoord = Default.GeographicCoord,
             LevelCoord = WaypointLevelCoord[1],
             LevelOrder = WaypointLevelOrder[1],
-            TraceName = TraceAName,
+            TraceName = Default.TraceAName,
         };
         Waypoints links = (Waypoints)Waypoints.Instance;
         links.Add(Waypoint1);
@@ -80,9 +88,9 @@ public class Tests
     public void SimpleTest()
     {
         Assert.That(SimpleWaypoint, Is.Not.Null);
-        Assert.That(SimpleWaypoint?.Elevation, Is.EqualTo(DefaultElevation));
-        Assert.That(SimpleWaypoint?.GeographicCoord, Is.EqualTo(DefaultGeographicCoord));
-        Assert.That(SimpleWaypoint?.LevelCoord, Is.EqualTo(DefaultLevelCoord));
+        Assert.That(SimpleWaypoint?.Elevation, Is.EqualTo(Default.Elevation));
+        Assert.That(SimpleWaypoint?.GeographicCoord, Is.EqualTo(Default.GeographicCoord));
+        Assert.That(SimpleWaypoint?.LevelCoord, Is.EqualTo(Default.LevelCoord));
         Assert.That(SimpleWaypoint?.Name, Is.EqualTo(SimpleName));
         Assert.That(SimpleWaypoint?.TraceName, Is.EqualTo(SimpleTraceName));
     }
@@ -101,12 +109,12 @@ public class Tests
         foreach (KeyValuePair<string, WaypointsLinks> link in links)
         {
             Waypoint currentWaypoint = link.Value.Waypoint;
-            Assert.That(currentWaypoint?.Elevation, Is.EqualTo(DefaultElevation));
-            Assert.That(currentWaypoint?.GeographicCoord, Is.EqualTo(DefaultGeographicCoord));
+            Assert.That(currentWaypoint?.Elevation, Is.EqualTo(Default.Elevation));
+            Assert.That(currentWaypoint?.GeographicCoord, Is.EqualTo(Default.GeographicCoord));
             Assert.That(currentWaypoint?.LevelCoord, Is.EqualTo(WaypointLevelCoord[i - 1]));
             Assert.That(currentWaypoint?.LevelOrder, Is.EqualTo(WaypointLevelOrder[i - 1]));
-            Assert.That(currentWaypoint?.Name, Is.EqualTo(TemplateName + i));
-            Assert.That(currentWaypoint?.TraceName, Is.EqualTo(TemplateTraceName + "A"));
+            Assert.That(currentWaypoint?.Name, Is.EqualTo(Default.TemplateName + i));
+            Assert.That(currentWaypoint?.TraceName, Is.EqualTo(Default.TemplateTraceName + "A"));
 
             // the waypoint must be connected
             foreach (
@@ -117,23 +125,152 @@ public class Tests
             )
             {
                 Waypoint destWaypoint = connectedWaypoint.Value.Waypoint;
-                Assert.That(destWaypoint.Elevation, Is.EqualTo(DefaultElevation));
-                Assert.That(destWaypoint.GeographicCoord, Is.EqualTo(DefaultGeographicCoord));
+                Assert.That(destWaypoint.Elevation, Is.EqualTo(Default.Elevation));
+                Assert.That(destWaypoint.GeographicCoord, Is.EqualTo(Default.GeographicCoord));
                 switch (i)
                 {
                     case 1:
                         Assert.That(destWaypoint.LevelCoord, Is.EqualTo(WaypointLevelCoord[1]));
                         Assert.That(destWaypoint.LevelOrder, Is.EqualTo(WaypointLevelOrder[1]));
-                        Assert.That(destWaypoint.Name, Is.EqualTo(TemplateName + 2));
+                        Assert.That(destWaypoint.Name, Is.EqualTo(Default.TemplateName + 2));
                         break;
                     case 2:
                         Assert.That(destWaypoint.LevelCoord, Is.EqualTo(WaypointLevelCoord[0]));
                         Assert.That(destWaypoint.LevelOrder, Is.EqualTo(WaypointLevelOrder[0]));
-                        Assert.That(destWaypoint.Name, Is.EqualTo(TemplateName + 1));
+                        Assert.That(destWaypoint.Name, Is.EqualTo(Default.TemplateName + 1));
                         break;
                 }
-                Assert.That(connectedWaypoint.Value.TraceName, Is.EqualTo(TemplateTraceName + "A"));
-                Assert.That(destWaypoint.TraceName, Is.EqualTo(TemplateTraceName + "A"));
+                Assert.That(
+                    connectedWaypoint.Value.TraceName,
+                    Is.EqualTo(Default.TemplateTraceName + "A")
+                );
+                Assert.That(destWaypoint.TraceName, Is.EqualTo(Default.TemplateTraceName + "A"));
+            }
+
+            i++;
+        }
+    }
+}
+
+public class TwoTraces
+{
+    static readonly Waypoint A1 = new("WPT1")
+    {
+        TraceName = Default.TraceAName,
+        Elevation = Default.Elevation,
+        GeographicCoord = new(0, 0),
+        LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 1 },
+        LevelCoord = Default.LevelCoord,
+    };
+    static readonly Waypoint A2 = new("WPT2")
+    {
+        TraceName = Default.TraceAName,
+        Elevation = Default.Elevation,
+        GeographicCoord = new(10, 10),
+        LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 2 },
+        LevelCoord = Default.LevelCoord,
+    };
+    static readonly Waypoint B1 = new("WPT2")
+    {
+        TraceName = Default.TraceBName,
+        Elevation = Default.Elevation,
+        GeographicCoord = new(10, 10),
+        LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 1 },
+        LevelCoord = Default.LevelCoord,
+    };
+
+    static readonly Waypoint B2 = new("WPT3")
+    {
+        TraceName = Default.TraceBName,
+        Elevation = Default.Elevation,
+        GeographicCoord = new(100, 100),
+        LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 2 },
+        LevelCoord = Default.LevelCoord,
+    };
+
+    readonly Waypoint[] TestedWaypoints = [A1, A2, B1, B2];
+    readonly Waypoint[][] LinkedWaypoints =
+    [
+        [A2],
+        [A1, B2],
+        [B1],
+    ];
+    readonly int[] NbConnectedWaypoints = [1, 2, 0, 1];
+
+    static readonly Dictionary<string, int> Waypoint2LevelOrder = new()
+    {
+        [Default.TraceAName] = 2,
+    };
+
+    [SetUp]
+    public void Setup()
+    {
+        Waypoints links = (Waypoints)Waypoints.Instance;
+        links.Add(A1);
+        links.Add(A2);
+        links.Add(B1);
+        links.Add(B2);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Waypoints.Reset();
+    }
+
+    /// <summary>
+    /// Test 2 traces with 3 waypoints (one common waypoint)
+    /// </summary>
+    [Test]
+    public void Test2TracesWithWaypoints()
+    {
+        Dictionary<string, WaypointsLinks>? links = Waypoints.Instance.Links;
+        Assert.That(links, Is.Not.Null);
+        Assert.That(links!.Count, Is.EqualTo(3));
+
+        int i = 0;
+        foreach (KeyValuePair<string, WaypointsLinks> link in links)
+        {
+            Waypoint currentWaypoint = link.Value.Waypoint;
+
+            // B1 must be skipped
+            if (i == 2)
+            {
+                i++;
+                continue;
+            }
+            Console.Write($"i {i} name {currentWaypoint?.Name} tested {TestedWaypoints[i].Name}\n");
+            Assert.That(currentWaypoint?.Elevation, Is.EqualTo(TestedWaypoints[i].Elevation));
+            Assert.That(
+                currentWaypoint?.GeographicCoord,
+                Is.EqualTo(TestedWaypoints[i].GeographicCoord)
+            );
+            Assert.That(currentWaypoint?.LevelCoord, Is.EqualTo(TestedWaypoints[i].LevelCoord));
+            Assert.That(currentWaypoint?.LevelOrder, Is.EqualTo(TestedWaypoints[i].LevelOrder));
+            Assert.That(currentWaypoint?.Name, Is.EqualTo(TestedWaypoints[i].Name));
+            Assert.That(currentWaypoint?.TraceName, Is.EqualTo(TestedWaypoints[i].TraceName));
+
+            // the waypoint must be connected
+            Assert.That(link.Value.ConnectedWaypoints.Count, Is.EqualTo(NbConnectedWaypoints[i]));
+            int j = 0;
+            foreach (
+                KeyValuePair<
+                    string,
+                    ConnectedWaypoint
+                > connectedWaypoint in link.Value.ConnectedWaypoints
+            )
+            {
+                Waypoint destWaypoint = connectedWaypoint.Value.Waypoint;
+                Assert.That(destWaypoint.Elevation, Is.EqualTo(LinkedWaypoints[i][j].Elevation));
+                Assert.That(
+                    destWaypoint.GeographicCoord,
+                    Is.EqualTo(LinkedWaypoints[i][j].GeographicCoord)
+                );
+                Assert.That(destWaypoint.LevelCoord, Is.EqualTo(LinkedWaypoints[i][j].LevelCoord));
+                Assert.That(destWaypoint.LevelOrder, Is.EqualTo(LinkedWaypoints[i][j].LevelOrder));
+                Assert.That(destWaypoint.Name, Is.EqualTo(LinkedWaypoints[i][j].Name));
+                Assert.That(destWaypoint.TraceName, Is.EqualTo(LinkedWaypoints[i][j].TraceName));
+                j++;
             }
 
             i++;
