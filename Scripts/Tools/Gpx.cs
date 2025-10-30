@@ -410,7 +410,7 @@ namespace Randonneur
                         string? type = waypoint.Extensions.Type;
                         if (type != null)
                         {
-                            Waypoints links = Waypoints.Instance;
+                            Waypoints links = (Waypoints)Waypoints.Instance;
                             string traceFileName = Path.GetFileName(xmlFile);
 
                             switch (type)

@@ -62,9 +62,15 @@ public class Tests
             LevelOrder = WaypointLevelOrder[1],
             TraceName = TraceAName,
         };
-        Waypoints links = Waypoints.Instance;
+        Waypoints links = (Waypoints)Waypoints.Instance;
         links.Add(Waypoint1);
         links.Add(Waypoint2);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Waypoints.Reset();
     }
 
     /// <summary>
@@ -87,8 +93,9 @@ public class Tests
     [Test]
     public void TraceWith2Waypoints()
     {
-        Dictionary<string, WaypointsLinks> links = Waypoints.Instance.Links;
-        Assert.That(links.Count, Is.EqualTo(2));
+        Dictionary<string, WaypointsLinks>? links = Waypoints.Instance.Links;
+        Assert.That(links, Is.Not.Null);
+        Assert.That(links!.Count, Is.EqualTo(2));
 
         int i = 1;
         foreach (KeyValuePair<string, WaypointsLinks> link in links)

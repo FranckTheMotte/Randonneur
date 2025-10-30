@@ -82,20 +82,34 @@ namespace Randonneur
     }
 
     /// <summary>
+    /// Interface to use Waypoints singleton.
+    /// Allow MOCK uses for unit tests.
+    /// </summary>
+    public interface IWaypoints
+    {
+        Dictionary<string, WaypointsLinks>? Links { get; set; }
+        void DisplayLinks();
+        Waypoint? GetWaypoint(string waypointName);
+        void Add(Waypoint newWaypoint);
+    }
+
+    /// <summary>
     /// Class to store all possible waypoints connections.
     /// </summary>
-    public class Waypoints
+    public class Waypoints : IWaypoints
     {
         /// <summary>
         /// Store all possible connections between waypoints.
         /// </summary>
-        public Dictionary<string, WaypointsLinks> Links { get; } = [];
+        public Dictionary<string, WaypointsLinks>? Links { get; set; } = [];
 
         /// <summary>
         /// Display all waypoints name and the related connected waypoints
         /// </summary>
         public void DisplayLinks()
         {
+            if (Links == null)
+                return;
             GD.Print($"======================================");
             foreach (KeyValuePair<string, WaypointsLinks> link in Links)
             {
@@ -118,27 +132,21 @@ namespace Randonneur
         /// <summary>
         /// Temporary dictionaries to get reacheable waypoints by waypoint.
         /// </summary>
-        private Dictionary<string, Dictionary<string, Waypoint>> _WbT = [];
-        private Dictionary<string, Dictionary<string, Waypoint>> _TbW = [];
+        private Dictionary<string, Dictionary<string, Waypoint>>? _WbT = [];
+        private Dictionary<string, Dictionary<string, Waypoint>>? _TbW = [];
 
         // From xml it can exist several waypoint from different traces, but for
         // world map, we just need to have a single waypoint.
         // First waypoint inserted IS the reference.
-        private Dictionary<string, Waypoint> _AggregateWaypoint = [];
+        private Dictionary<string, Waypoint>? _AggregateWaypoint = [];
 
         /// <summary>
         /// Singleton.
         /// </summary>
-        private static Waypoints? _instance;
-
-        public static Waypoints Instance
-        {
-            get
-            {
-                _instance ??= new Waypoints();
-                return _instance;
-            }
-        }
+        private static readonly Lazy<Waypoints> _instance = new Lazy<Waypoints>(() =>
+            new Waypoints()
+        );
+        public static IWaypoints Instance => _instance.Value;
 
         /// <summary>
         /// Get a Waypoint from WaypointsLinks with a waypoint name.
@@ -147,7 +155,7 @@ namespace Randonneur
         /// <returns>The Waypoint if found, null otherwise.</returns>
         public Waypoint? GetWaypoint(string waypointName)
         {
-            return Links[waypointName].Waypoint;
+            return Links?[waypointName].Waypoint;
         }
 
         /// <summary>
@@ -159,6 +167,14 @@ namespace Randonneur
         public void Add(Waypoint newWaypoint)
         {
             Dictionary<string, int> traceProcessed = [];
+
+            if (_TbW == null || _WbT == null || Links == null || _AggregateWaypoint == null)
+            {
+                Console.Write(
+                    "Failed to add a waypoint (missing reallocations) maybe a reset during unit test?"
+                );
+                return;
+            }
 
             /* new waypoint is added to Trace by Waypoint and
                Waypoint by Trace dictionnaries. */
@@ -249,6 +265,20 @@ namespace Randonneur
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Reset internal data (used for unit tests).
+        /// </summary>
+        internal static void Reset()
+        {
+            if (_instance.IsValueCreated)
+            {
+                _instance.Value.Links = [];
+                _instance.Value._WbT = [];
+                _instance.Value._TbW = [];
+                _instance.Value._AggregateWaypoint = [];
             }
         }
     }

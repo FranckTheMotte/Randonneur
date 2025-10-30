@@ -134,9 +134,12 @@ public partial class MapGenerator(float width, float height) : Node
                     if (waypoint != null)
                     {
                         // Complete the waypoint with graphical position
-                        Waypoints waypoints = Waypoints.Instance;
+                        Waypoints waypoints = (Waypoints)Waypoints.Instance;
                         string key = waypoint.Name;
-                        if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
+                        if (
+                            waypoints.Links != null
+                            && waypoints.Links.TryGetValue(key, out WaypointsLinks? links)
+                        )
                         {
                             GfxWaypoint connectedWaypoint = (GfxWaypoint)links.Waypoint;
                             connectedWaypoint.Label.Position = trace[i];

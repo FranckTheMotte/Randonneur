@@ -158,13 +158,13 @@ public partial class TemplateLevel : Node2D
             }
         }
 
-        Waypoints waypoints = Waypoints.Instance;
+        Waypoints waypoints = (Waypoints)Waypoints.Instance;
 
         // by default nothing can be selected
         Map?.DisableCollision();
 
         // Put White on  the reachable waypoints.
-        if (Waypoint != null)
+        if (Waypoint != null && waypoints.Links != null)
         {
             string key = Waypoint.Name;
             if (waypoints.Links.TryGetValue(key, out WaypointsLinks? links))
@@ -226,10 +226,15 @@ public partial class TemplateLevel : Node2D
 
     private void _on_trail_junction_choice_done(string destWaypointName)
     {
-        Waypoints waypoints = Waypoints.Instance;
+        Waypoints waypoints = (Waypoints)Waypoints.Instance;
 
         // Sanity checks
-        if (_fadeAnimation == null || waypoints == null || CurrentWaypoint == null)
+        if (
+            _fadeAnimation == null
+            || waypoints == null
+            || CurrentWaypoint == null
+            || waypoints.Links == null
+        )
         {
             GD.PushWarning($"${nameof(_on_trail_junction_choice_done)}: sanity checks failed");
             return;

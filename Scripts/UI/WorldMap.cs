@@ -128,7 +128,13 @@ public partial class WorldMap : Control
     /// </summary>
     public void DisableCollision()
     {
-        Waypoints waypoints = Waypoints.Instance;
+        Waypoints waypoints = (Waypoints)Waypoints.Instance;
+
+        if (waypoints.Links == null)
+        {
+            GD.PushWarning("Failed to disable collision.");
+            return;
+        }
 
         foreach (KeyValuePair<string, WaypointsLinks> link in waypoints.Links)
         {

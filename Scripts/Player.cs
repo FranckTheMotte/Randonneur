@@ -84,8 +84,11 @@ public partial class Player : CharacterBody2D
         // move forward (default)
         Walk = 1;
 
-        Waypoints waypoints = Waypoints.Instance;
-        if (waypoints.Links.TryGetValue(CurrentWaypoint.Name, out WaypointsLinks? links))
+        Waypoints waypoints = (Waypoints)Waypoints.Instance;
+        if (
+            waypoints.Links != null
+            && waypoints.Links.TryGetValue(CurrentWaypoint.Name, out WaypointsLinks? links)
+        )
         {
             string traceName = links.ConnectedWaypoints[destWaypointName].TraceName;
             Waypoint? TargetWaypoint = waypoints.GetWaypoint(destWaypointName);
