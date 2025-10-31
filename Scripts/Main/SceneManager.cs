@@ -130,19 +130,26 @@ public partial class SceneManager : Node
 
         GD.Print($"ChangeLevel {GpxFile}");
 
-        // try to find the level in the dictionary
-        if (Scenes.TryGetValue(GpxFile, out Level? level))
+        // try to find the level in the dictionary (preload)
+        Level? nextLevel = null;
+        if (Scenes.TryGetValue(GpxFile, out nextLevel))
         {
-            GD.Print($"Level {GpxFile} found!");
+            GD.Print($"Preload level {GpxFile} found!");
+        }
+        else
+        {
+            // load new level
+            LoadScenes(GpxFile);
+            Scenes.TryGetValue(GpxFile, out nextLevel);
+        }
 
-            // if the level is valid, change the scene
-            if (level != null && level.Scene != null)
-            {
-                Window root = GetTree().Root;
-                root.RemoveChild(CurrentScene);
-                root.AddChild(level.Scene);
-                CurrentScene = level.Scene;
-            }
+        // if the level is valid, change the scene
+        if (nextLevel != null && nextLevel.Scene != null)
+        {
+            Window root = GetTree().Root;
+            root.RemoveChild(CurrentScene);
+            root.AddChild(nextLevel.Scene);
+            CurrentScene = nextLevel.Scene;
         }
     }
 
