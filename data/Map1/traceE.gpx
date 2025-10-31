@@ -28,6 +28,8 @@
     <extensions>
         <type>junction</type>
         <junctions>
+            <gpxfile>traceC.gpx</gpxfile>
+            <gpxfile>traceD.gpx</gpxfile>
         </junctions>
         <start>false</start>
     </extensions>
