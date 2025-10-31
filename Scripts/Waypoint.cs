@@ -110,10 +110,10 @@ namespace Randonneur
         {
             if (Links == null)
                 return;
-            GD.Print($"======================================");
+            Console.Write("======================================\n");
             foreach (KeyValuePair<string, WaypointsLinks> link in Links)
             {
-                GD.Print($"Waypoint {link.Key} connected to: ");
+                Console.Write($"Waypoint {link.Key} connected to:\n");
                 foreach (
                     KeyValuePair<
                         string,
@@ -121,12 +121,12 @@ namespace Randonneur
                     > connectedWaypoint in link.Value.ConnectedWaypoints
                 )
                 {
-                    GD.Print(
-                        $"(Use {connectedWaypoint.Value.TraceName}) to go from {link.Key} to {connectedWaypoint.Key}"
+                    Console.Write(
+                        $"(Use {connectedWaypoint.Value.TraceName}) to go from {link.Key} to {connectedWaypoint.Key}\n"
                     );
                 }
             }
-            GD.Print($"======================================");
+            Console.Write("======================================\n");
         }
 
         /// <summary>
