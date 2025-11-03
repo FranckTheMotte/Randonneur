@@ -345,6 +345,7 @@ namespace Randonneur
         {
             XmlGpx gpx = new();
             xmlFile = ProjectSettings.GlobalizePath(xmlFile);
+            Waypoints links = (Waypoints)Waypoints.Instance;
 
             // Deserialize to object
             XmlSerializer serializer = new(typeof(XmlGpx));
@@ -410,7 +411,6 @@ namespace Randonneur
                         string? type = waypoint.Extensions.Type;
                         if (type != null)
                         {
-                            Waypoints links = (Waypoints)Waypoints.Instance;
                             string traceFileName = Path.GetFileName(xmlFile);
 
                             switch (type)
@@ -500,7 +500,7 @@ namespace Randonneur
                 }
 
                 TrackPoints[i].Coord = new Vector2(latitude, longitude);
-                TrackPoints[i].Waypoint = XWaypoints.GetWaypoint(TrackPoints[i].Coord);
+                TrackPoints[i].Waypoint = links.GetWaypoint(TrackPoints[i].Coord);
 
                 y_ele =
                     (

@@ -25,10 +25,15 @@ public partial class Sol : StaticBody2D
     {
         foreach (Waypoint wpt in _trailJunctions)
         {
-            DrawCircle(wpt.LevelCoord, 10.0f, Colors.Blue);
+            DrawCircle(wpt.LevelCoord[wpt.TraceName], 10.0f, Colors.Blue);
             Font defaultFont = ThemeDB.FallbackFont;
             int defaultFontSize = ThemeDB.FallbackFontSize;
-            DrawString(defaultFont, wpt.LevelCoord, wpt.Name, modulate: new Color(200, 0, 0));
+            DrawString(
+                defaultFont,
+                wpt.LevelCoord[wpt.TraceName],
+                wpt.Name,
+                modulate: new Color(200, 0, 0)
+            );
         }
         base._Draw();
     }
@@ -85,7 +90,7 @@ public partial class Sol : StaticBody2D
                 if (waypoint != null)
                 {
                     // TODO: here only to display a graphic object for junction
-                    waypoint.LevelCoord = ground[i];
+                    waypoint.LevelCoord[traceName] = ground[i];
                     _trailJunctions.Add(waypoint);
 
                     // Level order is the same as ground point index
@@ -106,7 +111,7 @@ public partial class Sol : StaticBody2D
                     junctionCollision.AddToGroup(_WaypointsGroup);
                     junctionArea.BodyEntered += delegate
                     {
-                        JunctionHandler(junctionCollision, traceName, waypoint.GeographicCoord);
+                        JunctionHandler(junctionCollision, traceName, waypoint.Name);
                     };
                     junctionArea.AddChild(junctionCollision);
                     AddChild(junctionArea);
@@ -121,11 +126,11 @@ public partial class Sol : StaticBody2D
             sol.Polygon = ground;
             solCollision.Polygon = sol.Polygon;
 
-            /* player start position */
+            /* default player start position */
             Vector2 position = Player.Position;
             CollisionShape2D playerCollisionShape = Player.GetNode<CollisionShape2D>("Collision");
 
-            position.X = 0.00f;
+            position.X = 30.00f;
             /* Align player position with half of the collision shape size (don't forget the player rescaling) */
             position.Y =
                 ground[0].Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Player.Scale.Y);
@@ -145,12 +150,8 @@ public partial class Sol : StaticBody2D
     /// </summary>
     /// <param name="JunctionCollision">Collision shape of the triggered junction.</param>
     /// <param name="TrackName">Contains the name of the gpx file.</param>
-    /// <param name="Coord">Geographical coord of the waypoint (key to retrieve waypoint).</param>
-    private void JunctionHandler(
-        CollisionShape2D JunctionCollision,
-        string TrackName,
-        Vector2 Coord
-    )
+    /// <param name="Name">Name of the waypoint (key to retrieve waypoint).</param>
+    private void JunctionHandler(CollisionShape2D JunctionCollision, string TrackName, string Name)
     {
         /* Reenable collisions of Waypoints group.
            Maybe there is a better method but as the collision can occurs several
@@ -167,12 +168,8 @@ public partial class Sol : StaticBody2D
             collision.SetDeferred("disabled", false);
         }
 
-        Waypoint? waypoint = CurrentTrack?.XWaypoints.GetWaypoint(Coord);
-        if (waypoint is not null)
-        {
-            Player?.DisplayJunction(TrackName, Coord);
-            // avoid useless collisions.
-            JunctionCollision.SetDeferred("disabled", true);
-        }
+        Player?.DisplayJunction(TrackName, Name);
+        // avoid useless collisions.
+        JunctionCollision.SetDeferred("disabled", true);
     }
 }

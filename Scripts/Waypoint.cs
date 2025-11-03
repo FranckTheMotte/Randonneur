@@ -28,7 +28,7 @@ namespace Randonneur
         /// <summary>
         /// Level coordinates (x, y)
         /// </summary>
-        public Vector2 LevelCoord;
+        public Dictionary<string, Vector2> LevelCoord { get; set; } = [];
 
         /// <summary>
         /// Elevation in meter.
@@ -90,6 +90,9 @@ namespace Randonneur
         Dictionary<string, WaypointsLinks>? Links { get; set; }
         void DisplayLinks();
         Waypoint? GetWaypoint(string waypointName);
+
+        Waypoint? GetWaypoint(Vector2 geographicCoord);
+
         void Add(Waypoint newWaypoint);
     }
 
@@ -156,6 +159,29 @@ namespace Randonneur
         public Waypoint? GetWaypoint(string waypointName)
         {
             return Links?[waypointName].Waypoint;
+        }
+
+        /// <summary>
+        /// Get a Waypoint from WaypointsLinks with geographical coord.
+        /// </summary>
+        /// <param name="geographicCoord">Geographical coordonate of waypoint.</param>
+        /// <returns>The Waypoint if found, null otherwise.</returns>
+        public Waypoint? GetWaypoint(Vector2 geographicCoord)
+        {
+            if (Links == null)
+                return null;
+
+            Waypoint? waypoint = null;
+
+            foreach (KeyValuePair<string, WaypointsLinks> link in Links)
+            {
+                if (link.Value.Waypoint.GeographicCoord == geographicCoord)
+                {
+                    waypoint = link.Value.Waypoint;
+                    break;
+                }
+            }
+            return waypoint;
         }
 
         /// <summary>

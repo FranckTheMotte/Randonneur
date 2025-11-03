@@ -1,4 +1,5 @@
-﻿using Randonneur;
+﻿using System.Formats.Asn1;
+using Randonneur;
 
 namespace TestWaypoints;
 
@@ -45,8 +46,11 @@ public class SimpleTests
         {
             Elevation = Default.Elevation,
             GeographicCoord = Default.GeographicCoord,
-            LevelCoord = Default.LevelCoord,
             TraceName = SimpleTraceName,
+            LevelCoord = new Dictionary<string, Godot.Vector2>
+            {
+                [SimpleTraceName] = Default.LevelCoord,
+            },
         };
 
         // a trace two waypoints
@@ -54,19 +58,25 @@ public class SimpleTests
         {
             Elevation = Default.Elevation,
             GeographicCoord = Default.GeographicCoord,
-            LevelCoord = WaypointLevelCoord[0],
             LevelOrder = WaypointLevelOrder[0],
-            TraceName = Default.TraceAName,
+            LevelCoord = new Dictionary<string, Godot.Vector2>
+            {
+                [SimpleTraceName] = Default.LevelCoord,
+            },
         };
 
         Waypoint Waypoint2 = new(Default.TemplateName + "2")
         {
             Elevation = Default.Elevation,
             GeographicCoord = Default.GeographicCoord,
-            LevelCoord = WaypointLevelCoord[1],
             LevelOrder = WaypointLevelOrder[1],
             TraceName = Default.TraceAName,
+            LevelCoord = new Dictionary<string, Godot.Vector2>
+            {
+                [SimpleTraceName] = Default.LevelCoord,
+            },
         };
+
         Waypoints links = (Waypoints)Waypoints.Instance;
         links.Add(Waypoint1);
         links.Add(Waypoint2);
@@ -87,7 +97,7 @@ public class SimpleTests
         Assert.That(SimpleWaypoint, Is.Not.Null);
         Assert.That(SimpleWaypoint?.Elevation, Is.EqualTo(Default.Elevation));
         Assert.That(SimpleWaypoint?.GeographicCoord, Is.EqualTo(Default.GeographicCoord));
-        Assert.That(SimpleWaypoint?.LevelCoord, Is.EqualTo(Default.LevelCoord));
+        Assert.That(SimpleWaypoint?.LevelCoord[SimpleTraceName], Is.EqualTo(Default.LevelCoord));
         Assert.That(SimpleWaypoint?.Name, Is.EqualTo(SimpleName));
         Assert.That(SimpleWaypoint?.TraceName, Is.EqualTo(SimpleTraceName));
     }
@@ -108,7 +118,10 @@ public class SimpleTests
             Waypoint currentWaypoint = link.Value.Waypoint;
             Assert.That(currentWaypoint?.Elevation, Is.EqualTo(Default.Elevation));
             Assert.That(currentWaypoint?.GeographicCoord, Is.EqualTo(Default.GeographicCoord));
-            Assert.That(currentWaypoint?.LevelCoord, Is.EqualTo(WaypointLevelCoord[i - 1]));
+            Assert.That(
+                currentWaypoint?.LevelCoord[Default.TemplateTraceName + "A"],
+                Is.EqualTo(WaypointLevelCoord[i - 1])
+            );
             Assert.That(currentWaypoint?.LevelOrder, Is.EqualTo(WaypointLevelOrder[i - 1]));
             Assert.That(currentWaypoint?.Name, Is.EqualTo(Default.TemplateName + i));
             Assert.That(currentWaypoint?.TraceName, Is.EqualTo(Default.TemplateTraceName + "A"));
@@ -127,12 +140,18 @@ public class SimpleTests
                 switch (i)
                 {
                     case 1:
-                        Assert.That(destWaypoint.LevelCoord, Is.EqualTo(WaypointLevelCoord[1]));
+                        Assert.That(
+                            destWaypoint.LevelCoord[Default.TemplateTraceName + "A"],
+                            Is.EqualTo(WaypointLevelCoord[1])
+                        );
                         Assert.That(destWaypoint.LevelOrder, Is.EqualTo(WaypointLevelOrder[1]));
                         Assert.That(destWaypoint.Name, Is.EqualTo(Default.TemplateName + 2));
                         break;
                     case 2:
-                        Assert.That(destWaypoint.LevelCoord, Is.EqualTo(WaypointLevelCoord[0]));
+                        Assert.That(
+                            destWaypoint.LevelCoord[Default.TemplateTraceName + "A"],
+                            Is.EqualTo(WaypointLevelCoord[0])
+                        );
                         Assert.That(destWaypoint.LevelOrder, Is.EqualTo(WaypointLevelOrder[0]));
                         Assert.That(destWaypoint.Name, Is.EqualTo(Default.TemplateName + 1));
                         break;
@@ -162,15 +181,22 @@ public class TwoTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceAName] = Default.LevelCoord,
+        },
     };
+
     static readonly Waypoint A2 = new("WPT2")
     {
         TraceName = Default.TraceAName,
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceAName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint B1 = new("WPT2")
     {
@@ -178,7 +204,10 @@ public class TwoTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceBName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint B2 = new("WPT3")
@@ -187,7 +216,10 @@ public class TwoTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(100, 100),
         LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceBName] = Default.LevelCoord,
+        },
     };
 
     readonly Waypoint[] TestedWaypoints = [A1, A2, B1, B2];
@@ -288,7 +320,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceAName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint A2 = new("WPT2")
     {
@@ -296,7 +331,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceAName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint B1 = new("WPT2")
     {
@@ -304,7 +342,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceBName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint B2 = new("WPT3")
@@ -313,7 +354,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceBName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint C1 = new("WPT3")
@@ -322,7 +366,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceCName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceCName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint C2 = new("WPT4")
     {
@@ -330,7 +377,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceCName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceCName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint D1 = new("WPT4")
     {
@@ -338,7 +388,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceDName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceDName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint D2 = new("WPT1")
@@ -347,7 +400,10 @@ public class FourTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceDName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceDName] = Default.LevelCoord,
+        },
     };
     readonly Waypoint[] TestedWaypoints = [A1, A2, B2, C2];
     readonly Waypoint[][] LinkedWaypoints =
@@ -456,7 +512,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceAName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint A2 = new("WPT2")
     {
@@ -464,7 +523,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceAName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceAName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint B1 = new("WPT2")
     {
@@ -472,7 +534,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceBName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint B2 = new("WPT3")
@@ -481,7 +546,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceBName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceBName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint C1 = new("WPT3")
@@ -490,7 +558,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceCName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceCName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint C2 = new("WPT4")
     {
@@ -498,7 +569,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceCName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceCName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint D1 = new("WPT4")
     {
@@ -506,7 +580,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceDName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceDName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint D2 = new("WPT1")
@@ -515,7 +592,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(0, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceDName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceDName] = Default.LevelCoord,
+        },
     };
     static readonly Waypoint E1 = new("WPT2")
     {
@@ -523,7 +603,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 0),
         LevelOrder = new Dictionary<string, int> { [Default.TraceEName] = 1 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceEName] = Default.LevelCoord,
+        },
     };
 
     static readonly Waypoint E2 = new("WPT4")
@@ -532,7 +615,10 @@ public class FiveTraces
         Elevation = Default.Elevation,
         GeographicCoord = new(10, 10),
         LevelOrder = new Dictionary<string, int> { [Default.TraceEName] = 2 },
-        LevelCoord = Default.LevelCoord,
+        LevelCoord = new Dictionary<string, Godot.Vector2>
+        {
+            [Default.TraceEName] = Default.LevelCoord,
+        },
     };
 
     readonly Waypoint[] TestedWaypoints = [A1, A2, B2, C2];

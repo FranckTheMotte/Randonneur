@@ -75,7 +75,7 @@ public partial class Player : CharacterBody2D
         // impossible to move on the same waypoint where the player is
         if (CurrentWaypoint.Name != destWaypointName)
         {
-            level.EmitSignal(TemplateLevel.SignalName.TrailJunctionChoiceDone, destWaypointName);
+            level.TrailJunctionChoiceDone(destWaypointName);
         }
         // TODO comment faire passer à travers la collison de la junction?
         SetCollisionLayerValue(Global.SolJunctionLayer, true);
@@ -105,19 +105,19 @@ public partial class Player : CharacterBody2D
         CurrentWaypoint = null;
     }
 
-    /**
-      Stop player and display the junction panel.
-
-      @param TrackName Contains the name of the gpx file.
-      @param Coord     Coordinate of the triggered waypoint.
-    */
-    internal void DisplayJunction(string Trace, Vector2 Coord)
+    ///
+    /// <summary>
+    /// Stop player and display the junction panel.
+    /// </summary>
+    /// <param name="TrackName">Contains the name of the gpx file.</param>
+    ///<param name="waypointName">Waypoint name.</param>
+    internal void DisplayJunction(string trace, string waypointName)
     {
         if (level == null)
             return;
         Walk = 0;
         SetCollisionLayerValue(Global.SolJunctionLayer, false);
         SetCollisionMaskValue(Global.SolJunctionLayer, false);
-        level.JunctionChoice(Trace, Coord);
+        level.JunctionChoice(trace, waypointName);
     }
 }

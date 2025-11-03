@@ -9,11 +9,11 @@
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
 
-[node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d", "player")]
+[node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d", "Player")]
 y_sort_enabled = true
 script = ExtResource("1_3wch0")
 camera2d = NodePath("Player/Camera2D")
-player = NodePath("Player")
+Player = NodePath("Player")
 pathToMap = "res://data/Map1/"
 
 [node name="Background" type="Parallax2D" parent="."]
@@ -109,5 +109,4 @@ offset_right = 68.0
 offset_bottom = 85.0
 text = "Walk"
 
-[connection signal="TrailJunctionChoiceDone" from="." to="." method="_on_trail_junction_choice_done"]
 [connection signal="toggled" from="Actions/Control/CheckButton" to="Actions" method="_on_check_button_toggled"]

@@ -14,14 +14,11 @@ public partial class TemplateLevel : Node2D
     public Camera2D? camera2d;
 
     [Export]
-    public Player? player;
+    public Player? Player;
 
     // godot directory to gpx files to define the level map
     [Export]
     string? pathToMap;
-
-    [Signal]
-    public delegate void TrailJunctionChoiceDoneEventHandler();
 
     private AnimationPlayer? _fadeAnimation;
 
@@ -41,7 +38,7 @@ public partial class TemplateLevel : Node2D
     public override void _Ready()
     {
         // Sanity checks
-        if (pathToMap == null || player == null)
+        if (pathToMap == null || Player == null)
         {
             GD.PushWarning($"${nameof(_Ready)}: sanity checks failed");
             return;
@@ -203,13 +200,13 @@ public partial class TemplateLevel : Node2D
     private void MapPositionUpdate()
     {
         // Sanity checks
-        if (player == null || Map == null)
+        if (Player == null || Map == null)
         {
             GD.PushWarning($"${nameof(_PhysicsProcess)}: sanity checks failed");
             return;
         }
 
-        Map.Position = new Godot.Vector2(player.Position.X - 200, player.Position.Y - 100);
+        Map.Position = new Godot.Vector2(Player.Position.X - 200, Player.Position.Y - 100);
     }
 
     public void TrailSignVisible(bool Visible)
@@ -224,7 +221,7 @@ public partial class TemplateLevel : Node2D
         await Task.Delay(TimeSpan.FromMilliseconds(value));
     }
 
-    private void _on_trail_junction_choice_done(string destWaypointName)
+    public void TrailJunctionChoiceDone(string destWaypointName)
     {
         Waypoints waypoints = (Waypoints)Waypoints.Instance;
 
@@ -234,14 +231,16 @@ public partial class TemplateLevel : Node2D
             || waypoints == null
             || CurrentWaypoint == null
             || waypoints.Links == null
+            || Player == null
         )
         {
-            GD.PushWarning($"${nameof(_on_trail_junction_choice_done)}: sanity checks failed");
+            GD.PushWarning($"${nameof(TrailJunctionChoiceDone)}: sanity checks failed");
             return;
         }
 
         if (waypoints.Links.TryGetValue(CurrentWaypoint.Name, out WaypointsLinks? links))
         {
+            //Waypoint destinationWaypoint = links.ConnectedWaypoints[destWaypointName].Waypoint;
             MapVisible(false, CurrentWaypoint);
 
             string traceName = links.ConnectedWaypoints[destWaypointName].TraceName;
@@ -256,6 +255,20 @@ public partial class TemplateLevel : Node2D
                 Sleep(500);
                 _fadeAnimation.Play("fade_out");
                 Sleep(500);
+
+                /* put player start position on destination waypoint */
+                Vector2 position = Player.Position;
+                CollisionShape2D playerCollisionShape = Player.GetNode<CollisionShape2D>(
+                    "Collision"
+                );
+
+                // get the current waypoint on the destination trace
+                position.X = CurrentWaypoint.LevelCoord[traceName].X;
+                /* Align player position with half of the collision shape size (don't forget the player rescaling) */
+                position.Y =
+                    CurrentWaypoint.LevelCoord[traceName].Y
+                    - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Player.Scale.Y);
+                Player.Position = position;
             }
         }
     }
@@ -264,21 +277,13 @@ public partial class TemplateLevel : Node2D
     ///  Display the junction choice through the map.
     ///  </summary>
     ///  <param name="TrackName">Contains the name of the gpx file.</param>
-    ///  <param name="Coord">Coordinate of the triggered waypoint.</param>
-    public void JunctionChoice(string TrackName, Vector2 Coord)
+    ///  <param name="WaypointName">Name of the triggered waypoint.</param>
+    public void JunctionChoice(string TrackName, string WaypointName)
     {
         Waypoint? waypoint = null;
-        // if possible put a marker on the map to display the player position
-        // all landmarks are not visible by default
-        Gpx? trail = (Gpx?)Trails?[TrackName];
-        if (trail != null)
-        {
-            waypoint = trail.XWaypoints.GetWaypoint(Coord);
-            if (waypoint is not null)
-            {
-                waypoint.FocusLandmark(true);
-            }
-        }
+
+        Waypoints waypoints = (Waypoints)Waypoints.Instance;
+        waypoint = waypoints.GetWaypoint(WaypointName);
 
         if (Player.Instance is not null)
             Player.Instance.CurrentWaypoint = waypoint;
