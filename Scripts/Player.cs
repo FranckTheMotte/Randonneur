@@ -120,4 +120,23 @@ public partial class Player : CharacterBody2D
         SetCollisionMaskValue(Global.SolJunctionLayer, false);
         level.JunctionChoice(trace, waypointName);
     }
+
+    /// <summary>
+    /// Move the player to a new position.
+    /// </summary>
+    /// <param name="position"></param>
+    public void MoveTo(Vector2 position)
+    {
+        Vector2 newPosition = new();
+        /* default player start position */
+        CollisionShape2D playerCollisionShape = GetNode<CollisionShape2D>("Collision");
+
+        /* Align player position with half of the collision shape size (don't forget the player rescaling) */
+        newPosition = new Vector2(
+            position.X,
+            position.Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Scale.Y)
+        );
+
+        Position = newPosition;
+    }
 }
