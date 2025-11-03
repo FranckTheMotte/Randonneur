@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Godot;
+using Randonneur;
 using Randonneur.Scripts;
 
 public enum eSceneNames
@@ -108,7 +109,7 @@ public partial class SceneManager : Node
     /// This function will defer the change of level to the next frame.
     /// </summary>
     /// <param name="GpxFile">Path to the gpx file of the level to change to.</param>
-    public void ChangeLevel(string GpxFile)
+    public void ChangeLevel(string GpxFile, string waypointName)
     {
         // try to find the level in the dictionary (preload)
         if (!Scenes.ContainsKey(GpxFile))
@@ -118,7 +119,7 @@ public partial class SceneManager : Node
         }
 
         // TODO could be done in Level1??
-        _ = CallDeferred("DefferedChangeLevel", GpxFile);
+        _ = CallDeferred("DefferedChangeLevel", GpxFile, waypointName);
     }
 
     /// <summary>
@@ -126,7 +127,7 @@ public partial class SceneManager : Node
     /// This function is called deferred, i.e. it will be called at the end of the frame.
     /// </summary>
     /// <param name="GpxFile">Path to the gpx file of the level to change to.</param>
-    public void DefferedChangeLevel(string GpxFile)
+    public void DefferedChangeLevel(string GpxFile, string waypointName)
     {
         // if there is no current scene, there is nothing to change
         if (CurrentScene == null)
@@ -147,6 +148,9 @@ public partial class SceneManager : Node
             {
                 Window root = GetTree().Root;
                 root.RemoveChild(CurrentScene);
+                TemplateLevel nextLevel = (TemplateLevel)level.Scene;
+                nextLevel.CurrentTraceName = Path.GetFileName(GpxFile);
+                nextLevel.CurrentWaypoint = Waypoints.Instance.GetWaypoint(waypointName);
                 root.AddChild(level.Scene);
                 CurrentScene = level.Scene;
             }

@@ -27,18 +27,25 @@ public partial class TemplateLevel : Node2D
     /// <summary>
     /// Last waypoint reached by the player when the map is displayed.
     /// </summary>
-    public Waypoint? CurrentWaypoint { get; private set; }
+    public Waypoint? CurrentWaypoint { get; set; }
 
     /// <summary>
     /// Reference to the world map.
     /// </summary>
     internal WorldMap? Map;
+    public string? CurrentTraceName;
 
     // Called when the node enters the scene tree for the first time.
+
     public override void _Ready()
     {
         // Sanity checks
-        if (pathToMap == null || Player == null)
+        if (
+            pathToMap == null
+            || Player == null
+            || CurrentWaypoint == null
+            || CurrentTraceName == null
+        )
         {
             GD.PushWarning($"${nameof(_Ready)}: sanity checks failed");
             return;
@@ -105,6 +112,9 @@ public partial class TemplateLevel : Node2D
 
         // Map is not visible at start
         MapVisible(false);
+
+        // player position
+        Player.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -247,9 +257,10 @@ public partial class TemplateLevel : Node2D
             string gpxFile = Global.DefautlMapDirectory + traceName;
 
             // need to change the scene?
+            CurrentTraceName = CurrentWaypoint.TraceName;
             if (traceName != CurrentWaypoint.TraceName)
             {
-                SceneManager.instance?.ChangeLevel(gpxFile);
+                SceneManager.instance?.ChangeLevel(gpxFile, CurrentWaypoint.Name);
 
                 _fadeAnimation.Play("fade_in");
                 Sleep(500);
@@ -257,18 +268,8 @@ public partial class TemplateLevel : Node2D
                 Sleep(500);
 
                 /* put player start position on destination waypoint */
-                Vector2 position = Player.Position;
-                CollisionShape2D playerCollisionShape = Player.GetNode<CollisionShape2D>(
-                    "Collision"
-                );
-
-                // get the current waypoint on the destination trace
-                position.X = CurrentWaypoint.LevelCoord[traceName].X;
-                /* Align player position with half of the collision shape size (don't forget the player rescaling) */
-                position.Y =
-                    CurrentWaypoint.LevelCoord[traceName].Y
-                    - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Player.Scale.Y);
-                Player.Position = position;
+                //Player?.MoveTo(CurrentWaypoint.LevelCoord[traceName]);
+                CurrentTraceName = traceName;
             }
         }
     }
@@ -276,9 +277,9 @@ public partial class TemplateLevel : Node2D
     ///  <summary>
     ///  Display the junction choice through the map.
     ///  </summary>
-    ///  <param name="TrackName">Contains the name of the gpx file.</param>
+    ///  <param name="TraceName">Contains the name of the gpx file.</param>
     ///  <param name="WaypointName">Name of the triggered waypoint.</param>
-    public void JunctionChoice(string TrackName, string WaypointName)
+    public void JunctionChoice(string TraceName, string WaypointName)
     {
         Waypoint? waypoint = null;
 
