@@ -46,6 +46,7 @@ namespace Randonneur
         /// Value: integer, lower value = close from start
         /// </summary>
         public Dictionary<string, int> LevelOrder { get; set; } = [];
+        public int Direction { get; set; } = 1;
 
         public Waypoint(string Name)
         {

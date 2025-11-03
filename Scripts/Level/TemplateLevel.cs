@@ -114,6 +114,7 @@ public partial class TemplateLevel : Node2D
         MapVisible(false);
 
         // player position
+        Player.Walk = CurrentWaypoint.Direction;
         Player.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
     }
 
@@ -267,8 +268,7 @@ public partial class TemplateLevel : Node2D
                 _fadeAnimation.Play("fade_out");
                 Sleep(500);
 
-                /* put player start position on destination waypoint */
-                //Player?.MoveTo(CurrentWaypoint.LevelCoord[traceName]);
+                /* Save the next trace */
                 CurrentTraceName = traceName;
             }
         }

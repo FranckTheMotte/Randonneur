@@ -77,6 +77,17 @@ public partial class Player : CharacterBody2D
         if (level == null || sol == null || CurrentWaypoint == null)
             return;
 
+        Waypoints waypoints = (Waypoints)Waypoints.Instance;
+        Waypoint? targetWaypoint = waypoints.GetWaypoint(destWaypointName);
+
+        if (targetWaypoint == null)
+        {
+            GD.PushWarning(
+                $"Trail junction choice: destination waypoint not found {destWaypointName}"
+            );
+            return;
+        }
+
         // impossible to move on the same waypoint where the player is
         if (CurrentWaypoint.Name != destWaypointName)
         {
@@ -88,23 +99,21 @@ public partial class Player : CharacterBody2D
 
         // move forward (default)
         Move = true;
-        Walk = 1;
+        CurrentWaypoint.Direction = Walk = 1;
 
-        Waypoints waypoints = (Waypoints)Waypoints.Instance;
         if (
             waypoints.Links != null
             && waypoints.Links.TryGetValue(CurrentWaypoint.Name, out WaypointsLinks? links)
         )
         {
             string traceName = links.ConnectedWaypoints[destWaypointName].TraceName;
-            Waypoint? TargetWaypoint = waypoints.GetWaypoint(destWaypointName);
             CurrentWaypoint = waypoints.GetWaypoint(CurrentWaypoint.Name);
-            if (TargetWaypoint != null && CurrentWaypoint != null)
+            if (targetWaypoint != null && CurrentWaypoint != null)
             {
                 // order of waypoints in the target trace determine the direction
-                if (TargetWaypoint.LevelOrder[traceName] < CurrentWaypoint.LevelOrder[traceName])
+                if (targetWaypoint.LevelOrder[traceName] < CurrentWaypoint.LevelOrder[traceName])
                 {
-                    Walk = -1;
+                    CurrentWaypoint.Direction = Walk = -1;
                 }
             }
         }
@@ -142,7 +151,7 @@ public partial class Player : CharacterBody2D
             Y: Align player position with half of the collision shape size (don't forget the player rescaling)
         */
         newPosition = new Vector2(
-            position.X + Walk * 30.0f,
+            position.X + (Walk > 0 ? 1 : -1) * 30.0f,
             position.Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Scale.Y)
         );
 
