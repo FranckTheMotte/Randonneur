@@ -18,7 +18,7 @@
         <start>false</start>
     </extensions>
   </wpt>
-  <wpt lat="42.766349" lon="1.480166">
+  <wpt lat="42.766370" lon="1.480150">
     <ele>733.5</ele>
     <name>Port du C++</name>
     <cmt></cmt>
@@ -36,7 +36,7 @@
   </wpt>
   <trk>
     <trkseg>
-      <trkpt lat="42.766349" lon="1.480166">
+      <trkpt lat="42.766370" lon="1.480150">
         <ele>733.5</ele>
         <extensions>
           <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">

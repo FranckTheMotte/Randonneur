@@ -4,7 +4,7 @@
     <name>traceD</name>
     <desc>D</desc>
   </metadata>
-  <wpt lat="42.766346" lon="1.480140">
+  <wpt lat="42.766370" lon="1.480150">
     <ele>733.7</ele>
     <name>Port du C++</name>
     <cmt></cmt>
@@ -20,7 +20,7 @@
         <start>true</start>
     </extensions>
   </wpt>
-  <wpt lat="42.765520" lon="1.482860">
+  <wpt lat="42.765508" lon="1.482857">
     <ele>730.7</ele>
     <name>Col de l'embarqué</name>
     <cmt></cmt>
@@ -38,7 +38,7 @@
   </wpt>
   <trk>
     <trkseg>
-      <trkpt lat="42.766346" lon="1.480140">
+      <trkpt lat="42.766370" lon="1.480150">
         <ele>733.7</ele>
         <extensions>
           <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
@@ -170,7 +170,7 @@
       <trkpt lat="42.765480" lon="1.482850">
         <ele>730.7</ele>
       </trkpt>
-      <trkpt lat="42.765520" lon="1.482860">
+      <trkpt lat="42.765508" lon="1.482857">
         <ele>730.7</ele>
         <extensions>
           <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">

@@ -4,7 +4,7 @@
     <name>traceG</name>
     <desc>G</desc>
   </metadata>
-  <wpt lat="42.765510" lon="1.482871">
+  <wpt lat="42.765508" lon="1.482857">
     <ele>730.7</ele>
     <name>Col de l'embarqué</name>
     <cmt></cmt>
@@ -36,7 +36,7 @@
   </wpt>
   <trk>
     <trkseg>
-      <trkpt lat="42.765510" lon="1.482871">
+      <trkpt lat="42.765508" lon="1.482857">
         <ele>730.7</ele>
         <extensions>
           <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">

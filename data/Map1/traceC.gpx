@@ -20,8 +20,8 @@
         <start>true</start>
     </extensions>
   </wpt>
-  <wpt lat="42.766775" lon="1.483046">
-      <ele>729.4</ele>
+  <wpt lat="42.766743" lon="1.483033">
+      <ele>730.4</ele>
       <name>Col du sanglier</name>
       <cmt></cmt>
       <desc></desc>
@@ -38,8 +38,8 @@
   </wpt>
   <trk>
     <trkseg>
-      <trkpt lat="42.766775" lon="1.483046">
-        <ele>729.4</ele>
+      <trkpt lat="42.766743" lon="1.483033">
+        <ele>730.4</ele>
         <extensions>
           <visugpx:TrkExtension xmlns:visugpx="https://www.visugpx.com/editgpx/">
             <visugpx:node>1</visugpx:node>
