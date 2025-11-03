@@ -4,6 +4,11 @@ using Randonneur;
 
 public partial class Player : CharacterBody2D
 {
+    /// <summary>
+    /// Flag to enable player moves.
+    /// </summary>
+    public bool Move = false;
+
     /* Coefficient of speed */
     [Export]
     public int Walk = 1;
@@ -39,7 +44,7 @@ public partial class Player : CharacterBody2D
         if (this.Position.X >= worldLimit.X)
         {
             // Don't fall
-            Walk = 0;
+            Move = false;
         }
 
         // Add the gravity.
@@ -49,7 +54,7 @@ public partial class Player : CharacterBody2D
         }
         else
         {
-            velocity.X = Walk * Speed;
+            velocity.X = Move ? Walk * Speed : 0;
         }
 
         Velocity = velocity;
@@ -82,6 +87,7 @@ public partial class Player : CharacterBody2D
         SetCollisionMaskValue(Global.SolJunctionLayer, true);
 
         // move forward (default)
+        Move = true;
         Walk = 1;
 
         Waypoints waypoints = (Waypoints)Waypoints.Instance;
@@ -115,7 +121,7 @@ public partial class Player : CharacterBody2D
     {
         if (level == null)
             return;
-        Walk = 0;
+        Move = false;
         SetCollisionLayerValue(Global.SolJunctionLayer, false);
         SetCollisionMaskValue(Global.SolJunctionLayer, false);
         level.JunctionChoice(trace, waypointName);
@@ -131,9 +137,12 @@ public partial class Player : CharacterBody2D
         /* default player start position */
         CollisionShape2D playerCollisionShape = GetNode<CollisionShape2D>("Collision");
 
-        /* Align player position with half of the collision shape size (don't forget the player rescaling) */
+        /*
+            X: little shift player from the starting waypoint
+            Y: Align player position with half of the collision shape size (don't forget the player rescaling)
+        */
         newPosition = new Vector2(
-            position.X,
+            position.X + Walk * 30.0f,
             position.Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Scale.Y)
         );
 
