@@ -1,14 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Godot;
 using Randonneur;
 using static Godot.GD;
 
+/// <summary>
+/// Store a junction by trace.
+/// </summary>
+public class TrailJunction
+{
+    /// <summary>
+    /// Name of trace use to match correct properties from Waypoint.
+    /// </summary>
+    public string TraceName { get; set; } = "None";
+
+    /// <summary>
+    /// Waypoint to display a junction.
+    /// </summary>
+    public Waypoint? Waypoint;
+}
+
 public partial class Sol : StaticBody2D
 {
-    private List<Waypoint> _trailJunctions = [];
+    private List<TrailJunction> _trailJunctions = [];
 
     public Gpx? CurrentTrack;
 
@@ -23,17 +40,21 @@ public partial class Sol : StaticBody2D
 
     public override void _Draw()
     {
-        foreach (Waypoint wpt in _trailJunctions)
+        foreach (TrailJunction junction in _trailJunctions)
         {
-            DrawCircle(wpt.LevelCoord[wpt.TraceName], 10.0f, Colors.Blue);
-            Font defaultFont = ThemeDB.FallbackFont;
-            int defaultFontSize = ThemeDB.FallbackFontSize;
-            DrawString(
-                defaultFont,
-                wpt.LevelCoord[wpt.TraceName],
-                wpt.Name,
-                modulate: new Color(200, 0, 0)
-            );
+            Waypoint? waypoint = junction.Waypoint;
+            if (waypoint != null)
+            {
+                DrawCircle(waypoint.LevelCoord[junction.TraceName], 10.0f, Colors.Blue);
+                Font defaultFont = ThemeDB.FallbackFont;
+                int defaultFontSize = ThemeDB.FallbackFontSize;
+                DrawString(
+                    defaultFont,
+                    waypoint.LevelCoord[junction.TraceName],
+                    waypoint.Name,
+                    modulate: new Color(200, 0, 0)
+                );
+            }
         }
         base._Draw();
     }
@@ -91,7 +112,8 @@ public partial class Sol : StaticBody2D
                 {
                     // TODO: here only to display a graphic object for junction
                     waypoint.LevelCoord[traceName] = ground[i];
-                    _trailJunctions.Add(waypoint);
+                    TrailJunction junction = new() { TraceName = traceName, Waypoint = waypoint };
+                    _trailJunctions.Add(junction);
 
                     // Level order is the same as ground point index
                     Waypoint? TargetWaypoint = Waypoints.Instance.GetWaypoint(waypoint.Name);
