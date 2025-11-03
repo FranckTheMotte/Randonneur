@@ -11,5 +11,7 @@ namespace Randonneur
         public const int MapLayer = 4;
 
         public const int SolJunctionLayer = 5;
+
+        public const int PlayerSpeed = 3;
     }
 }

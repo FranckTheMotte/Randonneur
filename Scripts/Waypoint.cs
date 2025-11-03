@@ -46,7 +46,11 @@ namespace Randonneur
         /// Value: integer, lower value = close from start
         /// </summary>
         public Dictionary<string, int> LevelOrder { get; set; } = [];
-        public int Direction { get; set; } = 1;
+
+        /// <summary>
+        /// Player speed with direction.
+        /// </summary>
+        public int PlayerDirection { get; set; } = Global.PlayerSpeed;
 
         public Waypoint(string Name)
         {

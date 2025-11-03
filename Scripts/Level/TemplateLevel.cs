@@ -114,7 +114,7 @@ public partial class TemplateLevel : Node2D
         MapVisible(false);
 
         // player position
-        Player.Walk = CurrentWaypoint.Direction;
+        Player.Walk = CurrentWaypoint.PlayerDirection;
         Player.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
     }
 

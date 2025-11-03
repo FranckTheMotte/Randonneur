@@ -11,7 +11,7 @@ public partial class Player : CharacterBody2D
 
     /* Coefficient of speed */
     [Export]
-    public int Walk = 1;
+    public int Walk = Global.PlayerSpeed;
 
     [Export]
     public Sol? sol;
@@ -99,7 +99,7 @@ public partial class Player : CharacterBody2D
 
         // move forward (default)
         Move = true;
-        CurrentWaypoint.Direction = Walk = 1;
+        CurrentWaypoint.PlayerDirection = Walk = Global.PlayerSpeed;
 
         if (
             waypoints.Links != null
@@ -113,7 +113,7 @@ public partial class Player : CharacterBody2D
                 // order of waypoints in the target trace determine the direction
                 if (targetWaypoint.LevelOrder[traceName] < CurrentWaypoint.LevelOrder[traceName])
                 {
-                    CurrentWaypoint.Direction = Walk = -1;
+                    CurrentWaypoint.PlayerDirection = Walk = -Global.PlayerSpeed;
                 }
             }
         }
