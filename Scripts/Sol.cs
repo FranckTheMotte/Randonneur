@@ -32,9 +32,6 @@ public partial class Sol : StaticBody2D
     [Export]
     Player? Player;
 
-    [Export]
-    public string? GpxFile;
-
     // Godot group of all wyapoints
     private const string _WaypointsGroup = "Waypoints";
 
@@ -147,16 +144,6 @@ public partial class Sol : StaticBody2D
 
             sol.Polygon = ground;
             solCollision.Polygon = sol.Polygon;
-
-            /* default player start position */
-            Vector2 position = Player.Position;
-            CollisionShape2D playerCollisionShape = Player.GetNode<CollisionShape2D>("Collision");
-
-            position.X = 30.00f;
-            /* Align player position with half of the collision shape size (don't forget the player rescaling) */
-            position.Y =
-                ground[0].Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Player.Scale.Y);
-            Player.Position = position;
 
             /* player limit */
             Player.worldLimit = new Vector2(CurrentTrack.MaxX, 0);
