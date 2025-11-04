@@ -10,12 +10,6 @@ using Vector2 = Godot.Vector2;
 
 public partial class TemplateLevel : Node2D
 {
-    [Export]
-    public Camera2D? camera2d;
-
-    [Export]
-    public Player? Player;
-
     // godot directory to gpx files to define the level map
     [Export]
     string? pathToMap;
@@ -35,19 +29,32 @@ public partial class TemplateLevel : Node2D
     internal WorldMap? Map;
     public string? CurrentTraceName;
 
-    // Called when the node enters the scene tree for the first time.
+    /// <summary>
+    /// The maximum distance from the origin in the level the player can go.
+    /// </summary>
+    public float WorldLimitX { get; set; } = 10000.0f;
 
     public override void _Ready()
     {
         // Sanity checks
-        if (
-            pathToMap == null
-            || Player == null
-            || CurrentWaypoint == null
-            || CurrentTraceName == null
-        )
+        if (pathToMap == null || CurrentWaypoint == null || CurrentTraceName == null)
         {
             GD.PushWarning($"${nameof(_Ready)}: sanity checks failed");
+            return;
+        }
+
+        // game start ? create player
+        if (Player.Instance == null)
+        {
+            PackedScene playerScene = GD.Load<PackedScene>("res://Scenes/player.tscn");
+            Player player = playerScene.Instantiate<Player>();
+            // Add to scene in order to no be free quickly
+            AddChild(player);
+        }
+
+        if (Player.Instance == null)
+        {
+            GD.PushError($"${nameof(_Ready)}: failed to instanciate player");
             return;
         }
 
@@ -113,20 +120,21 @@ public partial class TemplateLevel : Node2D
         // Map is not visible at start
         MapVisible(false);
 
-        // player position
-        Player.Walk = CurrentWaypoint.PlayerDirection;
-        Player.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
+        // player
+        UpdatePlayerInfos();
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
+        Player? player = Player.Instance;
+        if (player == null)
+        {
+            return;
+        }
         // Display the X,Y of the player in the label
-        CharacterBody2D player = GetNode<CharacterBody2D>("Player");
         Label label = GetNode<Label>("Debug/Control/DebugLabel");
-        string txt;
-        txt = $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")}";
-        label.Text = txt;
+        label.Text = $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")} MAX: {player.worldLimit.X}";
     }
 
     /// <summary>
@@ -211,13 +219,16 @@ public partial class TemplateLevel : Node2D
     private void MapPositionUpdate()
     {
         // Sanity checks
-        if (Player == null || Map == null)
+        if (Player.Instance == null || Map == null)
         {
             GD.PushWarning($"${nameof(_PhysicsProcess)}: sanity checks failed");
             return;
         }
 
-        Map.Position = new Godot.Vector2(Player.Position.X - 200, Player.Position.Y - 100);
+        Map.Position = new Godot.Vector2(
+            Player.Instance.Position.X - 200,
+            Player.Instance.Position.Y - 100
+        );
     }
 
     public void TrailSignVisible(bool Visible)
@@ -242,7 +253,6 @@ public partial class TemplateLevel : Node2D
             || waypoints == null
             || CurrentWaypoint == null
             || waypoints.Links == null
-            || Player == null
         )
         {
             GD.PushWarning($"${nameof(TrailJunctionChoiceDone)}: sanity checks failed");
@@ -303,5 +313,21 @@ public partial class TemplateLevel : Node2D
         // update trace name with the last used
         // otherwise the current and dest transition can fail
         waypoint.TraceName = TraceName;
+    }
+
+    internal void UpdatePlayerInfos()
+    {
+        // Sanity checks
+        if (Player.Instance == null || CurrentWaypoint == null || CurrentTraceName == null)
+        {
+            GD.PushWarning($"${nameof(UpdatePlayerInfos)}: sanity checks failed");
+            return;
+        }
+        Player.Instance.Reparent(this);
+        Player.Instance.Move = true;
+        Player.Instance.Walk = CurrentWaypoint.PlayerDirection;
+        Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
+        Player.Instance.worldLimit.X = WorldLimitX;
+        Player.Instance.Level = this;
     }
 }

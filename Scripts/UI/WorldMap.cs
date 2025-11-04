@@ -39,7 +39,7 @@ public partial class WorldMap : Control
     public override void _Input(InputEvent @event)
     {
         // Sanity checks
-        if (Player.Instance == null || _margin == null)
+        if (_margin == null)
         {
             GD.PushWarning($"${nameof(_Input)}: sanity checks failed");
             return;
@@ -55,7 +55,10 @@ public partial class WorldMap : Control
             {
                 // Left mouse button to select a junction destination
                 GD.Print($"WorldMap Button pressed {SelectedWaypoint}");
-                Player.Instance.EmitSignal(Player.SignalName.TrailJunctionChoice, SelectedWaypoint);
+                Player.Instance?.EmitSignal(
+                    Player.SignalName.TrailJunctionChoice,
+                    SelectedWaypoint
+                );
                 SelectedWaypoint = null;
             }
             else if (mouseEvent.ButtonIndex == MouseButton.Middle)

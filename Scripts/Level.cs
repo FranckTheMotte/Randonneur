@@ -27,6 +27,12 @@ namespace Randonneur.Scripts
         private Junction? _startpoint;
 
         /// <summary>
+        /// The maximum distance from the origin in the level the player can go.
+        /// </summary>
+        [Export]
+        public float WorldLimitX { get; set; } = 10000.0f;
+
+        /// <summary>
         /// Create the level by loading the gpx file.
         /// The list of junctions will be returned.
         /// </summary>
@@ -51,6 +57,8 @@ namespace Randonneur.Scripts
 
             // TODO define start point in gpx file
             _startpoint = null;
+
+            WorldLimitX = land.WorldLimitX;
 
             // get unique connected traces to this gpx file
             List<Junction>? junctions = land.CurrentTrack?.TrailJunctions;

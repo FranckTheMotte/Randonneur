@@ -29,11 +29,14 @@ public partial class Sol : StaticBody2D
 
     public Gpx? CurrentTrack;
 
-    [Export]
-    Player? Player;
-
     // Godot group of all wyapoints
     private const string _WaypointsGroup = "Waypoints";
+
+    /// <summary>
+    /// The maximum distance from the origin in the world the player can go.
+    /// </summary>
+    [Export]
+    public float WorldLimitX { get; set; } = 10000.0f;
 
     public override void _Draw()
     {
@@ -62,13 +65,6 @@ public partial class Sol : StaticBody2D
     /// </summary>
     public void generateGround(string gpxFile)
     {
-        // Sanity checks
-        if (Player == null)
-        {
-            GD.PushWarning($"{nameof(generateGround)}: sanity checks failed");
-            return;
-        }
-
         // reset
         _trailJunctions = [];
 
@@ -146,8 +142,8 @@ public partial class Sol : StaticBody2D
             solCollision.Polygon = sol.Polygon;
 
             /* player limit */
-            Player.worldLimit = new Vector2(CurrentTrack.MaxX, 0);
-            GD.Print($"world limit X : {Player.worldLimit.X}");
+            WorldLimitX = CurrentTrack.MaxX;
+            GD.Print($"world limit X : {WorldLimitX}");
         }
         /* TODO put default value if no Gpx is provided */
         watch.Stop();
@@ -177,7 +173,7 @@ public partial class Sol : StaticBody2D
             collision.SetDeferred("disabled", false);
         }
 
-        Player?.DisplayJunction(TrackName, Name);
+        Player.Instance?.DisplayJunction(TrackName, Name);
         // avoid useless collisions.
         JunctionCollision.SetDeferred("disabled", true);
     }

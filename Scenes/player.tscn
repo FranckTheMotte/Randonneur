@@ -116,4 +116,6 @@ frame_progress = 0.871791
 position = Vector2(1, 0)
 shape = SubResource("CapsuleShape2D_wf6w2")
 
+[node name="Camera2D" type="Camera2D" parent="."]
+
 [connection signal="TrailJunctionChoice" from="." to="." method="_on_trail_junction_choice"]

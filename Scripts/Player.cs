@@ -13,24 +13,34 @@ public partial class Player : CharacterBody2D
     [Export]
     public int Walk = Global.PlayerSpeed;
 
-    [Export]
-    public Sol? sol;
-
     [Signal]
     public delegate void TrailJunctionChoiceEventHandler();
 
-    [Export]
-    public TemplateLevel? level;
+    public TemplateLevel? Level;
 
     public const float Speed = 100.0f;
     public Godot.Vector2 worldLimit;
 
-    public static Player? Instance { get; private set; }
-
     public Waypoint? CurrentWaypoint = null;
+
+    private static Player? _instance;
+    public static Player? Instance { get; private set; } = _instance;
+
+    public override void _EnterTree()
+    {
+        if (_instance != null && _instance != this)
+        {
+            QueueFree();
+            return;
+        }
+        _instance = this;
+    }
 
     public override void _Ready()
     {
+        // Block player ressource free when scène change
+        ProcessMode = ProcessModeEnum.Always;
+
         Instance = this;
 
         // the player can climb all
@@ -74,7 +84,7 @@ public partial class Player : CharacterBody2D
     private void _on_trail_junction_choice(string destWaypointName)
     {
         // Sanity checks
-        if (level == null || sol == null || CurrentWaypoint == null)
+        if (Level == null || CurrentWaypoint == null)
             return;
 
         Waypoints waypoints = (Waypoints)Waypoints.Instance;
@@ -91,7 +101,7 @@ public partial class Player : CharacterBody2D
         // impossible to move on the same waypoint where the player is
         if (CurrentWaypoint.Name != destWaypointName)
         {
-            level.TrailJunctionChoiceDone(destWaypointName);
+            Level.TrailJunctionChoiceDone(destWaypointName);
         }
         // TODO comment faire passer à travers la collison de la junction?
         SetCollisionLayerValue(Global.SolJunctionLayer, true);
@@ -128,12 +138,12 @@ public partial class Player : CharacterBody2D
     ///<param name="waypointName">Waypoint name.</param>
     internal void DisplayJunction(string trace, string waypointName)
     {
-        if (level == null)
+        if (Level == null)
             return;
         Move = false;
         SetCollisionLayerValue(Global.SolJunctionLayer, false);
         SetCollisionMaskValue(Global.SolJunctionLayer, false);
-        level.JunctionChoice(trace, waypointName);
+        Level.JunctionChoice(trace, waypointName);
     }
 
     /// <summary>
