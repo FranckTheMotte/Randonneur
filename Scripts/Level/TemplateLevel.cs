@@ -285,6 +285,12 @@ public partial class TemplateLevel : Node2D
 
         Waypoints waypoints = (Waypoints)Waypoints.Instance;
         waypoint = waypoints.GetWaypoint(WaypointName);
+        // sanity checks
+        if (waypoint == null)
+        {
+            GD.PushError($"Waypoint {WaypointName} not found");
+            return;
+        }
 
         if (Player.Instance is not null)
             Player.Instance.CurrentWaypoint = waypoint;
@@ -294,5 +300,8 @@ public partial class TemplateLevel : Node2D
 
         // keep the location where player comes from.
         CurrentWaypoint = waypoint;
+        // update trace name with the last used
+        // otherwise the current and dest transition can fail
+        waypoint.TraceName = TraceName;
     }
 }
