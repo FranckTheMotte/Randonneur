@@ -15,7 +15,7 @@ public partial class Actions : CanvasLayer
             return;
         }
 
-        _player.Move = false;
+        _player.Move = true;
     }
 
     private void _on_check_button_toggled(bool isToggled)

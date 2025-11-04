@@ -106,6 +106,7 @@ offset_left = 24.0
 offset_top = 61.0
 offset_right = 68.0
 offset_bottom = 85.0
+button_pressed = true
 text = "Walk"
 
 [connection signal="toggled" from="Actions/Control/CheckButton" to="Actions" method="_on_check_button_toggled"]
