@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
 
-[node name="20_Level1" type="Node2D" node_paths=PackedStringArray("camera2d", "Player")]
+[node name="20_Level1" type="Node2D"]
 y_sort_enabled = true
 script = ExtResource("1_3wch0")
 pathToMap = "res://data/Map1/"
@@ -25,7 +25,7 @@ texture = ExtResource("2_vytwu")
 [node name="Ground" type="Node2D" parent="."]
 z_index = 1
 
-[node name="Sol" type="StaticBody2D" parent="Ground" node_paths=PackedStringArray("Player")]
+[node name="Sol" type="StaticBody2D" parent="Ground"]
 script = ExtResource("3_uowpc")
 
 [node name="ProfilElevation" type="Polygon2D" parent="Ground/Sol"]
@@ -77,9 +77,8 @@ scale = Vector2(10, 10)
 [node name="Map" type="Node2D" parent="."]
 position = Vector2(50, 500)
 
-[node name="Actions" type="CanvasLayer" parent="." node_paths=PackedStringArray("_player")]
+[node name="Actions" type="CanvasLayer" parent="."]
 script = ExtResource("6_8bbqd")
-_player = NodePath("")
 
 [node name="Control" type="Control" parent="Actions"]
 z_index = 2
