@@ -130,7 +130,7 @@ public partial class Sol : StaticBody2D
                         JunctionHandler(junctionArea, junctionCollision, traceName, waypoint.Name);
                     };
                     junctionArea.AddChild(junctionCollision);
-                    AddChild(junctionArea);
+                    GetParent().AddChild(junctionArea);
                 }
             }
 
