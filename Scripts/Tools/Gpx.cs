@@ -407,7 +407,6 @@ namespace Randonneur
                     // Extensions specific to randonneur
                     if (waypoint.Extensions != null)
                     {
-                        GD.Print($"extension type : {waypoint.Extensions.Type}");
                         string? type = waypoint.Extensions.Type;
                         if (type != null)
                         {
@@ -428,7 +427,6 @@ namespace Randonneur
                                     {
                                         foreach (string gpxFile in junctions.Gpxfile)
                                         {
-                                            GD.Print($"gpxFile : {gpxFile}");
                                             GpxDestination gpxDestination = new()
                                             {
                                                 GpxFile = Global.DefautlMapDirectory + gpxFile,
