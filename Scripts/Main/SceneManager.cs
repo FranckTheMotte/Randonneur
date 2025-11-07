@@ -152,7 +152,6 @@ public partial class SceneManager : Node
                 nextLevel.CurrentTraceName = Path.GetFileName(GpxFile);
                 nextLevel.CurrentWaypoint = Waypoints.Instance.GetWaypoint(waypointName);
                 nextLevel.WorldLimitX = level.WorldLimitX;
-                nextLevel.UpdatePlayerInfos();
                 root.AddChild(nextLevel);
                 CurrentScene = nextLevel;
             }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Godot;
+using Godot.Collections;
 using Randonneur;
 using static Godot.GD;
 
@@ -126,7 +127,7 @@ public partial class Sol : StaticBody2D
                     junctionCollision.AddToGroup(_WaypointsGroup);
                     junctionArea.BodyEntered += delegate
                     {
-                        JunctionHandler(junctionCollision, traceName, waypoint.Name);
+                        JunctionHandler(junctionArea, junctionCollision, traceName, waypoint.Name);
                     };
                     junctionArea.AddChild(junctionCollision);
                     AddChild(junctionArea);
@@ -153,11 +154,31 @@ public partial class Sol : StaticBody2D
     /// <summary>
     /// "BodyEntered" signal Handler. Triggered when player enter in a level junction.
     /// </summary>
+    /// <param name="JunctionArea">Area shape of the triggered junction.</param>
     /// <param name="JunctionCollision">Collision shape of the triggered junction.</param>
     /// <param name="TrackName">Contains the name of the gpx file.</param>
     /// <param name="Name">Name of the waypoint (key to retrieve waypoint).</param>
-    private void JunctionHandler(CollisionShape2D JunctionCollision, string TrackName, string Name)
+    private void JunctionHandler(
+        Area2D JunctionArea,
+        CollisionShape2D JunctionCollision,
+        string TrackName,
+        string Name
+    )
     {
+        if (Player.Instance == null)
+            return;
+
+        /* When reparent the player to another level, it's put on 0,0, before moving to
+        his real position.
+        A unexpected collision can occurs, here we just test if the distance between
+        the two collisionShapes is coherent.
+        TODO: find a better fix */
+        if (JunctionArea.Position.DistanceTo(Player.Instance.Position) > 30.0f)
+        {
+            GD.PushWarning("Junction is too far from player, skip.");
+            return;
+        }
+
         /* Reenable collisions of Waypoints group.
            Maybe there is a better method but as the collision can occurs several
            times when player go accross the shape, it is:

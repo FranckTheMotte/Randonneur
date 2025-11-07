@@ -58,6 +58,10 @@ public partial class TemplateLevel : Node2D
             return;
         }
 
+        // Player
+        UpdatePlayerInfos();
+
+        // World map
         Viewport root = GetTree().Root;
         Map = root.GetNode<WorldMap>("worldMapControl");
         if (Map is null)
@@ -119,9 +123,6 @@ public partial class TemplateLevel : Node2D
 
         // Map is not visible at start
         MapVisible(false);
-
-        // player
-        UpdatePlayerInfos();
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -323,11 +324,17 @@ public partial class TemplateLevel : Node2D
             GD.PushWarning($"${nameof(UpdatePlayerInfos)}: sanity checks failed");
             return;
         }
-        Player.Instance.Reparent(this);
+
+        if (Player.Instance.Level == this)
+        {
+            GD.Print("Player infos already updated.");
+            return;
+        }
+        Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
         Player.Instance.Move = true;
         Player.Instance.Walk = CurrentWaypoint.PlayerDirection;
-        Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
         Player.Instance.worldLimit.X = WorldLimitX;
         Player.Instance.Level = this;
+        Player.Instance.Reparent(this);
     }
 }
