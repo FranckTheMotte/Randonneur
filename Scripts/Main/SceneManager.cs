@@ -147,11 +147,12 @@ public partial class SceneManager : Node
             if (level != null && level.Scene != null)
             {
                 Window root = GetTree().Root;
-                root.RemoveChild(CurrentScene);
                 TemplateLevel nextLevel = (TemplateLevel)level.Scene;
                 nextLevel.CurrentTraceName = Path.GetFileName(GpxFile);
                 nextLevel.CurrentWaypoint = Waypoints.Instance.GetWaypoint(waypointName);
                 nextLevel.WorldLimitX = level.WorldLimitX;
+                nextLevel.UpdatePlayerInfos();
+                root.RemoveChild(CurrentScene);
                 root.AddChild(nextLevel);
                 CurrentScene = nextLevel;
             }
