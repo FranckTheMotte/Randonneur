@@ -51,7 +51,7 @@ public partial class Player : CharacterBody2D
     {
         Godot.Vector2 velocity = Velocity;
 
-        if (this.Position.X >= worldLimit.X)
+        if (this.Position.X >= worldLimit.X || this.Position.X <= 0)
         {
             // Don't fall
             Move = false;
