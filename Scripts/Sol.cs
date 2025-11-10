@@ -34,10 +34,10 @@ public partial class Sol : StaticBody2D
     private const string _WaypointsGroup = "Waypoints";
 
     /// <summary>
-    /// The maximum distance from the origin in the world the player can go.
+    /// The maximum distance from the origin in the level the player can go.
     /// </summary>
     [Export]
-    public float WorldLimitX { get; set; } = 10000.0f;
+    public float LevelLimitX { get; set; } = 10000.0f;
 
     public override void _Draw()
     {
@@ -143,8 +143,8 @@ public partial class Sol : StaticBody2D
             solCollision.Polygon = sol.Polygon;
 
             /* player limit */
-            WorldLimitX = CurrentTrack.MaxX;
-            GD.Print($"world limit X : {WorldLimitX}");
+            LevelLimitX = CurrentTrack.MaxX;
+            GD.Print($"world limit X : {LevelLimitX}");
         }
         /* TODO put default value if no Gpx is provided */
         watch.Stop();

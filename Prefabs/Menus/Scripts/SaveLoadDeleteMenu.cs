@@ -143,7 +143,7 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
     public void _on_new_load_button_up(int myInt)
     {
         // Sanity checks
-        if (SceneManager.instance == null)
+        if (SceneManager.Instance == null)
         {
             GD.PushWarning($"${nameof(_on_new_load_button_up)}: sanity checks failed");
             return;
@@ -173,7 +173,7 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
             - specify the level start for new game
             - load from saved game
         */
-        SceneManager sceneManager = SceneManager.instance;
+        SceneManager sceneManager = SceneManager.Instance;
         if (sceneManager == null)
         {
             GD.PushError("No scene manager");
@@ -211,13 +211,13 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
     public void _on_quit_button_button_up()
     {
         // Sanity checks
-        if (SceneManager.instance == null)
+        if (SceneManager.Instance == null)
         {
             GD.PushWarning($"${nameof(_on_quit_button_button_up)}: sanity checks failed");
             return;
         }
 
-        SceneManager.instance.QuitGame();
+        SceneManager.Instance.QuitGame();
     }
 
     private void DisableAllButtons()

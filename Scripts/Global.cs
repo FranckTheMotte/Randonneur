@@ -4,8 +4,10 @@ namespace Randonneur
     {
         public const string DefautlMapDirectory = "res://data/Map1/";
 
+        // Tag for waypoint metadata
         public const string MetaWaypointName = "WaypointName";
 
+        // Name for nodes which describes the trail in the map
         public const string TrailLineName = "TrailLine2D";
 
         public const int MapLayer = 4;

@@ -32,7 +32,7 @@ public partial class TemplateLevel : Node2D
     /// <summary>
     /// The maximum distance from the origin in the level the player can go.
     /// </summary>
-    public float WorldLimitX { get; set; } = 10000.0f;
+    public float LimitX { get; set; } = 10000.0f;
 
     public override void _Ready()
     {
@@ -135,7 +135,7 @@ public partial class TemplateLevel : Node2D
         }
         // Display the X,Y of the player in the label
         Label label = GetNode<Label>("Debug/Control/DebugLabel");
-        label.Text = $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")} MAX: {player.worldLimit.X}";
+        label.Text = $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")} MAX: {player.LevelLimitX.X}";
     }
 
     /// <summary>
@@ -272,7 +272,7 @@ public partial class TemplateLevel : Node2D
             CurrentTraceName = CurrentWaypoint.TraceName;
             if (traceName != CurrentWaypoint.TraceName)
             {
-                SceneManager.instance?.ChangeLevel(gpxFile, CurrentWaypoint.Name);
+                SceneManager.Instance?.ChangeLevel(gpxFile, CurrentWaypoint.Name);
 
                 _fadeAnimation.Play("fade_in");
                 Sleep(500);
@@ -333,7 +333,7 @@ public partial class TemplateLevel : Node2D
         Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
         Player.Instance.Move = true;
         Player.Instance.Walk = CurrentWaypoint.PlayerDirection;
-        Player.Instance.worldLimit.X = WorldLimitX;
+        Player.Instance.LevelLimitX.X = LimitX;
         Player.Instance.Level = this;
         Player.Instance.Reparent(this);
     }

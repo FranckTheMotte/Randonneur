@@ -16,10 +16,10 @@ public partial class SceneManager : Node
 {
     private readonly Dictionary<string, Level> Scenes = [];
     public Node? CurrentScene { get; set; }
-    public static SceneManager? instance;
+    public static SceneManager? Instance;
 
     //Update this Dictionary whenever you add or change a scene you want included in the Scene Manager.
-    public Dictionary<eSceneNames, SceneCstr> sceneDictionary = new Dictionary<
+    public Dictionary<eSceneNames, SceneCstr> SceneDictionary = new Dictionary<
         eSceneNames,
         SceneCstr
     >()
@@ -31,7 +31,7 @@ public partial class SceneManager : Node
 
     public override void _Ready()
     {
-        instance = this;
+        Instance = this;
 
         Viewport root = GetTree().Root;
         // Using a negative index counts from the end, so this gets the last child node of `root`.
@@ -98,8 +98,8 @@ public partial class SceneManager : Node
 
     public void ChangeScene(eSceneNames mySceneName)
     {
-        string myPath = sceneDictionary[mySceneName].path;
-        GameMaster.pauseAllowed = sceneDictionary[mySceneName].pauseAllowed;
+        string myPath = SceneDictionary[mySceneName].path;
+        GameMaster.pauseAllowed = SceneDictionary[mySceneName].pauseAllowed;
         GameMaster.playerData.savedScene = mySceneName;
         GetTree().ChangeSceneToFile(myPath);
     }
@@ -150,7 +150,7 @@ public partial class SceneManager : Node
                 TemplateLevel nextLevel = (TemplateLevel)level.Scene;
                 nextLevel.CurrentTraceName = Path.GetFileName(GpxFile);
                 nextLevel.CurrentWaypoint = Waypoints.Instance.GetWaypoint(waypointName);
-                nextLevel.WorldLimitX = level.WorldLimitX;
+                nextLevel.LimitX = level.LimitX;
                 nextLevel.UpdatePlayerInfos();
                 root.RemoveChild(CurrentScene);
                 root.AddChild(nextLevel);

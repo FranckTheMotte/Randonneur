@@ -16,10 +16,13 @@ public partial class Player : CharacterBody2D
     [Signal]
     public delegate void TrailJunctionChoiceEventHandler();
 
+    // ref to the current level
     public TemplateLevel? Level;
 
     public const float Speed = 100.0f;
-    public Godot.Vector2 worldLimit;
+
+    // Maximum limit of the level in X
+    public Godot.Vector2 LevelLimitX;
 
     public Waypoint? CurrentWaypoint = null;
 
@@ -51,7 +54,7 @@ public partial class Player : CharacterBody2D
     {
         Godot.Vector2 velocity = Velocity;
 
-        if (this.Position.X >= worldLimit.X || this.Position.X <= 0)
+        if (this.Position.X >= LevelLimitX.X || this.Position.X <= 0)
         {
             // Don't fall
             Move = false;
@@ -134,7 +137,7 @@ public partial class Player : CharacterBody2D
     /// <summary>
     /// Stop player and display the junction panel.
     /// </summary>
-    /// <param name="TrackName">Contains the name of the gpx file.</param>
+    /// <param name="trace">Contains the name of the gpx file.</param>
     ///<param name="waypointName">Waypoint name.</param>
     internal void DisplayJunction(string trace, string waypointName)
     {
