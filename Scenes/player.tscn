@@ -104,7 +104,7 @@ collision_layer = 19
 collision_mask = 17
 script = ExtResource("1_qw0uh")
 
-[node name="Animation" type="AnimatedSprite2D" parent="."]
+[node name="TheSprite" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.1, 0.1)
 sprite_frames = SubResource("SpriteFrames_5gk7y")
 animation = &"walk"

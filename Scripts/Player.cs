@@ -29,6 +29,20 @@ public partial class Player : CharacterBody2D
     private static Player? _instance;
     public static Player? Instance { get; private set; } = _instance;
 
+    /// <summary>
+    /// Ref to the player sprite.
+    /// </summary>
+    private AnimatedSprite2D? PlayerSprite;
+
+    /// <summary>
+    /// Define the direction of movement.
+    /// </summary>
+    internal enum Direction
+    {
+        Forward,
+        Backward,
+    }
+
     public override void _EnterTree()
     {
         if (_instance != null && _instance != this)
@@ -48,6 +62,9 @@ public partial class Player : CharacterBody2D
 
         // the player can climb all
         FloorBlockOnWall = false;
+
+        // ref to the sprite
+        PlayerSprite = GetNode<AnimatedSprite2D>("TheSprite");
     }
 
     public override void _PhysicsProcess(double delta)
@@ -112,7 +129,8 @@ public partial class Player : CharacterBody2D
 
         // move forward (default)
         Move = true;
-        CurrentWaypoint.PlayerDirection = Walk = Global.PlayerSpeed;
+        Go(Direction.Forward);
+        CurrentWaypoint.PlayerDirection = Global.PlayerSpeed;
 
         if (
             waypoints.Links != null
@@ -126,11 +144,37 @@ public partial class Player : CharacterBody2D
                 // order of waypoints in the target trace determine the direction
                 if (targetWaypoint.LevelOrder[traceName] < CurrentWaypoint.LevelOrder[traceName])
                 {
-                    CurrentWaypoint.PlayerDirection = Walk = -Global.PlayerSpeed;
+                    Go(Direction.Backward);
+                    CurrentWaypoint.PlayerDirection = -Global.PlayerSpeed;
                 }
             }
         }
         CurrentWaypoint = null;
+    }
+
+    /// <summary>
+    /// Move the player in the specified direction (sprite orientation and walk).
+    /// </summary>
+    /// <param name="direction">Direction to move the player.</param>
+    internal void Go(Direction direction)
+    {
+        if (PlayerSprite == null)
+        {
+            GD.PushError("Sprite must exist.");
+            return;
+        }
+
+        switch (direction)
+        {
+            case Direction.Forward:
+                PlayerSprite.FlipH = false;
+                Walk = Global.PlayerSpeed;
+                break;
+            case Direction.Backward:
+                PlayerSprite.FlipH = true;
+                Walk = -Global.PlayerSpeed;
+                break;
+        }
     }
 
     ///
