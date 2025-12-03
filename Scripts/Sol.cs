@@ -90,22 +90,29 @@ public partial class Sol : StaticBody2D
                 watch.Stop();
                 return;
             }
-            /* Add 2 points in order to display a solid ground */
-            Vector2[] ground = new Vector2[CurrentTrack.TrackPoints.Length + 2];
+            /* Add :
+              - 2 points to add a ground before and after the limit
+              - 2 points to finish the polygon
+              */
+            Vector2[] ground = new Vector2[CurrentTrack.TrackPoints.Length + 2 + 2];
 
+            // set a start
+            ground[0].X = -1000;
+            ground[0].Y = CurrentTrack.TrackPoints[0].Elevation.Y;
             string traceName = Path.GetFileName(gpxFile);
 
             int solLength = CurrentTrack.TrackPoints.Length;
-            for (int i = 0; i < solLength; i++)
+            int gi = 1; // ground index starts after fake start
+            for (int i = 0; i < solLength; i++, gi++)
             {
                 // Put the display coord
-                ground[i] = CurrentTrack.TrackPoints[i].Elevation;
+                ground[gi] = CurrentTrack.TrackPoints[i].Elevation;
                 // Display a waypoint
                 Waypoint? waypoint = CurrentTrack.TrackPoints[i].Waypoint;
                 if (waypoint != null)
                 {
                     // TODO: here only to display a graphic object for junction
-                    waypoint.LevelCoord[traceName] = ground[i];
+                    waypoint.LevelCoord[traceName] = ground[gi];
                     TrailJunction junction = new() { TraceName = traceName, Waypoint = waypoint };
                     _trailJunctions.Add(junction);
 
@@ -116,7 +123,7 @@ public partial class Sol : StaticBody2D
                         TargetWaypoint.LevelOrder[traceName] = i;
                     }
 
-                    Area2D junctionArea = new() { Position = ground[i], Name = traceName };
+                    Area2D junctionArea = new() { Position = ground[gi], Name = traceName };
                     // Use the junction collision layer
                     junctionArea.SetCollisionLayerValue(1, false);
                     junctionArea.SetCollisionLayerValue(Global.SolJunctionLayer, true);
@@ -134,10 +141,15 @@ public partial class Sol : StaticBody2D
                 }
             }
 
-            ground[solLength].X = CurrentTrack.MaxX;
-            ground[solLength].Y = Gpx.PixelElevationMax;
-            ground[solLength + 1].X = 0.00f;
-            ground[solLength + 1].Y = Gpx.PixelElevationMax;
+            // set an end
+            ground[solLength + 1].X = ground[solLength].X + 1000;
+            ground[solLength + 1].Y = ground[solLength].Y;
+
+            // close the polygon
+            ground[solLength + 2].X = CurrentTrack.MaxX;
+            ground[solLength + 2].Y = Gpx.PixelElevationMax;
+            ground[solLength + 3].X = 0.00f;
+            ground[solLength + 3].Y = Gpx.PixelElevationMax;
 
             sol.Polygon = ground;
             solCollision.Polygon = sol.Polygon;
