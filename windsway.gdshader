@@ -24,6 +24,6 @@ void vertex() {
   float time = TIME * speed + offset;
   VERTEX.x += getWind(VERTEX.xy, UV, time);
   if (skew != 0.0) {
-	VERTEX.x += max(0.0, (1.0-UV.y) - heightOffset) * (skew / 12.0);
+	  VERTEX.x += max(0.0, (1.0-UV.y) - heightOffset) * (skew / 12.0);
   }
 }
