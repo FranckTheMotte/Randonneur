@@ -65,6 +65,9 @@ public partial class Player : CharacterBody2D
 
         // ref to the sprite
         PlayerSprite = GetNode<AnimatedSprite2D>("TheSprite");
+
+        // group for other item interaction
+        AddToGroup(Global.PlayerGroup);
     }
 
     public override void _PhysicsProcess(double delta)

@@ -33,6 +33,8 @@ public partial class Sol : StaticBody2D
     // Godot group of all wyapoints
     private const string _WaypointsGroup = "Waypoints";
 
+    PackedScene FlowerScene = GD.Load<PackedScene>("res://Scenes/flower.tscn");
+
     /// <summary>
     /// The maximum distance from the origin in the level the player can go.
     /// </summary>
@@ -58,6 +60,14 @@ public partial class Sol : StaticBody2D
             }
         }
         base._Draw();
+    }
+
+    private void _addFlower(Vector2 Position)
+    {
+        // put a flower
+        Area2D flowerScene = (Area2D)FlowerScene.Instantiate();
+        flowerScene.Position = new Vector2(Position.X, Position.Y - 5);
+        AddChild(flowerScene);
     }
 
     /// <summary>
@@ -139,6 +149,9 @@ public partial class Sol : StaticBody2D
                     junctionArea.AddChild(junctionCollision);
                     GetParent().AddChild(junctionArea);
                 }
+
+                // add some flowers
+                _addFlower(ground[gi]);
             }
 
             // set an end
