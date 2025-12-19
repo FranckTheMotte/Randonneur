@@ -96,4 +96,15 @@ offset_bottom = 85.0
 button_pressed = true
 text = "Walk"
 
+[node name="Speed" type="SpinBox" parent="Actions/PlayerSettings"]
+layout_mode = 0
+offset_left = 106.0
+offset_top = 62.0
+offset_right = 192.5625
+offset_bottom = 93.0
+max_value = 10.0
+value = 5.0
+alignment = 1
+
 [connection signal="toggled" from="Actions/PlayerSettings/Walk" to="Actions" method="_on_check_button_toggled"]
+[connection signal="value_changed" from="Actions/PlayerSettings/Speed" to="Actions" method="_on_speed_value_changed"]
