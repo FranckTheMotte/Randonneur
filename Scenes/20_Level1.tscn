@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
 [ext_resource type="Texture2D" uid="uid://cqag3u1am0jea" path="res://Art/Background/prairie.png" id="3_mgsr5"]
 [ext_resource type="Script" uid="uid://cysc5mc3t3ajk" path="res://Scripts/Sol.cs" id="3_uowpc"]
-[ext_resource type="Script" uid="uid://dkmqx0q07t5vd" path="res://Scripts/Actions.cs" id="6_8bbqd"]
+[ext_resource type="Script" uid="uid://dkmqx0q07t5vd" path="res://Scripts/UI/Actions.cs" id="6_8bbqd"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
 
@@ -80,14 +80,14 @@ position = Vector2(50, 500)
 [node name="Actions" type="CanvasLayer" parent="."]
 script = ExtResource("6_8bbqd")
 
-[node name="Control" type="Control" parent="Actions"]
+[node name="PlayerSettings" type="Control" parent="Actions"]
 z_index = 2
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="CheckButton" type="CheckButton" parent="Actions/Control"]
+[node name="Walk" type="CheckButton" parent="Actions/PlayerSettings"]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 61.0
@@ -96,4 +96,4 @@ offset_bottom = 85.0
 button_pressed = true
 text = "Walk"
 
-[connection signal="toggled" from="Actions/Control/CheckButton" to="Actions" method="_on_check_button_toggled"]
+[connection signal="toggled" from="Actions/PlayerSettings/Walk" to="Actions" method="_on_check_button_toggled"]
