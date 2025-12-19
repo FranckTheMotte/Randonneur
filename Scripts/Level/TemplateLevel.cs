@@ -332,7 +332,7 @@ public partial class TemplateLevel : Node2D
         }
         Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
         Player.Instance.Move = true;
-        Player.Instance.Walk = CurrentWaypoint.PlayerDirection;
+        Player.Instance.HikerSpeed = CurrentWaypoint.PlayerDirection;
         Player.Instance.LevelLimitX.X = LimitX;
         Player.Instance.Level = this;
         Player.Instance.Reparent(this);

@@ -14,7 +14,7 @@ public partial class Actions : CanvasLayer
 
         Player.Instance.Move = true;
         SpinBox speed = GetNode<SpinBox>("PlayerSettings/Speed");
-        speed.Value = Player.Instance.Walk;
+        speed.Value = Player.Instance.HikerSpeed;
     }
 
     private void _on_check_button_toggled(bool isToggled)
@@ -43,8 +43,8 @@ public partial class Actions : CanvasLayer
         }
 
         // retrieve the direction
-        int direction = Player.Instance.Walk >= 0 ? 1 : -1;
-        Player.Instance.Walk = (int)Speed * direction;
+        int direction = Player.Instance.HikerSpeed >= 0 ? 1 : -1;
+        Player.Instance.HikerSpeed = (int)Speed * direction;
         Player.Instance.Move = true;
     }
 }

@@ -9,9 +9,9 @@ public partial class Player : CharacterBody2D
     /// </summary>
     public bool Move = false;
 
-    /* Coefficient of speed */
+    // MoveSpeed
     [Export]
-    public int Walk = Global.PlayerSpeed;
+    public int HikerSpeed = Global.PlayerSpeed;
 
     [Signal]
     public delegate void TrailJunctionChoiceEventHandler();
@@ -19,7 +19,7 @@ public partial class Player : CharacterBody2D
     // ref to the current level
     public TemplateLevel? Level;
 
-    public const float Speed = 100.0f;
+    public const float SpeedCoefficient = 100.0f;
 
     // Maximum limit of the level in X
     public Godot.Vector2 LevelLimitX;
@@ -87,7 +87,7 @@ public partial class Player : CharacterBody2D
         }
         else
         {
-            velocity.X = Move ? Walk * Speed : 0;
+            velocity.X = Move ? HikerSpeed * SpeedCoefficient : 0;
         }
 
         Velocity = velocity;
@@ -171,11 +171,11 @@ public partial class Player : CharacterBody2D
         {
             case Direction.Forward:
                 PlayerSprite.FlipH = false;
-                Walk = Global.PlayerSpeed;
+                HikerSpeed = Global.PlayerSpeed;
                 break;
             case Direction.Backward:
                 PlayerSprite.FlipH = true;
-                Walk = -Global.PlayerSpeed;
+                HikerSpeed = -Global.PlayerSpeed;
                 break;
         }
     }
@@ -211,7 +211,7 @@ public partial class Player : CharacterBody2D
             Y: Align player position with half of the collision shape size (don't forget the player rescaling)
         */
         newPosition = new Vector2(
-            position.X + (Walk > 0 ? 1 : -1) * 30.0f,
+            position.X + (HikerSpeed > 0 ? 1 : -1) * 30.0f,
             position.Y - (playerCollisionShape.Shape.GetRect().Size.Y / 2 * Scale.Y)
         );
 
