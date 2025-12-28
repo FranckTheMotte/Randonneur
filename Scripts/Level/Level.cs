@@ -32,6 +32,65 @@ namespace Randonneur.Scripts
         [Export]
         public float LimitX { get; set; } = 10000.0f;
 
+        private readonly Random _rand = new();
+
+        /// <summary>
+        /// Generate background with some sprite like clouds or birds.
+        /// </summary>
+        /// <param name="Sky">Node which regroups all sky nodes.</param>
+        /// <param name="ViewportSize">Game display size.</param>
+        /// <param name="RessourcePath">Full path to cloud image.</param>
+        /// <param name="ParallaxName">Node name of the parallax2D.</param>
+        /// <param name="Y">Heigh position.</param>
+        private void SpawnCloud(
+            Node2D Sky,
+            Vector2 ViewportSize,
+            string RessourcePath,
+            string ParallaxName,
+            float Y
+        )
+        {
+            Parallax2D skyParallax = Sky.GetNodeOrNull<Parallax2D>(ParallaxName);
+            // scale a cloud from 0.15 to 0.65 of original size
+            float randScale = _rand.NextSingle() * 0.5f + 0.15f;
+            int midX = (int)ViewportSize.X / 2;
+            int midY = (int)ViewportSize.Y / 2;
+
+            Sprite2D cloud = new()
+            {
+                Texture = GD.Load<Texture2D>(RessourcePath),
+                Position = new Vector2(_rand.Next(0, midX), Y - midY),
+                Scale = new Vector2(randScale, randScale),
+            };
+            skyParallax.AddChild(cloud);
+        }
+
+        /// <summary>
+        /// Generate background with some sprite like clouds or birds.
+        /// </summary>
+        void GenerateBackground()
+        {
+            if (Scene == null)
+            {
+                return;
+            }
+
+            Node2D sky = Scene.GetNodeOrNull<Node2D>("Sky");
+
+            // as the current scene is not attached to any scene, the viewport size is
+            // retrieve from settings.
+            int width = (int)ProjectSettings.GetSetting("display/window/size/viewport_width");
+            int height = (int)ProjectSettings.GetSetting("display/window/size/viewport_height");
+            GD.Print($"Viewport size {width} {height}");
+            Vector2 vpSize = new(width, height);
+
+            // Feed sky with clouds
+            SpawnCloud(sky, vpSize, "res://Art/Background/nuage5.png", "SkyParallax1", 100);
+            SpawnCloud(sky, vpSize, "res://Art/Background/nuage5.png", "SkyParallax1", 200);
+            SpawnCloud(sky, vpSize, "res://Art/Background/nuage6.png", "SkyParallax2", 250);
+            SpawnCloud(sky, vpSize, "res://Art/Background/nuage6.png", "SkyParallax3", 300);
+        }
+
         /// <summary>
         /// Create the level by loading the gpx file.
         /// The list of junctions will be returned.
@@ -54,6 +113,7 @@ namespace Randonneur.Scripts
                 ?? throw new System.NullReferenceException("Sol node was not found");
 
             land.generateGround(_gpxFile);
+            GenerateBackground();
 
             // TODO define start point in gpx file
             _startpoint = null;
