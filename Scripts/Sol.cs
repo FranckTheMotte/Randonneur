@@ -86,7 +86,7 @@ public partial class Sol : StaticBody2D
             CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>(
                 "CollisionProfilElevation"
             );
-            Polygon2D sol = GetNode<Polygon2D>("ProfilElevation");
+            Polygon2D sol = GetNode<Polygon2D>("WalkingSurface");
 
             /* Generate a profil from a gpx file */
             CurrentTrack = new Gpx();
