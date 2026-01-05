@@ -86,7 +86,7 @@ public partial class Sol : StaticBody2D
             CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>(
                 "CollisionProfilElevation"
             );
-            Polygon2D sol = GetNode<Polygon2D>("WalkingSurface");
+            Polygon2D basement = GetNode<Polygon2D>("Basement");
 
             /* Generate a profil from a gpx file */
             CurrentTrack = new Gpx();
@@ -158,14 +158,16 @@ public partial class Sol : StaticBody2D
             ground[solLength + 1].X = ground[solLength].X + 1000;
             ground[solLength + 1].Y = ground[solLength].Y;
 
-            // close the polygon
+            // close the ground polygon
             ground[solLength + 2].X = CurrentTrack.MaxX;
             ground[solLength + 2].Y = Gpx.PixelElevationMax;
             ground[solLength + 3].X = 0.00f;
             ground[solLength + 3].Y = Gpx.PixelElevationMax;
 
-            sol.Polygon = ground;
-            solCollision.Polygon = sol.Polygon;
+            basement.Polygon = ground;
+            solCollision.Polygon = basement.Polygon;
+
+            GenerateGrass(CurrentTrack.TrackPoints.Length, ground);
 
             /* player limit */
             LevelLimitX = CurrentTrack.MaxX;
@@ -174,6 +176,167 @@ public partial class Sol : StaticBody2D
         /* TODO put default value if no Gpx is provided */
         watch.Stop();
         Print($"Ground creation Time: {watch.ElapsedMilliseconds} ms");
+    }
+
+    /// <summary>
+    /// Add blades of grass of the surface of a ground.
+    /// </summary>
+    /// <param name="trackPointsCount">Number of trackpoints.</param>
+    /// <param name="ground">Array of trackpoints.</param>
+    private void GenerateGrass(int trackPointsCount, Vector2[] ground)
+    {
+        // Sanity checks
+        if (ground == null || ground.Length < 3)
+            throw new ArgumentException("Ground must have at least 3 points");
+
+        Polygon2D basement = GetNode<Polygon2D>("Basement");
+        // Duplicate the upper part of ground to define the walking line
+        // (the last 2 points are ignored, they define the bottom of the poligon)
+        Vector2[] surface = ground[..^2];
+
+        Line2D walkingLine = new() { Points = surface };
+
+        // it defines the widht and height of a blade of grass
+        QuadMesh quad = new() { Size = new Vector2(4, 40) };
+
+        // shader to apply texture
+        ShaderMaterial material = new()
+        {
+            Shader = GD.Load<Shader>("res://Scripts/grass.gdshader"),
+        };
+        material.SetShaderParameter(
+            "grass_texture",
+            GD.Load<Texture2D>("res://Art/Background/brinherbe.png")
+        );
+
+        // TODO:
+        // The grass counter must be linked with the length's trail and the
+        // density of grass.
+        int grassCount = trackPointsCount * 60;
+        MultiMesh multiMesh = new()
+        {
+            TransformFormat = MultiMesh.TransformFormatEnum.Transform2D,
+            InstanceCount = grassCount,
+            Mesh = quad,
+        };
+
+        // Restrict to the track area
+        Rect2 bounds = GetPolygonBounds(surface);
+
+        // required to put randomly the blades of grass
+        RandomNumberGenerator rng = new();
+        rng.Randomize();
+
+        int index = 0;
+        float grassRotationStart = Mathf.Tau / 1.9f;
+        float grassRotationEnd = Mathf.Tau / 2.1f;
+        float minXBounds = bounds.Position.X;
+        float maxXBounds = bounds.Position.X + bounds.Size.X;
+        while (index < grassCount)
+        {
+            // Y will be modified
+            Vector2 p = new(rng.RandfRange(minXBounds, maxXBounds), 0);
+
+            // each point y must be attached to the walking line
+            var (result, point) = AlignPointOnLine(p, walkingLine);
+            if (result)
+            {
+                // set different size
+                float scale = rng.RandfRange(0.3f, 0.7f);
+
+                multiMesh.SetInstanceTransform2D(
+                    index,
+                    new Transform2D(
+                        rng.RandfRange(grassRotationStart, grassRotationEnd),
+                        Vector2.One * scale,
+                        0,
+                        point
+                    )
+                );
+            }
+
+            index++;
+        }
+        MultiMeshInstance2D multiMeshInstance = GetNode<MultiMeshInstance2D>("WalkingSurface");
+
+        // don't forget to free an old instace of multiMesh
+        multiMeshInstance.Multimesh?.Dispose();
+
+        multiMeshInstance.Multimesh = multiMesh;
+        multiMeshInstance.Material = material;
+
+        walkingLine.QueueFree();
+    }
+
+    /// <summary>
+    /// Put a point on a Line2D if X is inside horizontal bounds of the line.
+    /// Only Y will be modified.
+    /// </summary>
+    /// <param name="point">Point to align.</param>
+    /// <param name="line">Line2D.</param>
+    /// <returns>True is point can be aligned, False otherwise.
+    /// The new point is returned.</returns>
+    private static (bool result, Vector2 point) AlignPointOnLine(Vector2 point, Line2D line)
+    {
+        Vector2[] points = line.Points;
+
+        // Need at least 2 points to form a line
+        if (points.Length < 2)
+            return (false, new Vector2());
+
+        // Check each segment of the line
+        for (int i = 0; i < points.Length - 1; i++)
+        {
+            Vector2 segmentStart = points[i];
+            Vector2 segmentEnd = points[i + 1];
+
+            // to ensure that start is before end
+            if (segmentStart.X > segmentEnd.X)
+            {
+                segmentStart = points[i + 1];
+                segmentEnd = points[i];
+            }
+
+            if (point.X >= segmentStart.X && point.X <= segmentEnd.X)
+            {
+                float elevationDiff = segmentStart.Y - segmentEnd.Y;
+                point.Y = segmentStart.Y - (elevationDiff / 2.0f);
+                return (true, point);
+            }
+        }
+
+        return (false, new Vector2());
+    }
+
+    /// <summary>
+    /// Return a Rect2 to delimiter the bounds of a polygon2D.
+    /// </summary>
+    /// <param name="polygon">Polygon defined by an array of 2D coordinates.</param>
+    /// <returns>Rect2 with bounds of Polygon</returns>
+    static Rect2 GetPolygonBounds(Vector2[] polygon)
+    {
+        if (polygon == null || polygon.Length == 0)
+            return new Rect2();
+
+        Vector2 min = polygon[0];
+        Vector2 max = polygon[0];
+
+        for (int i = 1; i < polygon.Length; i++)
+        {
+            Vector2 p = polygon[i];
+
+            if (p.X < min.X)
+                min.X = p.X;
+            if (p.Y < min.Y)
+                min.Y = p.Y;
+
+            if (p.X > max.X)
+                max.X = p.X;
+            if (p.Y > max.Y)
+                max.Y = p.Y;
+        }
+
+        return new Rect2(min, max - min);
     }
 
     /// <summary>
