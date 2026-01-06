@@ -199,7 +199,7 @@ public partial class MapGenerator(float width, float height) : Node
     /// <remarks>
     /// The collisions will be named according to the format "TrailCollisionFilterName#i" where i is the index of the line segment.
     /// </remarks>
-    private void CreateSegmentCollisions(Area2D area, Line2D line)
+    private static void CreateSegmentCollisions(Area2D area, Line2D line)
     {
         // Create collision for each line segment
         for (int i = 0; i < line.Points.Length - 1; i++)

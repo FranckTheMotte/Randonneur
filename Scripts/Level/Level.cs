@@ -112,7 +112,7 @@ namespace Randonneur.Scripts
                 Scene.GetNodeOrNull<Sol>("Ground/Sol")
                 ?? throw new System.NullReferenceException("Sol node was not found");
 
-            land.generateGround(_gpxFile);
+            land.GenerateGround(_gpxFile);
             GenerateBackground();
 
             // TODO define start point in gpx file

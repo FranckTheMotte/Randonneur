@@ -13,7 +13,7 @@ public class GpxWaypoints
 {
     private readonly List<Waypoint> _gpxWayPoints = [];
 
-    private Waypoint? noWaypoint = null;
+    private readonly Waypoint? noWaypoint = null;
 
     /**
         Retrieve waypoint with a latitude/longitude coordinate.

@@ -13,12 +13,12 @@ public partial class DestinationsList : VBoxContainer
     public delegate void DestinationsUpdateEventHandler();
 
     // Called when the node enters the scene tree for the first time.
-    public void populateDestination(Junction trailJunction)
+    public void PopulateDestination(Junction trailJunction)
     {
         // Sanity checks
         if (Location == null || Destination == null || trailJunction.Destinations == null)
         {
-            GD.PushWarning($"${nameof(populateDestination)}: sanity checks failed");
+            GD.PushWarning($"${nameof(PopulateDestination)}: sanity checks failed");
             return;
         }
 
@@ -62,6 +62,6 @@ public partial class DestinationsList : VBoxContainer
 
     private void _on_destinations_update(Junction trailJunction)
     {
-        populateDestination(trailJunction);
+        PopulateDestination(trailJunction);
     }
 }

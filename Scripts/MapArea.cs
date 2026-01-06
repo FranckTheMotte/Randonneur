@@ -54,22 +54,22 @@ public partial class MapArea : Area2D
 
         if (selected)
         {
-            setColorTrail(Colors.Red);
+            SetColorTrail(Colors.Red);
             Map.SelectedWaypoint = (string)area.GetMeta(Global.MetaWaypointName);
         }
         else
         {
-            setColorTrail(Colors.Orange);
+            SetColorTrail(Colors.Orange);
             Map.SelectedWaypoint = null;
         }
     }
 
-    private void setColorTrail(Color color)
+    private void SetColorTrail(Color color)
     {
         // Sanity checks
         if (_trailLine == null)
         {
-            GD.PushWarning($"${nameof(setColorTrail)}: sanity checks failed");
+            GD.PushWarning($"${nameof(SetColorTrail)}: sanity checks failed");
             return;
         }
 

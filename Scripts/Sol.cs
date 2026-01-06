@@ -62,7 +62,7 @@ public partial class Sol : StaticBody2D
         base._Draw();
     }
 
-    private void _addFlower(Vector2 Position)
+    private void AddFlower(Vector2 Position)
     {
         // put a flower
         Area2D flowerScene = (Area2D)FlowerScene.Instantiate();
@@ -74,7 +74,7 @@ public partial class Sol : StaticBody2D
     /// Generate a solid ground from a gpx file.
     /// <param name="gpxFile">Full godot path to the gpx file.</param>
     /// </summary>
-    public void generateGround(string gpxFile)
+    public void GenerateGround(string gpxFile)
     {
         // reset
         _trailJunctions = [];
@@ -95,7 +95,7 @@ public partial class Sol : StaticBody2D
             if (CurrentTrack.TrackPoints == null)
             {
                 GD.PushWarning(
-                    $"{nameof(generateGround)}: no track points in current gpx file ${gpxFile}"
+                    $"{nameof(GenerateGround)}: no track points in current gpx file ${gpxFile}"
                 );
                 watch.Stop();
                 return;
@@ -151,7 +151,7 @@ public partial class Sol : StaticBody2D
                 }
 
                 // add some flowers
-                _addFlower(ground[gi]);
+                AddFlower(ground[gi]);
             }
 
             // set an end
