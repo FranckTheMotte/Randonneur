@@ -269,6 +269,38 @@ public partial class Sol : StaticBody2D
     }
 
     /// <summary>
+    /// Retrieve the Y value on a line from X.
+    /// </summary>
+    /// <param name="line">An horizontal line (can be irregular).</param>
+    /// <param name="x">A x enclosed in line bound</param>
+    /// <returns></returns>
+    private static float FindYOnLine(Line2D line, float x)
+    {
+        var points = line.Points;
+
+        for (int i = 0; i < points.Length - 1; i++)
+        {
+            Vector2 p1 = points[i];
+            Vector2 p2 = points[i + 1];
+
+            float minX = Mathf.Min(p1.X, p2.X);
+            float maxX = Mathf.Max(p1.X, p2.X);
+
+            if (x >= minX && x <= maxX)
+            {
+                if (Mathf.Abs(p2.X - p1.X) < 0.001f)
+                    return (p1.Y + p2.Y) / 2f;
+
+                float t = (x - p1.X) / (p2.X - p1.X);
+                return Mathf.Lerp(p1.Y, p2.Y, t);
+            }
+        }
+
+        // Hors limites
+        return x < points[0].X ? points[0].Y : points[^1].Y;
+    }
+
+    /// <summary>
     /// Put a point on a Line2D if X is inside horizontal bounds of the line.
     /// Only Y will be modified.
     /// </summary>
@@ -284,28 +316,9 @@ public partial class Sol : StaticBody2D
         if (points.Length < 2)
             return (false, new Vector2());
 
-        // Check each segment of the line
-        for (int i = 0; i < points.Length - 1; i++)
-        {
-            Vector2 segmentStart = points[i];
-            Vector2 segmentEnd = points[i + 1];
+        point.Y = FindYOnLine(line, point.X);
 
-            // to ensure that start is before end
-            if (segmentStart.X > segmentEnd.X)
-            {
-                segmentStart = points[i + 1];
-                segmentEnd = points[i];
-            }
-
-            if (point.X >= segmentStart.X && point.X <= segmentEnd.X)
-            {
-                float elevationDiff = segmentStart.Y - segmentEnd.Y;
-                point.Y = segmentStart.Y - (elevationDiff / 2.0f);
-                return (true, point);
-            }
-        }
-
-        return (false, new Vector2());
+        return (true, point);
     }
 
     /// <summary>
