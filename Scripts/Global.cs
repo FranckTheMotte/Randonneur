@@ -17,5 +17,7 @@ namespace Randonneur
         public const int PlayerSpeed = 3;
 
         public const string PlayerGroup = "player";
+
+        public const float JunctionCollisionShapeSize = 20.0f;
     }
 }

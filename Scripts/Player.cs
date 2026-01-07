@@ -27,6 +27,11 @@ public partial class Player : CharacterBody2D
     public Waypoint? CurrentWaypoint = null;
 
     /// <summary>
+    /// Traveled distance since last junction.
+    /// </summary>
+    public float TraveledDistance = 0.0f;
+
+    /// <summary>
     /// Reference to actions panel
     /// </summary>
     private Actions? _actionsPanel = null;
@@ -93,6 +98,17 @@ public partial class Player : CharacterBody2D
         else
         {
             velocity.X = Move ? HikerSpeed * SpeedCoefficient : 0;
+            if (Move) {
+                TraveledDistance += Math.Abs(HikerSpeed);
+            }
+        }
+
+        // re-activate collision with junction when player is far enough
+        // from last junction
+        if (TraveledDistance > Global.JunctionCollisionShapeSize)
+        {
+            SetCollisionLayerValue(Global.SolJunctionLayer, true);
+            SetCollisionMaskValue(Global.SolJunctionLayer, true);
         }
 
         Velocity = velocity;
@@ -131,9 +147,6 @@ public partial class Player : CharacterBody2D
         {
             Level.TrailJunctionChoiceDone(destWaypointName);
         }
-        // TODO comment faire passer à travers la collison de la junction?
-        SetCollisionLayerValue(Global.SolJunctionLayer, true);
-        SetCollisionMaskValue(Global.SolJunctionLayer, true);
 
         // move forward (default)
         Move = true;
@@ -202,6 +215,7 @@ public partial class Player : CharacterBody2D
         SetCollisionLayerValue(Global.SolJunctionLayer, false);
         SetCollisionMaskValue(Global.SolJunctionLayer, false);
         Level.JunctionChoice(trace, waypointName);
+        TraveledDistance = 0;
     }
 
     /// <summary>

@@ -139,7 +139,13 @@ public partial class Sol : StaticBody2D
                     junctionArea.SetCollisionLayerValue(Global.SolJunctionLayer, true);
                     junctionArea.SetCollisionMaskValue(1, false);
                     junctionArea.SetCollisionMaskValue(Global.SolJunctionLayer, true);
-                    RectangleShape2D rectangle = new() { Size = new Vector2(20, 20) };
+                    RectangleShape2D rectangle = new()
+                    {
+                        Size = new Vector2(
+                            Global.JunctionCollisionShapeSize,
+                            Global.JunctionCollisionShapeSize
+                        ),
+                    };
                     CollisionShape2D junctionCollision = new() { Shape = rectangle };
                     junctionCollision.AddToGroup(_WaypointsGroup);
                     junctionArea.BodyEntered += delegate
@@ -380,23 +386,6 @@ public partial class Sol : StaticBody2D
             return;
         }
 
-        /* Reenable collisions of Waypoints group.
-           Maybe there is a better method but as the collision can occurs several
-           times when player go accross the shape, it is:
-           - 1) disable when triggered
-           - 2) reenable when next trigger occurs
-        */
-        foreach (
-            CollisionShape2D collision in GetTree()
-                .GetNodesInGroup(_WaypointsGroup)
-                .Cast<CollisionShape2D>()
-        )
-        {
-            collision.SetDeferred("disabled", false);
-        }
-
         Player.Instance?.DisplayJunction(TrackName, Name);
-        // avoid useless collisions.
-        JunctionCollision.SetDeferred("disabled", true);
     }
 }
