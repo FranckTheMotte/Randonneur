@@ -115,11 +115,7 @@ public partial class TemplateLevel : Node2D
         AddChild(customCursorCanvas);
 
         /* Scene transition */
-        if (FindChild("SceneTransitionAnimation") != null)
-        {
-            Node2D sceneTransition = GetNode<Node2D>("SceneTransitionAnimation");
-            _fadeAnimation = sceneTransition.GetNode<AnimationPlayer>("FadeAnimation");
-        }
+        FadeIn();
 
         // Map is not visible at start
         MapVisible(false);
@@ -135,7 +131,8 @@ public partial class TemplateLevel : Node2D
         }
         // Display the X,Y of the player in the label
         Label label = GetNode<Label>("Debug/Control/DebugLabel");
-        label.Text = $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")} MAX: {player.LevelLimitX.X}";
+        label.Text =
+            $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")} MAX: {player.LevelLimitX.X}";
     }
 
     /// <summary>
@@ -238,10 +235,20 @@ public partial class TemplateLevel : Node2D
         sign.Visible = Visible;
     }
 
-    /* TODO move this in global tools class */
-    private async void Sleep(double value)
+    public static async void FadeIn()
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(value));
+        if (ScreenFader.Instance == null)
+            return;
+
+        await ScreenFader.Instance.FadeIn();
+    }
+
+    public static async void FadeOut()
+    {
+        if (ScreenFader.Instance == null)
+            return;
+
+        await ScreenFader.Instance.FadeOut();
     }
 
     public void TrailJunctionChoiceDone(string destWaypointName)
@@ -249,12 +256,7 @@ public partial class TemplateLevel : Node2D
         Waypoints waypoints = (Waypoints)Waypoints.Instance;
 
         // Sanity checks
-        if (
-            _fadeAnimation == null
-            || waypoints == null
-            || CurrentWaypoint == null
-            || waypoints.Links == null
-        )
+        if (waypoints == null || CurrentWaypoint == null || waypoints.Links == null)
         {
             GD.PushWarning($"${nameof(TrailJunctionChoiceDone)}: sanity checks failed");
             return;
@@ -272,12 +274,9 @@ public partial class TemplateLevel : Node2D
             CurrentTraceName = CurrentWaypoint.TraceName;
             if (traceName != CurrentWaypoint.TraceName)
             {
-                SceneManager.Instance?.ChangeLevel(gpxFile, CurrentWaypoint.Name);
+                FadeOut();
 
-                _fadeAnimation.Play("fade_in");
-                Sleep(500);
-                _fadeAnimation.Play("fade_out");
-                Sleep(500);
+                SceneManager.Instance?.ChangeLevel(gpxFile, CurrentWaypoint.Name);
 
                 /* Save the next trace */
                 CurrentTraceName = traceName;

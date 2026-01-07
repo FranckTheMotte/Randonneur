@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 WorldMap="res://Scenes/world_map.tscn"
 SceneManager="*res://Scripts/Main/SceneManager.cs"
 GameMaster="*res://Scripts/Main/GameMaster.cs"
+ScreenFader="*res://Scenes/ScreenFader.tscn"
 
 [display]
 

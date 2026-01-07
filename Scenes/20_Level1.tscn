@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://be11snw13ct0b"]
+[gd_scene load_steps=11 format=3 uid="uid://be11snw13ct0b"]
 
 [ext_resource type="Script" uid="uid://b24uweoh1uvry" path="res://Scripts/Level/TemplateLevel.cs" id="1_3wch0"]
 [ext_resource type="Shader" uid="uid://caqs8seommkrm" path="res://Scripts/Level/SkyGradient.gdshader" id="2_mcm6m"]
@@ -9,7 +9,6 @@
 [ext_resource type="Script" uid="uid://dget2th477uv" path="res://Scripts/PolygonWithBorder.cs" id="6_by584"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="Texture2D" uid="uid://c2o8w52yybufe" path="res://Art/Background/solherbesmall.png" id="7_s5sg5"]
-[ext_resource type="PackedScene" uid="uid://pgt17caveqbe" path="res://Scenes/scene_transition_animation.tscn" id="8_bsps8"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_by584"]
 shader = ExtResource("2_mcm6m")
@@ -120,10 +119,6 @@ offset_left = -4030.0
 offset_top = -2140.0
 offset_right = -4030.0
 offset_bottom = -2140.0
-scale = Vector2(10, 10)
-
-[node name="SceneTransitionAnimation" parent="." instance=ExtResource("8_bsps8")]
-position = Vector2(346, -1413.0001)
 scale = Vector2(10, 10)
 
 [node name="Map" type="Node2D" parent="."]
