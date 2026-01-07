@@ -86,7 +86,7 @@ public partial class Sol : StaticBody2D
             CollisionPolygon2D solCollision = GetNode<CollisionPolygon2D>(
                 "CollisionProfilElevation"
             );
-            Polygon2D basement = GetNode<Polygon2D>("Basement");
+            Polygon2D underground = GetNode<Polygon2D>("Underground");
 
             /* Generate a profil from a gpx file */
             CurrentTrack = new Gpx();
@@ -164,8 +164,8 @@ public partial class Sol : StaticBody2D
             ground[solLength + 3].X = 0.00f;
             ground[solLength + 3].Y = Gpx.PixelElevationMax;
 
-            basement.Polygon = ground;
-            solCollision.Polygon = basement.Polygon;
+            underground.Polygon = ground;
+            solCollision.Polygon = underground.Polygon;
 
             GenerateGrass(CurrentTrack.TrackPoints.Length, ground);
 
@@ -189,7 +189,7 @@ public partial class Sol : StaticBody2D
         if (ground == null || ground.Length < 3)
             throw new ArgumentException("Ground must have at least 3 points");
 
-        Polygon2D basement = GetNode<Polygon2D>("Basement");
+        Polygon2D underground = GetNode<Polygon2D>("Underground");
         // Duplicate the upper part of ground to define the walking line
         // (the last 2 points are ignored, they define the bottom of the poligon)
         Vector2[] surface = ground[..^2];

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bgym6syidi2l3"
-path="res://.godot/imported/basementrock.png-f0888bb1f9df04fd685bfa5a470b3292.ctex"
+path="res://.godot/imported/undergroundRock.png-49b484f6c3fcddba15c05642158f53dd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Background/basementrock.png"
-dest_files=["res://.godot/imported/basementrock.png-f0888bb1f9df04fd685bfa5a470b3292.ctex"]
+source_file="res://Art/Background/undergroundRock.png"
+dest_files=["res://.godot/imported/undergroundRock.png-49b484f6c3fcddba15c05642158f53dd.ctex"]
 
 [params]
 

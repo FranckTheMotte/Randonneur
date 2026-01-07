@@ -4,7 +4,7 @@
 [ext_resource type="Shader" uid="uid://caqs8seommkrm" path="res://Scripts/Level/SkyGradient.gdshader" id="2_mcm6m"]
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
 [ext_resource type="Script" uid="uid://cysc5mc3t3ajk" path="res://Scripts/Sol.cs" id="3_uowpc"]
-[ext_resource type="Script" uid="uid://k4a2b63xm4vn" path="res://Scripts/Level/Basement.cs" id="5_mcm6m"]
+[ext_resource type="Script" uid="uid://k4a2b63xm4vn" path="res://Scripts/Level/Underground.cs" id="5_mcm6m"]
 [ext_resource type="Script" uid="uid://dkmqx0q07t5vd" path="res://Scripts/UI/Actions.cs" id="6_8bbqd"]
 [ext_resource type="Script" uid="uid://dget2th477uv" path="res://Scripts/PolygonWithBorder.cs" id="6_by584"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
@@ -75,7 +75,7 @@ script = ExtResource("3_uowpc")
 texture_filter = 1
 texture_repeat = 2
 
-[node name="Basement" type="Polygon2D" parent="Ground/Sol"]
+[node name="Underground" type="Polygon2D" parent="Ground/Sol"]
 polygon = PackedVector2Array(0, 203, 69, 195, 89, 180, 110, 177, 130, 169, 160, 157, 244, 112, 366, 104, 412, 79, 446, 90, 467, 97, 475, 105, 485, 117, 485, 224, 0, 222)
 uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
 script = ExtResource("5_mcm6m")
@@ -85,7 +85,7 @@ build_mode = 1
 
 [node name="PolygonWithBorder" type="Node2D" parent="Ground/Sol" node_paths=PackedStringArray("Surface")]
 script = ExtResource("6_by584")
-Surface = NodePath("../Basement")
+Surface = NodePath("../Underground")
 BorderTexture = ExtResource("7_s5sg5")
 
 [node name="Debug" type="CanvasLayer" parent="."]
