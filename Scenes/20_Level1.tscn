@@ -154,8 +154,9 @@ offset_left = 106.0
 offset_top = 62.0
 offset_right = 192.5625
 offset_bottom = 93.0
+min_value = -10.0
 max_value = 10.0
-value = 5.0
+value = 3.0
 alignment = 1
 
 [connection signal="toggled" from="Actions/PlayerSettings/Walk" to="Actions" method="_on_check_button_toggled"]

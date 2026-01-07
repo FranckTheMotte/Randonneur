@@ -26,6 +26,11 @@ public partial class Player : CharacterBody2D
 
     public Waypoint? CurrentWaypoint = null;
 
+    /// <summary>
+    /// Reference to actions panel
+    /// </summary>
+    private Actions? _actionsPanel = null;
+
     private static Player? _instance;
     public static Player? Instance { get; private set; } = _instance;
 
@@ -178,6 +183,9 @@ public partial class Player : CharacterBody2D
                 HikerSpeed = -Global.PlayerSpeed;
                 break;
         }
+
+        // Update actions
+        _actionsPanel?.UpdateHikerSpeed(HikerSpeed);
     }
 
     ///
@@ -216,5 +224,14 @@ public partial class Player : CharacterBody2D
         );
 
         Position = newPosition;
+    }
+
+    /// <summary>
+    /// Give access to actions panel.
+    /// </summary>
+    /// <param name="ActionsPanel">Canvas to control actions.</param>
+    public void SetActionsPanel(Actions ActionsPanel)
+    {
+        _actionsPanel = ActionsPanel;
     }
 }

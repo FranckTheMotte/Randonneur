@@ -330,6 +330,8 @@ public partial class TemplateLevel : Node2D
             GD.Print("Player infos already updated.");
             return;
         }
+        Actions actions = GetNode<Actions>("Actions");
+        Player.Instance.SetActionsPanel(actions);
         Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
         Player.Instance.Move = true;
         Player.Instance.HikerSpeed = CurrentWaypoint.PlayerDirection;
