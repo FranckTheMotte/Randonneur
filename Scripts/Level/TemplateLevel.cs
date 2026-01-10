@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Godot;
 using Randonneur;
+using MGType = Randonneur.MinigameMenu.MGType;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
@@ -33,6 +34,11 @@ public partial class TemplateLevel : Node2D
     /// The maximum distance from the origin in the level the player can go.
     /// </summary>
     public float LimitX { get; set; } = 10000.0f;
+
+    /// <summary>
+    /// Reference to the Mini Game box.
+    /// </summary>
+    internal MinigameMenu? MinigameBox;
 
     public override void _Ready()
     {
@@ -74,7 +80,7 @@ public partial class TemplateLevel : Node2D
         MarginContainer bgMargin = Map.GetNode<MarginContainer>("BgMargin");
         MarginContainer mapMargin = bgMargin.GetNode<MarginContainer>("BgNinePathRect/MapMargin");
         ColorRect mapRect = mapMargin.GetNode<ColorRect>("MapRect");
-        MapPositionUpdate();
+        BoxPositionUpdate(Map);
 
         /* TODO: compute with margins */
         float mapWidth =
@@ -114,11 +120,19 @@ public partial class TemplateLevel : Node2D
         MouseCursor customCursor = customCursorCanvas.GetNode<MouseCursor>("MouseCursor");
         AddChild(customCursorCanvas);
 
+        MinigameBox = GetNode<MinigameMenu>("MiniMenu");
+        if (MinigameBox is null)
+        {
+            GD.PushError($"${nameof(_Ready)}: fail to find mini game box");
+            return;
+        }
+
         /* Scene transition */
         FadeIn();
 
-        // Map is not visible at start
+        // Boxes are not visible at start
         MapVisible(false);
+        MGVisible(false);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -139,9 +153,7 @@ public partial class TemplateLevel : Node2D
     /// Show or hide the map.
     /// </summary>
     /// <param name="Visible">true to show the map, false to hide.</param>
-    /// <remarks>
-    /// </summary>
-    /// <param name="Waypoint">optional, indice the player location.</param>
+    /// <param name="Waypoint">optional, indicate the player location.</param>
     /// <remarks>
     /// When the map is visible, all landmarks are hidden.
     /// </remarks>
@@ -211,22 +223,41 @@ public partial class TemplateLevel : Node2D
         }
     }
 
-    /**
-     Update the map position based on the player's position.
-     */
-    private void MapPositionUpdate()
+    ///<summary>
+    /// Update a box position based on the player's position.
+    /// </summary>
+    /// <param name="Box">A control box.</param>
+    private void BoxPositionUpdate(Control Box)
     {
         // Sanity checks
-        if (Player.Instance == null || Map == null)
+        if (Player.Instance == null || Box == null)
         {
-            GD.PushWarning($"${nameof(_PhysicsProcess)}: sanity checks failed");
+            GD.PushWarning($"${nameof(BoxPositionUpdate)}: sanity checks failed");
             return;
         }
 
-        Map.Position = new Godot.Vector2(
+        Box.Position = new Godot.Vector2(
             Player.Instance.Position.X - 200,
             Player.Instance.Position.Y - 100
         );
+    }
+
+    /// <summary>
+    /// Show or hide the minigame box. This box describe the minigame and allows
+    /// to launch it.
+    /// </summary>
+    /// <param name="Visible">true to show the box, false to hide.</param>
+    /// <param name="Type">minigame type.</param>
+    /// <param name="Waypoint">optional, indicate the player location.</param>
+    public void MGVisible(bool Visible, MGType Type = MGType.None, Waypoint? Waypoint = null)
+    {
+        if (MinigameBox == null)
+        {
+            GD.PushWarning($"${nameof(MGVisible)}: sanity checks failed");
+            return;
+        }
+
+        MinigameBox.Visible = Visible;
     }
 
     public void TrailSignVisible(bool Visible)
@@ -296,17 +327,27 @@ public partial class TemplateLevel : Node2D
         Waypoints waypoints = (Waypoints)Waypoints.Instance;
         waypoint = waypoints.GetWaypoint(WaypointName);
         // sanity checks
-        if (waypoint == null)
+        if (waypoint == null || Map == null || MinigameBox == null)
         {
-            GD.PushError($"Waypoint {WaypointName} not found");
+            GD.PushWarning($"${nameof(JunctionChoice)}: sanity checks failed");
             return;
         }
 
         if (Player.Instance is not null)
             Player.Instance.CurrentWaypoint = waypoint;
 
-        MapPositionUpdate();
-        MapVisible(true, waypoint);
+        // Open the expected event box
+        Object baseObject = waypoint;
+        if (baseObject is Junction)
+        {
+            BoxPositionUpdate(Map);
+            MapVisible(true, waypoint);
+        }
+        else if (baseObject is PoV)
+        {
+            BoxPositionUpdate(MinigameBox);
+            MGVisible(true, MGType.Picture, waypoint);
+        }
 
         // keep the location where player comes from.
         CurrentWaypoint = waypoint;

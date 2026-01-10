@@ -1,0 +1,134 @@
+[gd_scene load_steps=15 format=3 uid="uid://bdb4x1dslt7l6"]
+
+[ext_resource type="Texture2D" uid="uid://b158v0os365ch" path="res://Art/UI/ui.png" id="2_eypy8"]
+[ext_resource type="Texture2D" uid="uid://dqohhuijbii2n" path="res://Art/UI/MiniGameWiseButton.png" id="3_fb5q8"]
+[ext_resource type="Texture2D" uid="uid://lhls0cpaqqt3" path="res://Art/UI/MiniGameNormalButton.png" id="4_eypy8"]
+[ext_resource type="Texture2D" uid="uid://bci06qg1r2msm" path="res://Art/UI/MiniGameFastlyButton.png" id="5_fb5q8"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xqn7j"]
+atlas = ExtResource("3_fb5q8")
+region = Rect2(0, 0, 106, 43)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8dnpt"]
+atlas = ExtResource("3_fb5q8")
+region = Rect2(0, 87, 106, 43)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u1vk8"]
+atlas = ExtResource("3_fb5q8")
+region = Rect2(0, 43, 106, 44)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fb5q8"]
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fb5q8"]
+atlas = ExtResource("4_eypy8")
+region = Rect2(0, 0, 106, 43)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uex2n"]
+atlas = ExtResource("4_eypy8")
+region = Rect2(0, 87, 106, 43)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fdo2t"]
+atlas = ExtResource("4_eypy8")
+region = Rect2(0, 43, 106, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m4mml"]
+atlas = ExtResource("5_fb5q8")
+region = Rect2(0, 0, 106, 43)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0dk68"]
+atlas = ExtResource("5_fb5q8")
+region = Rect2(0, 87, 106, 43)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e8pi7"]
+atlas = ExtResource("5_fb5q8")
+region = Rect2(0, 43, 106, 44)
+
+[node name="MiniMenu" type="Control"]
+z_index = 2
+layout_mode = 3
+anchors_preset = 0
+mouse_force_pass_scroll_events = false
+
+[node name="BgMargin" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(400, 250)
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 200.0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="BgNinePathRect" type="NinePatchRect" parent="BgMargin"]
+layout_mode = 2
+texture = ExtResource("2_eypy8")
+region_rect = Rect2(0, 133, 782, 268)
+
+[node name="MapMargin" type="MarginContainer" parent="BgMargin/BgNinePathRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -190.0
+offset_bottom = -190.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="MapRect" type="ColorRect" parent="BgMargin/BgNinePathRect/MapMargin"]
+layout_mode = 2
+color = Color(1, 1, 1, 0)
+
+[node name="VBoxChoice" type="VBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxWise" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice"]
+layout_mode = 2
+
+[node name="WiseButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice/HBoxWise"]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_xqn7j")
+texture_pressed = SubResource("AtlasTexture_8dnpt")
+texture_hover = SubResource("AtlasTexture_u1vk8")
+
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice/HBoxWise"]
+layout_mode = 2
+text = "Stress--  Time+++"
+label_settings = SubResource("LabelSettings_fb5q8")
+
+[node name="HBoxNormal" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice"]
+layout_mode = 2
+
+[node name="NormalButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice/HBoxNormal"]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_fb5q8")
+texture_pressed = SubResource("AtlasTexture_uex2n")
+texture_hover = SubResource("AtlasTexture_fdo2t")
+
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice/HBoxNormal"]
+layout_mode = 2
+text = "Stress-    Time++"
+label_settings = SubResource("LabelSettings_fb5q8")
+
+[node name="HBoxFastly" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice"]
+layout_mode = 2
+
+[node name="FastlyButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice/HBoxFastly"]
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_m4mml")
+texture_pressed = SubResource("AtlasTexture_0dk68")
+texture_hover = SubResource("AtlasTexture_e8pi7")
+
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/VBoxChoice/HBoxFastly"]
+layout_mode = 2
+text = "Stress++ Time+"
+label_settings = SubResource("LabelSettings_fb5q8")
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
