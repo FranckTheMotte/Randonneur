@@ -123,9 +123,6 @@ offset_right = -4030.0
 offset_bottom = -2140.0
 scale = Vector2(10, 10)
 
-[node name="Map" type="Node2D" parent="."]
-position = Vector2(50, 500)
-
 [node name="Actions" type="CanvasLayer" parent="."]
 script = ExtResource("6_8bbqd")
 
