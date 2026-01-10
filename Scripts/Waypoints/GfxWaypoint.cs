@@ -11,7 +11,7 @@ public class GfxWaypoint : Waypoint
     /// <summary>
     /// Gfx of waypoint (TODO unstuck from junction type).
     /// </summary>
-    public MapJunctionArea MapJunctionGfx = new();
+    public MapJunctionArea MapJunctionGfx { get; set; } = new();
 
     /// <summary>
     /// Displayed name.

@@ -4,10 +4,10 @@ using Randonneur;
 public partial class DestinationsList : VBoxContainer
 {
     [Export]
-    public Label? Location;
+    public Label? Location { get; set; }
 
     [Export]
-    public HBoxContainer? Destination;
+    public HBoxContainer? Destination { get; set; }
 
     [Signal]
     public delegate void DestinationsUpdateEventHandler();

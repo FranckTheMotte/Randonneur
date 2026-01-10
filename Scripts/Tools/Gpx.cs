@@ -242,12 +242,12 @@ namespace Randonneur
         public readonly GpxWaypoints XWaypoints = new();
 
         // Keep all junctions of a single trace
-        public List<Junction>? TrailJunctions;
+        public List<Junction>? TrailJunctions { get; set; }
 
         internal float MaxX; // length of the track (meters)
 
         // Number of pixels by meter
-        public const float PixelMeter = 5.0f;
+        public const float PixelMeter  = 5.0f;
 
         // Max elevation in meters
         public const float ElevationMax = 10000.0f;

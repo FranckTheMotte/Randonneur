@@ -28,7 +28,7 @@ public partial class Sol : StaticBody2D
 {
     private List<TrailJunction> _trailJunctions = [];
 
-    public Gpx? CurrentTrack;
+    public Gpx? CurrentTrack { get; set; }
 
     // Godot group of all wyapoints
     private const string _WaypointsGroup = "Waypoints";

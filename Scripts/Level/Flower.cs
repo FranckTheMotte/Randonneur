@@ -8,7 +8,7 @@ using Randonneur;
 public partial class Flower : Area2D
 {
     [Export]
-    public Sprite2D? FlowerSprite;
+    public Sprite2D? FlowerSprite { get; set; }
 
     public override void _Ready()
     {

@@ -3,7 +3,7 @@ using Godot;
 public partial class PlayerDataTest : Node
 {
     [Export]
-    public Label? myLabel;
+    public Label? myLabel { get; set; }
 
     public override void _Ready()
     {

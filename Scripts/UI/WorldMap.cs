@@ -27,7 +27,7 @@ public partial class WorldMap : Control
     /// <summary>
     /// name of the selected waypoint.
     /// </summary>
-    public string? SelectedWaypoint = null;
+    public string? SelectedWaypoint { get; set; } = null;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()

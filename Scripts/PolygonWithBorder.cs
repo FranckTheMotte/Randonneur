@@ -10,23 +10,23 @@ public partial class PolygonWithBorder : Node2D
     /// Ground surface. Polygon must be counterclockwise direction.
     /// </summary>
     [Export]
-    public Polygon2D? Surface;
+    public Polygon2D? Surface { get; set; }
 
     [Export]
-    public Texture2D? BorderTexture;
+    public Texture2D? BorderTexture { get; set; }
 
     /// <summary>
     /// Depth of border (starting from the Surface)
     /// </summary>
     [Export]
-    public float BorderDepth = 32f;
+    public float BorderDepth { get; set; } = 32f;
 
     /// <summary>
     /// Default width of the segment to apply a texture.
     /// It is used to set a correct U in UVs.
     /// </summary>
     [Export]
-    public float SegmentWidth = 64f;
+    public float SegmentWidth { get; set; } = 64f;
 
     public override void _Ready()
     {

@@ -13,17 +13,17 @@ namespace Randonneur
         /// <summary>
         /// Name of the waypoint.
         /// </summary>
-        public string Name = "NULL";
+        public string Name { get; set; } = "NULL";
 
         /// <summary>
         /// Linked trace name.
         /// </summary>
-        public string TraceName = "nothing.gpx";
+        public string TraceName { get; set; } = "nothing.gpx";
 
         /// <summary>
         /// Geographic coordinates (lat, lon)
         /// </summary>
-        public Vector2 GeographicCoord;
+        public Vector2 GeographicCoord { get; set; }
 
         /// <summary>
         /// Level coordinates (x, y)
@@ -38,7 +38,7 @@ namespace Randonneur
         /// <summary>
         /// List of trace destinations.
         /// </summary>
-        public List<GpxDestination> Destinations = [];
+        public List<GpxDestination> Destinations { get; set; } = [];
 
         /// <summary>
         /// Order of waypoints by trace.
@@ -54,7 +54,6 @@ namespace Randonneur
 
         public Waypoint(string Name)
         {
-            // Configure a label without X,Y position
             this.Name = Name;
         }
 
@@ -69,8 +68,8 @@ namespace Randonneur
     /// </summary>
     public class ConnectedWaypoint
     {
-        public required string TraceName;
-        public required Waypoint Waypoint;
+        public required string TraceName { get; set; }
+        public required Waypoint Waypoint  { get; set; }
     }
 
     /// <summary>
@@ -78,12 +77,12 @@ namespace Randonneur
     /// </summary>
     public class WaypointsLinks
     {
-        public required Waypoint Waypoint;
+        public required Waypoint Waypoint { get; set; }
 
         /// <summary>
         /// Connected waypoints with linked trace, can be empty.
         /// </summary>
-        public Dictionary<string, ConnectedWaypoint> ConnectedWaypoints = [];
+        public Dictionary<string, ConnectedWaypoint> ConnectedWaypoints { get; set; } = [];
     }
 
     /// <summary>

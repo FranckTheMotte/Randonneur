@@ -7,29 +7,29 @@ public partial class Player : CharacterBody2D
     /// <summary>
     /// Flag to enable player moves.
     /// </summary>
-    public bool Move = false;
+    public bool Move { get; set; } = false;
 
     // MoveSpeed
     [Export]
-    public int HikerSpeed = Global.PlayerSpeed;
+    public int HikerSpeed { get; set; } = Global.PlayerSpeed;
 
     [Signal]
     public delegate void TrailJunctionChoiceEventHandler();
 
     // ref to the current level
-    public TemplateLevel? Level;
+    public TemplateLevel? Level { get; set; }
 
     public const float SpeedCoefficient = 100.0f;
 
     // Maximum limit of the level in X
-    public Godot.Vector2 LevelLimitX;
+    public Godot.Vector2 LevelLimitX { get; set; }
 
-    public Waypoint? CurrentWaypoint = null;
+    public Waypoint? CurrentWaypoint { get; set; } = null;
 
     /// <summary>
     /// Traveled distance since last junction.
     /// </summary>
-    public float TraveledDistance = 0.0f;
+    private float _traveledDistance = 0.0f;
 
     /// <summary>
     /// Reference to actions panel
@@ -106,13 +106,13 @@ public partial class Player : CharacterBody2D
             velocity.X = Move ? HikerSpeed * SpeedCoefficient : 0;
             if (Move)
             {
-                TraveledDistance += Math.Abs(HikerSpeed);
+                _traveledDistance += Math.Abs(HikerSpeed);
             }
         }
 
         // re-activate collision with junction when player is far enough
         // from last junction
-        if (TraveledDistance > Global.JunctionCollisionShapeSize || ForceJunction)
+        if (_traveledDistance > Global.JunctionCollisionShapeSize || ForceJunction)
         {
             SetCollisionLayerValue(Global.SolJunctionLayer, true);
             SetCollisionMaskValue(Global.SolJunctionLayer, true);
@@ -222,7 +222,7 @@ public partial class Player : CharacterBody2D
         SetCollisionLayerValue(Global.SolJunctionLayer, false);
         SetCollisionMaskValue(Global.SolJunctionLayer, false);
         Level.JunctionChoice(trace, waypointName);
-        TraveledDistance = 0;
+        _traveledDistance = 0;
     }
 
     /// <summary>

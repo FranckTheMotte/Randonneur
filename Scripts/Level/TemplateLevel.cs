@@ -28,7 +28,7 @@ public partial class TemplateLevel : Node2D
     /// Reference to the world map.
     /// </summary>
     internal WorldMap? Map;
-    public string? CurrentTraceName;
+    public string? CurrentTraceName { get; set; }
 
     /// <summary>
     /// The maximum distance from the origin in the level the player can go.
@@ -376,7 +376,7 @@ public partial class TemplateLevel : Node2D
         Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
         Player.Instance.Move = true;
         Player.Instance.HikerSpeed = CurrentWaypoint.PlayerDirection;
-        Player.Instance.LevelLimitX.X = LimitX;
+        Player.Instance.LevelLimitX = new Vector2(LimitX, 0);
         Player.Instance.Level = this;
         Player.Instance.Reparent(this);
     }

@@ -7,7 +7,7 @@ using Godot;
 public partial class ScreenFader : CanvasLayer
 {
     [Export]
-    public float FadeDuration = 0.5f;
+    public float FadeDuration { get; set; } = 0.5f;
 
     private ColorRect? _rect;
 

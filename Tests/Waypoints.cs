@@ -24,7 +24,7 @@ file static class Default
 
 public class SimpleTests
 {
-    Waypoint? SimpleWaypoint;
+    Waypoint? SimpleWaypoint { get; set; }
 
     // Simple constants
     static readonly string SimpleName = "Simple";

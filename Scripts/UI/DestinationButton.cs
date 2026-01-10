@@ -2,7 +2,7 @@ using Godot;
 
 public partial class DestinationButton : Button
 {
-    public string? GpxFile;
+    public string? GpxFile { get; set; }
 
     private void _on_pressed()
     {
