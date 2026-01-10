@@ -17,5 +17,16 @@ namespace Randonneur
             Plants,
             None,
         }
+
+        public void _on_quit_button_pressed()
+        {
+            Visible = false;
+            // Re-activated the player to let collide with next waypoint collision shape
+            if (Player.Instance != null)
+            {
+                Player.Instance.Move = true;
+                Player.Instance.ForceJunction = true;
+            }
+        }
     }
 }

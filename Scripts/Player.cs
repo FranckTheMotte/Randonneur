@@ -36,6 +36,12 @@ public partial class Player : CharacterBody2D
     /// </summary>
     private Actions? _actionsPanel = null;
 
+    /// <summary>
+    /// Force next waypoint to act as a junction.
+    /// Introduce to force the map to display when exiting from a minigame.
+    /// </summary>
+    public bool ForceJunction { get; set; } = false;
+
     private static Player? _instance;
     public static Player? Instance { get; private set; } = _instance;
 
@@ -98,14 +104,15 @@ public partial class Player : CharacterBody2D
         else
         {
             velocity.X = Move ? HikerSpeed * SpeedCoefficient : 0;
-            if (Move) {
+            if (Move)
+            {
                 TraveledDistance += Math.Abs(HikerSpeed);
             }
         }
 
         // re-activate collision with junction when player is far enough
         // from last junction
-        if (TraveledDistance > Global.JunctionCollisionShapeSize)
+        if (TraveledDistance > Global.JunctionCollisionShapeSize || ForceJunction)
         {
             SetCollisionLayerValue(Global.SolJunctionLayer, true);
             SetCollisionMaskValue(Global.SolJunctionLayer, true);

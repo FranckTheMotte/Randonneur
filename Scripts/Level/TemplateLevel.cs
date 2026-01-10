@@ -323,25 +323,26 @@ public partial class TemplateLevel : Node2D
     public void JunctionChoice(string TraceName, string WaypointName)
     {
         Waypoint? waypoint = null;
-
         Waypoints waypoints = (Waypoints)Waypoints.Instance;
         waypoint = waypoints.GetWaypoint(WaypointName);
+
         // sanity checks
-        if (waypoint == null || Map == null || MinigameBox == null)
+        if (waypoint == null || Map == null || MinigameBox == null || Player.Instance == null)
         {
             GD.PushWarning($"${nameof(JunctionChoice)}: sanity checks failed");
             return;
         }
 
-        if (Player.Instance is not null)
-            Player.Instance.CurrentWaypoint = waypoint;
+        // remember where we are
+        Player.Instance.CurrentWaypoint = waypoint;
 
         // Open the expected event box
         Object baseObject = waypoint;
-        if (baseObject is Junction)
+        if (baseObject is Junction || Player.Instance.ForceJunction)
         {
             BoxPositionUpdate(Map);
             MapVisible(true, waypoint);
+            Player.Instance.ForceJunction = false;
         }
         else if (baseObject is PoV)
         {
