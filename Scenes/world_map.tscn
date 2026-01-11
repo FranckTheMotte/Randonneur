@@ -1,9 +1,10 @@
 [gd_scene load_steps=3 format=3 uid="uid://b4tnu5fp0rn6w"]
 
-[ext_resource type="Script" path="res://Scripts/UI/WorldMap.cs" id="1_5xiep"]
+[ext_resource type="Script" uid="uid://dkr4mjj86b52d" path="res://Scripts/UI/WorldMap.cs" id="1_5xiep"]
 [ext_resource type="Texture2D" uid="uid://b158v0os365ch" path="res://Art/UI/ui.png" id="2_jsdbf"]
 
 [node name="WorldMap" type="Control"]
+visible = false
 z_index = 2
 layout_mode = 3
 anchors_preset = 0
