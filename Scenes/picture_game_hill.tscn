@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://bepjjtcitx8u1"]
+
+[ext_resource type="Script" uid="uid://buaeg4job471i" path="res://Scripts/Minigames/PhotoCameraController.cs" id="1_758ga"]
+[ext_resource type="PackedScene" uid="uid://08lvem081xs2" path="res://Art/Minigame/HillLandscape.glb" id="2_ptm37"]
+[ext_resource type="Texture2D" uid="uid://xfl54qjsl3qx" path="res://Art/Minigame/Picture/rougegorge.png" id="3_av8rq"]
+
+[node name="PictureGameHill" type="Node3D"]
+
+[node name="NoonSun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100, -35.118)
+light_energy = 2.0
+light_indirect_energy = 12.17
+light_angular_distance = 40.0
+
+[node name="PlayerPosition" type="Node3D" parent="."]
+
+[node name="Camera" type="Camera3D" parent="PlayerPosition"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 144.90753, 36.00296)
+script = ExtResource("1_758ga")
+MaxFov = 150.0
+
+[node name="HillLandscape" parent="." instance=ExtResource("2_ptm37")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -450)
+
+[node name="Robin" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 41.183807, 26.115616, -333.6549)
+billboard = 1
+shaded = true
+texture = ExtResource("3_av8rq")
