@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://bp8ggf3oxvqnu"]
+
+[ext_resource type="Texture2D" uid="uid://cwwllrokato5l" path="res://Art/Minigame/Picture/objectif.png" id="1_57b8a"]
+
+[node name="CameraHUD" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="HUD" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_57b8a")
