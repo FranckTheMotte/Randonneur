@@ -29,7 +29,7 @@ window/size/viewport_height=720
 window/size/resizable=false
 window/size/window_width_override=1280
 window/size/window_height_override=720
-window/stretch/aspect="expand"
+window/stretch/aspect="ignore"
 window/stretch/scale=1.5
 
 [dotnet]
