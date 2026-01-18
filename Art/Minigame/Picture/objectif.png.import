@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cwwllrokato5l"
-path.s3tc="res://.godot/imported/objectif.png-1689f472ec6c032bac7e41d61fc639c0.s3tc.ctex"
+path="res://.godot/imported/objectif.png-1689f472ec6c032bac7e41d61fc639c0.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://Art/Minigame/Picture/objectif.png"
-dest_files=["res://.godot/imported/objectif.png-1689f472ec6c032bac7e41d61fc639c0.s3tc.ctex"]
+dest_files=["res://.godot/imported/objectif.png-1689f472ec6c032bac7e41d61fc639c0.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
