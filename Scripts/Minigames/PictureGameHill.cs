@@ -1,7 +1,9 @@
 using System;
+using System.Drawing;
 using System.Numerics;
 using Godot;
 // Because of System.Numerics
+using Vector2 = Godot.Vector2;
 using Vector3 = Godot.Vector3;
 
 /// <summary>
@@ -12,6 +14,18 @@ using Vector3 = Godot.Vector3;
 /// </summary>
 public partial class PictureGameHill : Node3D
 {
+    /// <summary>
+    /// Density of trees in their area, lower is the number, higher is the number of trees.
+    /// </summary>
+    [Export]
+    public int TreeDensity = 3;
+
+    /// <summary>
+    /// Size multiplier for the trees.
+    /// </summary>
+    [Export]
+    public int TreeSize = 2;
+
     // Outside of landascape
     const float OFFLANDSCAPE = 1000000.0f;
     private readonly Random _rand = new();
@@ -34,30 +48,69 @@ public partial class PictureGameHill : Node3D
             GD.Load<Texture2D>("res://Art/Background/Tree3.png"),
         };
 
-        // Browse all coords to put items randomly
-        for (float x = planeStartPosition.X; x < planeEndPosition.X; x += 30.0f)
+        // use various polygons to define tree areas
+        // polygons forms are defined in the scene
+        Polygon2D[] polygons = new Polygon2D[9];
+        for (int i = 0; i < polygons.Length; i++)
         {
-            for (float z = planeStartPosition.Z; z < planeEndPosition.Z; z += 30.0f)
+            // place somewhere in the landscape
+            Vector2 randomPositions = new(
+                planeStartPosition.X + _rand.Next(100, 900),
+                planeStartPosition.Z + _rand.Next(100, 900)
+            );
+            polygons[i] = GetNode<Polygon2D>("RandoPoly2D0" + (i + 1));
+            Vector2[] polygon = polygons[i].Polygon;
+
+            // shift each polygon's coordinates
+            for (int j = 0; j < polygons[i].Polygon.Length; j++)
             {
-                float landscapeY = GetYOnLandscape(x, z);
-                if (landscapeY != OFFLANDSCAPE)
+                polygon[j] += randomPositions;
+            }
+            polygons[i].Polygon = polygon;
+
+            // hide defined Polygon2D
+            polygons[i].Visible = false;
+        }
+
+        int treeCounter = 0;
+        // Populate trees in each polygon
+        for (int i = 0; i < polygons.Length; i++)
+        {
+            // Browse all coords to place items randomly
+            for (float x = planeStartPosition.X; x < planeEndPosition.X; x += TreeDensity)
+            {
+                for (float z = planeStartPosition.Z; z < planeEndPosition.Z; z += TreeDensity)
                 {
-                    Sprite3D tree = new()
+                    // Trees are added randomly within allowed areas, not on every pixel.
+                    if (
+                        Geometry2D.IsPointInPolygon(new Vector2(x, z), polygons[i].Polygon)
+                        && _rand.Next(0, TreeDensity * 15) == 0
+                    )
                     {
-                        Texture = treeTexture2D[_rand.Next(0, treeTexture2D.Length)],
-                        Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
-                        Shaded = true,
-                        TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
-                    };
-                    tree.Position = new Vector3(
-                        x,
-                        landscapeY + (tree.Texture.GetSize().Y / plane.Scale.Y) + 1,
-                        z
-                    );
-                    AddChild(tree);
+                        treeCounter++;
+                        float landscapeY = GetYOnLandscape(x, z);
+                        if (landscapeY != OFFLANDSCAPE)
+                        {
+                            Sprite3D tree = new()
+                            {
+                                Texture = treeTexture2D[_rand.Next(0, treeTexture2D.Length)],
+                                Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
+                                Shaded = true,
+                                TextureFilter = BaseMaterial3D.TextureFilterEnum.Nearest,
+                                Scale = new Vector3(TreeSize, TreeSize, TreeSize),
+                            };
+                            tree.Position = new Vector3(
+                                x,
+                                landscapeY + (tree.Texture.GetSize().Y / plane.Scale.Y) + 1,
+                                z
+                            );
+                            AddChild(tree);
+                        }
+                    }
                 }
             }
         }
+        GD.Print($"{treeCounter} trees added.");
     }
 
     /// <summary>
