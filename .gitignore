@@ -431,3 +431,6 @@ FodyWeavers.xsd
 .godot/
 /android/
 MovieWriter/*
+
+# blender files
+*.blend1
