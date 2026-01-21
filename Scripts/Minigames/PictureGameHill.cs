@@ -52,6 +52,42 @@ public partial class PictureGameHill : Node3D
         _planeEndPosition = (planeSize / 2) + hillLandscape.Position;
 
         InitTrees();
+        InitHiddenPNJ();
+    }
+
+    /// <summary>
+    /// Place randomly a PNJ.
+    /// </summary>
+    private void InitHiddenPNJ()
+    {
+        // sanity checks
+        if (_plane == null)
+        {
+            GD.PushError("InitHiddenPNJ() sanity check failed.");
+            return;
+        }
+
+        // inside a lower square
+        float x = _planeStartPosition.X + _rand.Next(100, 900);
+        float z = _planeStartPosition.Z + _rand.Next(100, 900);
+        float landscapeY = GetYOnLandscape(x, z);
+        if (landscapeY == OFFLANDSCAPE)
+        {
+            GD.PushError("Failed to place the PNJ.");
+            return;
+        }
+
+        // Only the robin can be place for the moment
+        VisibleOnScreenNotifier3D pnjNotifier = GetNode<VisibleOnScreenNotifier3D>(
+            "RobinNotifier3D"
+        );
+        Sprite3D pnj = GetNode<Sprite3D>("RobinNotifier3D/Robin");
+        pnjNotifier.Position = new Vector3(
+            x,
+            landscapeY + (pnj.Texture.GetSize().Y / _plane.Scale.Y) + 1,
+            z
+        );
+        GD.Print($"robin visible {pnjNotifier.IsVisibleInTree()}");
     }
 
     /// <summary>
@@ -165,5 +201,16 @@ public partial class PictureGameHill : Node3D
 
         // no collision
         return OFFLANDSCAPE;
+    }
+
+    void _on_visible_on_screen_notifier_3d_screen_entered()
+    {
+        // Debug: add a flower over the robin to easily find him.
+        Sprite3D tips = GetNode<Sprite3D>("Tips");
+        VisibleOnScreenNotifier3D pnjNotifier = GetNode<VisibleOnScreenNotifier3D>(
+            "RobinNotifier3D"
+        );
+
+        tips.Position = pnjNotifier.Position + new Vector3(0.0f, 100.0f, 0.0f);
     }
 }
