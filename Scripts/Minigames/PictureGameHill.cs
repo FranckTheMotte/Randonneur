@@ -30,15 +30,41 @@ public partial class PictureGameHill : Node3D
     const float OFFLANDSCAPE = 1000000.0f;
     private readonly Random _rand = new();
 
+    /// <summary>
+    /// Bounds of landscape.
+    /// </summary>
+    private Vector3 _planeStartPosition;
+    private Vector3 _planeEndPosition;
+
+    /// <summary>
+    /// Ref to plane.
+    /// </summary>
+    private MeshInstance3D? _plane;
+
     public override void _Ready()
     {
-        MeshInstance3D plane = GetNode<MeshInstance3D>("HillLandscape/Plane");
+        _plane = GetNode<MeshInstance3D>("HillLandscape/Plane");
         Node3D hillLandscape = GetNode<Node3D>("HillLandscape");
+        Vector3 planeSize = _plane.Mesh.GetAabb().Size * _plane.Scale;
 
-        Vector3 planeSize = plane.Mesh.GetAabb().Size * plane.Scale;
-        // Divice by 2 because it's centered
-        Vector3 planeStartPosition = (-planeSize / 2) + hillLandscape.Position;
-        Vector3 planeEndPosition = (planeSize / 2) + hillLandscape.Position;
+        // Divide by 2 because it's centered
+        _planeStartPosition = (-planeSize / 2) + hillLandscape.Position;
+        _planeEndPosition = (planeSize / 2) + hillLandscape.Position;
+
+        InitTrees();
+    }
+
+    /// <summary>
+    /// Place randomly trees in areas.
+    /// </summary>
+    private void InitTrees()
+    {
+        // sanity checks
+        if (_plane == null)
+        {
+            GD.PushError("InitTrees() sanity check failed.");
+            return;
+        }
 
         // Load tree Textures
         Texture2D[] treeTexture2D =
@@ -55,8 +81,8 @@ public partial class PictureGameHill : Node3D
         {
             // place somewhere in the landscape
             Vector2 randomPositions = new(
-                planeStartPosition.X + _rand.Next(100, 900),
-                planeStartPosition.Z + _rand.Next(100, 900)
+                _planeStartPosition.X + _rand.Next(100, 900),
+                _planeStartPosition.Z + _rand.Next(100, 900)
             );
             polygons[i] = GetNode<Polygon2D>("RandoPoly2D0" + (i + 1));
             Vector2[] polygon = polygons[i].Polygon;
@@ -77,9 +103,9 @@ public partial class PictureGameHill : Node3D
         for (int i = 0; i < polygons.Length; i++)
         {
             // Browse all coords to place items randomly
-            for (float x = planeStartPosition.X; x < planeEndPosition.X; x += TreeDensity)
+            for (float x = _planeStartPosition.X; x < _planeEndPosition.X; x += TreeDensity)
             {
-                for (float z = planeStartPosition.Z; z < planeEndPosition.Z; z += TreeDensity)
+                for (float z = _planeStartPosition.Z; z < _planeEndPosition.Z; z += TreeDensity)
                 {
                     // Trees are added randomly within allowed areas, not on every pixel.
                     if (
@@ -101,7 +127,7 @@ public partial class PictureGameHill : Node3D
                             };
                             tree.Position = new Vector3(
                                 x,
-                                landscapeY + (tree.Texture.GetSize().Y / plane.Scale.Y) + 1,
+                                landscapeY + (tree.Texture.GetSize().Y / _plane.Scale.Y) + 1,
                                 z
                             );
                             AddChild(tree);
