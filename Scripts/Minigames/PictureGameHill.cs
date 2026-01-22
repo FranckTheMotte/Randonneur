@@ -87,6 +87,11 @@ public partial class PictureGameHill : Node3D
             landscapeY + (pnj.Texture.GetSize().Y / _plane.Scale.Y) + 1,
             z
         );
+
+        // Debug: add a flower over the robin to easily find him.
+        Sprite3D tips = GetNode<Sprite3D>("Tips");
+        tips.Position = pnjNotifier.Position + new Vector3(0.0f, 100.0f, 0.0f);
+
         GD.Print($"robin visible {pnjNotifier.IsVisibleInTree()}");
     }
 
@@ -163,7 +168,9 @@ public partial class PictureGameHill : Node3D
                             };
                             tree.Position = new Vector3(
                                 x,
-                                landscapeY + (tree.Texture.GetSize().Y / _plane.Scale.Y) + 1,
+                                landscapeY
+                                    + ((tree.Texture.GetSize().Y * TreeSize) / _plane.Scale.Y)
+                                    + TreeSize,
                                 z
                             );
                             AddChild(tree);
@@ -203,14 +210,13 @@ public partial class PictureGameHill : Node3D
         return OFFLANDSCAPE;
     }
 
-    void _on_visible_on_screen_notifier_3d_screen_entered()
+    void _on_robin_notifier_3d_screen_entered()
     {
-        // Debug: add a flower over the robin to easily find him.
-        Sprite3D tips = GetNode<Sprite3D>("Tips");
-        VisibleOnScreenNotifier3D pnjNotifier = GetNode<VisibleOnScreenNotifier3D>(
-            "RobinNotifier3D"
-        );
+        GD.Print("Robin visible");
+    }
 
-        tips.Position = pnjNotifier.Position + new Vector3(0.0f, 100.0f, 0.0f);
+    void _on_robin_notifier_3d_screen_exited()
+    {
+        GD.Print("Robin hidden");
     }
 }
