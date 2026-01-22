@@ -11,8 +11,23 @@ using Vector2 = Godot.Vector2;
 /// - find the element in the shot
 /// - count elapsed time
 /// </summary>
-public partial class PictureGame : Control
+public partial class PictureGame : Node2D
 {
+    /// <summary>
+    /// Duration of picture move in seconds.
+    /// </summary>
+    private const float PICTURE_MOVE_DURATION = 1.0f;
+
+    /// <summary>
+    /// Scale value to apply on picture for the destination.
+    /// </summary>
+    private const float PICTURE_SCALE = 0.4f;
+
+    /// <summary>
+    /// Node to camera container.
+    /// </summary>
+    private SubViewportContainer? _cameraViewPortContainer;
+
     /// <summary>
     /// Node to camera viewport.
     /// </summary>
@@ -21,53 +36,131 @@ public partial class PictureGame : Control
     /// <summary>
     /// Node destination of last picture.
     /// </summary>
-    private TextureRect? _pictureRect = null;
+    private Sprite2D? _picture = null;
 
     /// <summary>
-    /// Region inside HUD camera (where picture must be shoot).
+    /// Texture rects to contain the picture.
+    /// Two rects are required to keep last displayed when a new picture
+    /// is shot.
     /// </summary>
-    private Rect2I _captureRegion;
+    private TextureRect _pictureTexture = new();
+    private TextureRect _pictureTexture2 = new();
+
+    /// <summary>
+    /// Next unused picture, in order to remove from parent when a new
+    /// picture taken (and move is done).
+    /// </summary>
+    private TextureRect? _unusedPicture;
+
+    /// <summary>
+    /// This flag block picture during move.
+    /// </summary>
+    bool _moveFinished = true;
+    private static System.Threading.Mutex _moveMutex = new();
 
     public override void _Ready()
     {
-        _cameraViewPort = GetNode<SubViewport>(
-            "GameContainer/BgNinePathRect/MapMargin/MapRect/HBoxContainer/CameraContainer/CameraViewport"
-        );
-
+        _cameraViewPortContainer = GetNode<SubViewportContainer>("CameraContainer");
+        _cameraViewPort = GetNode<SubViewport>("CameraContainer/CameraViewport");
         _cameraViewPort.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
-        _pictureRect = GetNode<TextureRect>(
-            "GameContainer/BgNinePathRect/MapMargin/MapRect/HBoxContainer/PictureRect"
-        );
-
-        Node2D cameraHUD = GetNode<Node2D>("CameraHUD");
-
-        Sprite2D HUD = cameraHUD.GetNode<Sprite2D>("HUD");
-        Vector2I _HUDSize = (Vector2I)(HUD.Texture.GetSize() * HUD.Scale);
-        // Capture only inside the camera HUD
-        _captureRegion = new(
-            (_cameraViewPort.Size.X - _HUDSize.X) / 2,
-            (_cameraViewPort.Size.Y - _HUDSize.Y) / 2,
-            _HUDSize.X,
-            _HUDSize.Y
-        );
+        _picture = GetNode<Sprite2D>("Picture");
     }
 
     public override void _Input(InputEvent @event)
     {
-        if (_cameraViewPort == null || _pictureRect == null)
-            return;
-
-        if (@event is InputEventMouseButton mouseEvent)
+        if (_cameraViewPort == null || _picture == null || _cameraViewPortContainer == null)
         {
-            // take a picture with left button
-            if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+            GD.PushError("_Input(): Sanity check failed.");
+            return;
+        }
+
+        if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
+        {
+            switch (mouseEvent.ButtonIndex)
             {
-                Image screenshot = _cameraViewPort.GetTexture().GetImage();
-                ImageTexture imageTexture = new();
-                imageTexture.SetImage(screenshot.GetRegion(_captureRegion));
-                imageTexture.SetSizeOverride((Vector2I)_pictureRect.Size);
-                _pictureRect.Texture = imageTexture;
+                // take a picture with left button
+                case MouseButton.Left:
+                    if (_moveFinished == false)
+                        return;
+                    _moveMutex.WaitOne();
+                    _moveFinished = false;
+                    TextureRect t;
+                    Image screenshot = _cameraViewPort.GetTexture().GetImage();
+                    ImageTexture imageTexture = new();
+                    imageTexture.SetImage(screenshot);
+                    if (_pictureTexture.GetParent() == null)
+                    {
+                        _pictureTexture.Texture = imageTexture;
+                        t = _pictureTexture;
+                        _unusedPicture = _pictureTexture2;
+                        AddChild(_pictureTexture);
+                    }
+                    else
+                    {
+                        _pictureTexture2.Texture = imageTexture;
+                        t = _pictureTexture2;
+                        _unusedPicture = _pictureTexture;
+                        AddChild(_pictureTexture2);
+                    }
+
+                    _moveMutex.ReleaseMutex();
+                    ImageSmoothMove(
+                        t,
+                        _cameraViewPortContainer.Position,
+                        _picture.Position,
+                        PICTURE_SCALE,
+                        PICTURE_MOVE_DURATION
+                    );
+                    break;
             }
         }
+    }
+
+    /// <summary>
+    /// Move a TextureRect from a position to a target position. During movement
+    /// the texture will be rescale.
+    /// </summary>
+    /// <param name="t">A TextureRect</param>
+    /// <param name="src">Starting position</param>
+    /// <param name="dest">Destination position</param>
+    /// <param name="scale">Scale factor</param>
+    /// <param name="duration">Duration in seconds of the move animation</param>
+    private void ImageSmoothMove(
+        TextureRect t,
+        Vector2 src,
+        Vector2 dest,
+        float scale,
+        float duration = 1.0f
+    )
+    {
+        t.Position = src;
+
+        Tween tween = CreateTween();
+        tween.Parallel().TweenProperty(t, "scale", new Vector2(scale, scale), duration);
+        tween
+            .Parallel()
+            .TweenProperty(t, "position", dest, duration)
+            .SetTrans(Tween.TransitionType.Cubic)
+            .SetEase(Tween.EaseType.In);
+
+        tween.Finished += MoveFinished;
+    }
+
+    private void MoveFinished()
+    {
+        // nothing to do
+        if (_unusedPicture == null)
+            return;
+
+        if (_unusedPicture.GetParent() != null)
+        {
+            // reset the scaling
+            _unusedPicture.Scale = new Vector2(1.0f, 1.0f);
+            RemoveChild(_unusedPicture);
+        }
+
+        _moveMutex.WaitOne();
+        _moveFinished = true;
+        _moveMutex.ReleaseMutex();
     }
 }

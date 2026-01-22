@@ -1,76 +1,34 @@
-[gd_scene load_steps=5 format=3 uid="uid://b2t6vdwgg7v53"]
+[gd_scene load_steps=4 format=3 uid="uid://b2t6vdwgg7v53"]
 
 [ext_resource type="Script" uid="uid://cx0fty6ls33lk" path="res://Scripts/Minigames/PictureGame.cs" id="1_c1qhv"]
-[ext_resource type="Texture2D" uid="uid://b158v0os365ch" path="res://Art/UI/ui.png" id="2_uxemj"]
 [ext_resource type="PackedScene" uid="uid://bepjjtcitx8u1" path="res://Scenes/picture_game_hill.tscn" id="3_hftw5"]
 [ext_resource type="PackedScene" uid="uid://bp8ggf3oxvqnu" path="res://Scenes/camera_hud.tscn" id="4_m613v"]
 
-[node name="PictureGame" type="Control"]
+[node name="PictureGame" type="Node2D"]
 z_index = 2
-layout_mode = 3
-anchors_preset = 0
-mouse_force_pass_scroll_events = false
 script = ExtResource("1_c1qhv")
 
-[node name="GameContainer" type="MarginContainer" parent="."]
-custom_minimum_size = Vector2(1000, 600)
-layout_mode = 0
-offset_left = -300.0
-offset_top = -200.0
-offset_right = 700.0
-offset_bottom = 400.0
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 5
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 5
-
-[node name="BgNinePathRect" type="NinePatchRect" parent="GameContainer"]
-layout_mode = 2
-texture = ExtResource("2_uxemj")
-region_rect = Rect2(0, 133, 782, 268)
-
-[node name="MapMargin" type="MarginContainer" parent="GameContainer/BgNinePathRect"]
-layout_mode = 1
+[node name="CameraContainer" type="SubViewportContainer" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -190.0
-offset_bottom = -190.0
+offset_left = -960.0
+offset_top = -365.0
+offset_right = -160.0
+offset_bottom = 135.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 50
-theme_override_constants/margin_top = 50
-theme_override_constants/margin_right = 50
-theme_override_constants/margin_bottom = 50
 
-[node name="MapRect" type="ColorRect" parent="GameContainer/BgNinePathRect/MapMargin"]
-layout_mode = 2
-color = Color(1, 1, 1, 0)
-
-[node name="HBoxContainer" type="HBoxContainer" parent="GameContainer/BgNinePathRect/MapMargin/MapRect"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="CameraContainer" type="SubViewportContainer" parent="GameContainer/BgNinePathRect/MapMargin/MapRect/HBoxContainer"]
-layout_mode = 2
-
-[node name="CameraViewport" type="SubViewport" parent="GameContainer/BgNinePathRect/MapMargin/MapRect/HBoxContainer/CameraContainer"]
+[node name="CameraViewport" type="SubViewport" parent="CameraContainer"]
 handle_input_locally = false
-size = Vector2i(600, 400)
+size = Vector2i(800, 475)
 render_target_update_mode = 4
 
-[node name="PictureGame" parent="GameContainer/BgNinePathRect/MapMargin/MapRect/HBoxContainer/CameraContainer/CameraViewport" instance=ExtResource("3_hftw5")]
+[node name="PictureGame" parent="CameraContainer/CameraViewport" instance=ExtResource("3_hftw5")]
 
-[node name="PictureRect" type="TextureRect" parent="GameContainer/BgNinePathRect/MapMargin/MapRect/HBoxContainer"]
-clip_contents = true
-custom_minimum_size = Vector2(300, 200)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 0
+[node name="Picture" type="Sprite2D" parent="."]
+position = Vector2(-128, -360)
 
 [node name="CameraHUD" parent="." instance=ExtResource("4_m613v")]
-position = Vector2(55, 55)
-
-[connection signal="gui_input" from="." to="." method="_on_gui_input"]
-[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+position = Vector2(-362, -88)
+metadata/_edit_lock_ = true

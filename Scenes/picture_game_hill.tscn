@@ -98,6 +98,7 @@ polygon = PackedVector2Array(171, 65, 81, 98, 182.59665, 180.63565, 162.27731, 2
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 texture = ExtResource("5_5n52s")
 
-[connection signal="screen_entered" from="RobinNotifier3D" to="." method="_on_visible_on_screen_notifier_3d_screen_entered"]
+[connection signal="screen_entered" from="RobinNotifier3D" to="." method="_on_robin_notifier_3d_screen_entered"]
+[connection signal="screen_exited" from="RobinNotifier3D" to="." method="_on_robin_notifier_3d_screen_exited"]
 
 [editable path="HillLandscape"]
