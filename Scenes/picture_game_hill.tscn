@@ -42,11 +42,12 @@ shape = SubResource("ConcavePolygonShape3D_5n52s")
 transform = Transform3D(0.3235377, 1.0430813e-07, 0.94621533, -0.7364374, -0.6278952, 0.25180876, 0.594124, -0.77829796, -0.20314766, 23.633373, -48.131943, -271.97955)
 
 [node name="Robin" type="Sprite3D" parent="RobinNotifier3D"]
-transform = Transform3D(1, 2.9802322e-08, 2.9802322e-08, -5.9604645e-08, 1.0000001, 2.9802322e-08, -2.2351742e-08, 1.4901161e-08, 1, 0, 0, 0)
+transform = Transform3D(0.25, 1.4901161e-08, 5.5879354e-09, -1.4901161e-08, 0.25, -3.7252894e-09, -5.5879354e-09, 3.725289e-09, 0.25, 0, 0, 0)
 sorting_offset = 1.0
 billboard = 1
 shaded = true
 texture_filter = 0
+render_priority = 1
 texture = ExtResource("3_av8rq")
 
 [node name="RandoPoly2D01" type="Polygon2D" parent="."]
