@@ -50,47 +50,47 @@ texture_filter = 0
 render_priority = 1
 texture = ExtResource("3_av8rq")
 
-[node name="RandoPoly2D01" type="Polygon2D" parent="."]
+[node name="DeployPoly2D01" type="Polygon2D" parent="."]
 position = Vector2(-2.157423, 57.37874)
 scale = Vector2(0.8801431, 0.8106312)
 polygon = PackedVector2Array(171, 65, 81, 98, 81, 150, -18, 234, 357, 303, 479, 204, 541, 86, 537, 10, 371, 2)
 
-[node name="RandoPoly2D02" type="Polygon2D" parent="."]
+[node name="DeployPoly2D02" type="Polygon2D" parent="."]
 position = Vector2(-144.30876, -67.52178)
 scale = Vector2(0.42518628, 0.40850082)
 polygon = PackedVector2Array(70.086334, 83.511406, 126, 1, 217, -28, 279, -108, 450, -268, 584, -94, 330, 23, 332.3138, 185.76965, 188, 264, 77.813934, 346.07813, 15.804657, 184.37515)
 
-[node name="RandoPoly2D03" type="Polygon2D" parent="."]
+[node name="DeployPoly2D03" type="Polygon2D" parent="."]
 position = Vector2(689.497, 70.52631)
 scale = Vector2(0.55666, 0.47368422)
 polygon = PackedVector2Array(208, 120, 81, 98, 123, 182, 53, 273, 207.90576, 288.2868, 357, 303, 414.4485, 256.3819, 479, 204, 942, 343, 1059, 71, 546, 18, 371, 2, 174, -75)
 
-[node name="RandoPoly2D04" type="Polygon2D" parent="."]
+[node name="DeployPoly2D04" type="Polygon2D" parent="."]
 position = Vector2(702.8791, -448.7189)
 scale = Vector2(0.6434687, 0.51683676)
 polygon = PackedVector2Array(171, 65, 81, 98, 182.59665, 180.63565, 162.27731, 237.84576, 245.11765, 214.49469, 388.916, 370.9468, 488.16806, 296.22342, 397.5126, 159.61969, 401.4202, 98.90692, 336.5546, 98.90692, 252, 13)
 
-[node name="RandoPoly2D05" type="Polygon2D" parent="."]
+[node name="DeployPoly2D05" type="Polygon2D" parent="."]
 position = Vector2(-950.2098, -350.22327)
 scale = Vector2(0.25853756, 0.24794374)
 polygon = PackedVector2Array(171, 65, 81, 98, 182.59665, 180.63565, 162.27731, 237.84576, 245.11765, 214.49469, 388.916, 370.9468, 488.16806, 296.22342, 397.5126, 159.61969, 401.4202, 98.90692, 336.5546, 98.90692, 252, 13)
 
-[node name="RandoPoly2D06" type="Polygon2D" parent="."]
+[node name="DeployPoly2D06" type="Polygon2D" parent="."]
 position = Vector2(-887.9939, -439)
 scale = Vector2(0.2519498, 0.0614761)
 polygon = PackedVector2Array(171, 65, 81, 98, 182.59665, 180.63565, 162.27731, 237.84576, 218.2732, 992.2554, 388.916, 370.9468, 488.16806, 296.22342, 397.5126, 159.61969, 401.4202, 98.90692, 336.5546, 98.90692, 198.42798, -699.459)
 
-[node name="RandoPoly2D07" type="Polygon2D" parent="."]
+[node name="DeployPoly2D07" type="Polygon2D" parent="."]
 position = Vector2(360, -561)
 scale = Vector2(0.017281082, 0.015242615)
 polygon = PackedVector2Array(81, 98, 182.59665, 180.63565, -1250.6016, 2794.0938, -578.6719, 6429.3438, 427.53125, 3253.332, 3957.4063, 497.89844, 12730.684, -4133.1484, 1874.2031, -1273.4512, 252, 13)
 
-[node name="RandoPoly2D08" type="Polygon2D" parent="."]
+[node name="DeployPoly2D08" type="Polygon2D" parent="."]
 position = Vector2(-311, -474.99997)
 scale = Vector2(0.037937723, 0.026468527)
 polygon = PackedVector2Array(214.923, -42.811005, 158, -86, 36.186646, -134.81137, -79.07715, -75.56445, -184.5127, 226.68164, -52.717773, 604.49023, 131.79541, 793.3926, 289.94922, 604.49023, 553.53906, 680.0508, 488.16806, 296.22342, 397.5126, 159.61969, 401.4202, 98.90692, 373.8226, 50.990917, 290.599, -16.282001)
 
-[node name="RandoPoly2D09" type="Polygon2D" parent="."]
+[node name="DeployPoly2D09" type="Polygon2D" parent="."]
 position = Vector2(-335.52042, -313.99994)
 scale = Vector2(0.13011998, 0.0620452)
 polygon = PackedVector2Array(171, 65, 81, 98, 182.59665, 180.63565, 162.27731, 237.84576, 245.11765, 214.49469, 388.916, 370.9468, 488.16806, 296.22342, 397.5126, 159.61969, 401.4202, 98.90692, 336.5546, 98.90692, 252, 13)
