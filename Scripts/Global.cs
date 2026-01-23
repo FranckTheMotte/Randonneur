@@ -19,5 +19,8 @@ namespace Randonneur
         public const string PlayerGroup = "player";
 
         public const float JunctionCollisionShapeSize = 20.0f;
+
+        // Errors
+        public const int SANITY_CHECK_ERROR = -1000;
     }
 }
