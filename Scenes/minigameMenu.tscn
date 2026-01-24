@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bdb4x1dslt7l6"]
+[gd_scene load_steps=21 format=3 uid="uid://bdb4x1dslt7l6"]
 
 [ext_resource type="Script" uid="uid://cm2ski616aitr" path="res://Scripts/UI/MinigameMenu.cs" id="1_xqn7j"]
 [ext_resource type="Texture2D" uid="uid://b158v0os365ch" path="res://Art/UI/ui.png" id="2_eypy8"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dqohhuijbii2n" path="res://Art/UI/MiniGameWiseButton.png" id="3_fb5q8"]
 [ext_resource type="Texture2D" uid="uid://lhls0cpaqqt3" path="res://Art/UI/MiniGameNormalButton.png" id="4_eypy8"]
 [ext_resource type="Texture2D" uid="uid://bci06qg1r2msm" path="res://Art/UI/MiniGameFastlyButton.png" id="5_fb5q8"]
+[ext_resource type="PackedScene" uid="uid://b2t6vdwgg7v53" path="res://Scenes/picture_game_box.tscn" id="7_8dnpt"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_xqn7j"]
 atlas = ExtResource("3_fb5q8")
@@ -66,7 +67,7 @@ mouse_force_pass_scroll_events = false
 script = ExtResource("1_xqn7j")
 
 [node name="BgMargin" type="MarginContainer" parent="."]
-custom_minimum_size = Vector2(400, 250)
+custom_minimum_size = Vector2(1200, 800)
 layout_mode = 0
 offset_right = 300.0
 offset_bottom = 200.0
@@ -100,8 +101,8 @@ color = Color(1, 1, 1, 0)
 
 [node name="GridContainer" type="GridContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 1100.0
+offset_bottom = 700.0
 theme_override_constants/h_separation = 30
 columns = 2
 
@@ -111,47 +112,54 @@ layout_mode = 2
 [node name="VBoxChoice" type="VBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer"]
 layout_mode = 2
 
-[node name="HBoxWise" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice"]
+[node name="HBoxContainer" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice"]
 layout_mode = 2
 
-[node name="WiseButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxWise"]
+[node name="HBoxWise" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer"]
+layout_mode = 2
+
+[node name="WiseButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxWise"]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_xqn7j")
 texture_pressed = SubResource("AtlasTexture_8dnpt")
 texture_hover = SubResource("AtlasTexture_u1vk8")
 
-[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxWise"]
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxWise"]
 layout_mode = 2
 text = "Stress--  Time+++"
 label_settings = SubResource("LabelSettings_fb5q8")
 
-[node name="HBoxNormal" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice"]
+[node name="HBoxNormal" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer"]
 layout_mode = 2
 
-[node name="NormalButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxNormal"]
+[node name="NormalButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxNormal"]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_fb5q8")
 texture_pressed = SubResource("AtlasTexture_uex2n")
 texture_hover = SubResource("AtlasTexture_fdo2t")
 
-[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxNormal"]
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxNormal"]
 layout_mode = 2
 text = "Stress-    Time++"
 label_settings = SubResource("LabelSettings_fb5q8")
 
-[node name="HBoxFastly" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice"]
+[node name="HBoxFastly" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer"]
 layout_mode = 2
 
-[node name="FastlyButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxFastly"]
+[node name="FastlyButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxFastly"]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_m4mml")
 texture_pressed = SubResource("AtlasTexture_0dk68")
 texture_hover = SubResource("AtlasTexture_e8pi7")
 
-[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxFastly"]
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxFastly"]
 layout_mode = 2
 text = "Stress++ Time+"
 label_settings = SubResource("LabelSettings_fb5q8")
+
+[node name="PictureGame" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice" instance=ExtResource("7_8dnpt")]
+visible = false
+position = Vector2(957, 446)
 
 [node name="ExitContainer" type="VBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer"]
 layout_mode = 2
@@ -164,4 +172,5 @@ texture_hover = SubResource("AtlasTexture_salio")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="pressed" from="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxNormal/NormalButton" to="." method="_on_normal_button_pressed"]
 [connection signal="pressed" from="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ExitContainer/QuitButton" to="." method="_on_quit_button_pressed"]
