@@ -40,6 +40,16 @@ public partial class TemplateLevel : Node2D
     /// </summary>
     internal MinigameMenu? MinigameBox;
 
+    /// <summary>
+    /// Shortcut to player camera.
+    /// </summary>
+    private Camera2D? _playerCamera;
+
+    /// <summary>
+    /// Define the X,Y position of top left corner of UI window.
+    /// </summary>
+    private Vector2 _UIPosition = Vector2.Zero;
+
     public override void _Ready()
     {
         // Sanity checks
@@ -63,6 +73,8 @@ public partial class TemplateLevel : Node2D
             GD.PushError($"${nameof(_Ready)}: failed to instanciate player");
             return;
         }
+
+        _playerCamera = Player.Instance.GetNode<Camera2D>("Camera2D");
 
         // Player
         UpdatePlayerInfos();
@@ -225,21 +237,19 @@ public partial class TemplateLevel : Node2D
 
     ///<summary>
     /// Update a box position based on the player's position.
+    /// (As camera is a child of player).
     /// </summary>
     /// <param name="Box">A control box.</param>
     private void BoxPositionUpdate(Control Box)
     {
         // Sanity checks
-        if (Player.Instance == null || Box == null)
+        if (_playerCamera == null || Box == null)
         {
             GD.PushWarning($"${nameof(BoxPositionUpdate)}: sanity checks failed");
             return;
         }
 
-        Box.Position = new Godot.Vector2(
-            Player.Instance.Position.X - 200,
-            Player.Instance.Position.Y - 100
-        );
+        Box.Position = _playerCamera.GetCanvasTransform().AffineInverse() * _UIPosition;
     }
 
     /// <summary>
