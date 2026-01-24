@@ -74,6 +74,12 @@ public partial class PictureGame : Node2D
             return;
         }
 
+        if (Visible == false)
+        {
+            GD.Print("Game window is hidden, ignore the event.");
+            return;
+        }
+
         if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
         {
             switch (mouseEvent.ButtonIndex)
