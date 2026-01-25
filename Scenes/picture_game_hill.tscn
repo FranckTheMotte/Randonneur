@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://crukrfapnsd12" path="res://Scripts/Minigames/PictureGameHill.cs" id="1_5n52s"]
 [ext_resource type="Script" uid="uid://buaeg4job471i" path="res://Scripts/Minigames/PhotoCameraController.cs" id="1_758ga"]
 [ext_resource type="PackedScene" uid="uid://08lvem081xs2" path="res://Art/Minigame/HillLandscape.glb" id="2_ptm37"]
-[ext_resource type="Texture2D" uid="uid://xfl54qjsl3qx" path="res://Art/Minigame/Picture/rougegorge.png" id="3_av8rq"]
+[ext_resource type="Texture2D" uid="uid://xfl54qjsl3qx" path="res://Art/Minigame/Picture/robin.png" id="3_av8rq"]
 [ext_resource type="Texture2D" uid="uid://bx8ln1ijmi51s" path="res://Art/Background/fleur1.png" id="5_5n52s"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_5n52s"]
@@ -22,10 +22,11 @@ light_angular_distance = 40.0
 
 [node name="PlayerPosition" type="Node3D" parent="."]
 
-[node name="Camera" type="Camera3D" parent="PlayerPosition"]
+[node name="Camera" type="Camera3D" parent="PlayerPosition" node_paths=PackedStringArray("PNJ")]
 transform = Transform3D(0.99981606, 0, -0.01918, 0.008283781, 0.901923, 0.43181738, 0.017298883, -0.43189684, 0.9017571, -47.625397, 22.542297, 24.006958)
 script = ExtResource("1_758ga")
-MaxFov = 150.0
+MaxFov = 175.0
+PNJ = NodePath("../../RobinNotifier3D/Robin")
 
 [node name="HillLandscape" parent="." instance=ExtResource("2_ptm37")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -450)

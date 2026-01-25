@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xfl54qjsl3qx"
-path="res://.godot/imported/rougegorge.png-29e5be7a9661caebcc7232f10103b0c0.ctex"
+uid="uid://c3yn3i3xrv288"
+path="res://.godot/imported/OutlinedRobin.png-4887d833043f4650f7acb4c03eee0c33.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Minigame/Picture/rougegorge.png"
-dest_files=["res://.godot/imported/rougegorge.png-29e5be7a9661caebcc7232f10103b0c0.ctex"]
+source_file="res://Art/Minigame/Picture/OutlinedRobin.png"
+dest_files=["res://.godot/imported/OutlinedRobin.png-4887d833043f4650f7acb4c03eee0c33.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -37,4 +37,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1
