@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://be11snw13ct0b"]
+[gd_scene format=3 uid="uid://be11snw13ct0b"]
 
 [ext_resource type="Script" uid="uid://b24uweoh1uvry" path="res://Scripts/Level/TemplateLevel.cs" id="1_3wch0"]
 [ext_resource type="Shader" uid="uid://caqs8seommkrm" path="res://Scripts/Level/SkyGradient.gdshader" id="2_mcm6m"]
@@ -16,14 +16,14 @@ shader = ExtResource("2_mcm6m")
 shader_parameter/color_top = Color(0.3, 0.5, 0.8, 1)
 shader_parameter/color_bottom = Color(0.7, 0.85, 0.95, 1)
 
-[node name="20_Level1" type="Node2D"]
+[node name="20_Level1" type="Node2D" unique_id=170977824]
 y_sort_enabled = true
 script = ExtResource("1_3wch0")
 pathToMap = "res://data/Map1/"
 
-[node name="Sky" type="Node2D" parent="."]
+[node name="Sky" type="Node2D" parent="." unique_id=519469132]
 
-[node name="SkyParallax1" type="Parallax2D" parent="Sky"]
+[node name="SkyParallax1" type="Parallax2D" parent="Sky" unique_id=140635438]
 z_index = -1
 scroll_scale = Vector2(0.2, 0.2)
 scroll_offset = Vector2(10, 0)
@@ -31,23 +31,23 @@ repeat_size = Vector2(640, 800)
 autoscroll = Vector2(2, 0)
 repeat_times = 4
 
-[node name="SkyParallax2" type="Parallax2D" parent="Sky"]
+[node name="SkyParallax2" type="Parallax2D" parent="Sky" unique_id=483111393]
 scroll_scale = Vector2(0.3, 0.3)
 repeat_size = Vector2(940, 800)
 autoscroll = Vector2(2, 0)
 repeat_times = 4
 
-[node name="SkyParallax3" type="Parallax2D" parent="Sky"]
+[node name="SkyParallax3" type="Parallax2D" parent="Sky" unique_id=798221806]
 z_index = -1
 scroll_scale = Vector2(0.4, 0.4)
 repeat_size = Vector2(1280, 800)
 autoscroll = Vector2(2, 0)
 repeat_times = 4
 
-[node name="ClearSkyCanvas" type="CanvasLayer" parent="Sky"]
+[node name="ClearSkyCanvas" type="CanvasLayer" parent="Sky" unique_id=1066338669]
 layer = -1
 
-[node name="ClearSkyRect" type="ColorRect" parent="Sky/ClearSkyCanvas"]
+[node name="ClearSkyRect" type="ColorRect" parent="Sky/ClearSkyCanvas" unique_id=1837838342]
 z_index = -1
 material = SubResource("ShaderMaterial_by584")
 offset_right = 1920.0
@@ -55,43 +55,43 @@ offset_bottom = 1080.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Background" type="Parallax2D" parent="."]
+[node name="Background" type="Parallax2D" parent="." unique_id=2028196596]
 visible = false
 scroll_scale = Vector2(0.2, 0.2)
 repeat_size = Vector2(480, 800)
 repeat_times = 4
 
-[node name="Sprite2D" type="Sprite2D" parent="Background"]
+[node name="Sprite2D" type="Sprite2D" parent="Background" unique_id=230041304]
 position = Vector2(240, 400)
 texture = ExtResource("2_vytwu")
 
-[node name="Ground" type="Node2D" parent="."]
+[node name="Ground" type="Node2D" parent="." unique_id=1017887152]
 z_index = 1
 
-[node name="Sol" type="StaticBody2D" parent="Ground"]
+[node name="Sol" type="StaticBody2D" parent="Ground" unique_id=650671281]
 script = ExtResource("3_uowpc")
 
-[node name="WalkingSurface" type="MultiMeshInstance2D" parent="Ground/Sol"]
+[node name="WalkingSurface" type="MultiMeshInstance2D" parent="Ground/Sol" unique_id=1797564732]
 texture_filter = 1
 texture_repeat = 2
 
-[node name="Underground" type="Polygon2D" parent="Ground/Sol"]
+[node name="Underground" type="Polygon2D" parent="Ground/Sol" unique_id=2033374134]
 polygon = PackedVector2Array(0, 203, 69, 195, 89, 180, 110, 177, 130, 169, 160, 157, 244, 112, 366, 104, 412, 79, 446, 90, 467, 97, 475, 105, 485, 117, 485, 224, 0, 222)
 uv = PackedVector2Array(0, 193, 81, 192, 155, 190, 177, 189, 209, 173, 242, 158, 272, 150, 300, 150, 346, 139, 383, 131, 418, 116, 442, 109, 481, 100, 485, 224, 0, 222)
 script = ExtResource("5_mcm6m")
 
-[node name="CollisionProfilElevation" type="CollisionPolygon2D" parent="Ground/Sol"]
+[node name="CollisionProfilElevation" type="CollisionPolygon2D" parent="Ground/Sol" unique_id=353492010]
 build_mode = 1
 
-[node name="PolygonWithBorder" type="Node2D" parent="Ground/Sol" node_paths=PackedStringArray("Surface")]
+[node name="PolygonWithBorder" type="Node2D" parent="Ground/Sol" unique_id=1631693043 node_paths=PackedStringArray("Surface")]
 script = ExtResource("6_by584")
 Surface = NodePath("../Underground")
 BorderTexture = ExtResource("7_s5sg5")
 
-[node name="Debug" type="CanvasLayer" parent="."]
+[node name="Debug" type="CanvasLayer" parent="." unique_id=2133054722]
 layer = 0
 
-[node name="Control" type="Control" parent="Debug"]
+[node name="Control" type="Control" parent="Debug" unique_id=1819254042]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -100,39 +100,39 @@ offset_right = -3.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DebugLabel" type="Label" parent="Debug/Control"]
+[node name="DebugLabel" type="Label" parent="Debug/Control" unique_id=128370205]
 layout_mode = 0
 offset_right = 270.0
 offset_bottom = 50.0
 text = "Default Text"
 
-[node name="TrailSignNode" type="Node2D" parent="."]
+[node name="TrailSignNode" type="Node2D" parent="." unique_id=1474311510]
 z_index = 2
 
-[node name="TrailSign" type="CanvasLayer" parent="TrailSignNode"]
+[node name="TrailSign" type="CanvasLayer" parent="TrailSignNode" unique_id=1916632383]
 layer = 2
 visible = false
 scale = Vector2(0.1, 0.1)
 transform = Transform2D(0.1, 0, 0, 0.1, 0, 0)
 
-[node name="InGameUI" parent="TrailSignNode/TrailSign" instance=ExtResource("7_fx2fa")]
+[node name="InGameUI" parent="TrailSignNode/TrailSign" unique_id=606288723 instance=ExtResource("7_fx2fa")]
 offset_left = -4030.0
 offset_top = -2140.0
 offset_right = -4030.0
 offset_bottom = -2140.0
 scale = Vector2(10, 10)
 
-[node name="Actions" type="CanvasLayer" parent="."]
+[node name="Actions" type="CanvasLayer" parent="." unique_id=503853304]
 script = ExtResource("6_8bbqd")
 
-[node name="PlayerSettings" type="Control" parent="Actions"]
+[node name="PlayerSettings" type="Control" parent="Actions" unique_id=1410126204]
 z_index = 2
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Walk" type="CheckButton" parent="Actions/PlayerSettings"]
+[node name="Walk" type="CheckButton" parent="Actions/PlayerSettings" unique_id=396441231]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 61.0
@@ -141,7 +141,7 @@ offset_bottom = 85.0
 button_pressed = true
 text = "Walk"
 
-[node name="Speed" type="SpinBox" parent="Actions/PlayerSettings"]
+[node name="Speed" type="SpinBox" parent="Actions/PlayerSettings" unique_id=1711286014]
 layout_mode = 0
 offset_left = 106.0
 offset_top = 62.0
@@ -152,7 +152,7 @@ max_value = 10.0
 value = 3.0
 alignment = 1
 
-[node name="MiniMenu" parent="." instance=ExtResource("10_s5sg5")]
+[node name="MiniMenu" parent="." unique_id=2071026586 instance=ExtResource("10_s5sg5")]
 visible = false
 
 [connection signal="toggled" from="Actions/PlayerSettings/Walk" to="Actions" method="_on_check_button_toggled"]
