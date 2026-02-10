@@ -373,16 +373,8 @@ public partial class Sol : StaticBody2D
     )
     {
         if (Player.Instance == null)
-            return;
-
-        /* When reparent the player to another level, it's put on 0,0, before moving to
-        his real position.
-        A unexpected collision can occurs, here we just test if the distance between
-        the two collisionShapes is coherent.
-        TODO: find a better fix */
-        if (JunctionArea.Position.DistanceTo(Player.Instance.Position) > 30.0f)
         {
-            GD.PushWarning("Junction is too far from player, skip.");
+            GD.PushError("JunctionHandler: player is missing!");
             return;
         }
 

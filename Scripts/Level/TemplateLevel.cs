@@ -384,6 +384,7 @@ public partial class TemplateLevel : Node2D
         Actions actions = GetNode<Actions>("Actions");
         Player.Instance.SetActionsPanel(actions);
         Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
+        Player.Instance.LastWaypointName = CurrentWaypoint.Name;
         Player.Instance.Move = true;
         Player.Instance.HikerSpeed = CurrentWaypoint.PlayerDirection;
         Player.Instance.LevelLimitX = new Vector2(LimitX, 0);

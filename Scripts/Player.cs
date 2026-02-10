@@ -51,6 +51,11 @@ public partial class Player : CharacterBody2D
     private AnimatedSprite2D? PlayerSprite;
 
     /// <summary>
+    /// Last visited waypoint.
+    /// </summary>
+    public String LastWaypointName { get; set; } = "NULL";
+
+    /// <summary>
     /// Define the direction of movement.
     /// </summary>
     internal enum Direction
@@ -218,11 +223,19 @@ public partial class Player : CharacterBody2D
     {
         if (Level == null)
             return;
-        Move = false;
-        SetCollisionLayerValue(Global.SolJunctionLayer, false);
-        SetCollisionMaskValue(Global.SolJunctionLayer, false);
-        Level.JunctionChoice(trace, waypointName);
-        _traveledDistance = 0;
+
+        // Junction is not triggered if the player comes from this one
+        // Added to prevent unexpected collision detection when leaving
+        // the last waypoint.
+        if (waypointName != LastWaypointName)
+        {
+            Move = false;
+            SetCollisionLayerValue(Global.SolJunctionLayer, false);
+            SetCollisionMaskValue(Global.SolJunctionLayer, false);
+            Level.JunctionChoice(trace, waypointName);
+            _traveledDistance = 0;
+            LastWaypointName = waypointName;
+        }
     }
 
     /// <summary>
