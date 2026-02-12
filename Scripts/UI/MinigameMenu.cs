@@ -71,13 +71,11 @@ namespace Randonneur
         /// </summary>
         public void _on_quit_button_pressed()
         {
-            if (_gameContainer == null || _pictureGameScene == null)
+            if (_gameContainer != null && _pictureGameScene != null)
             {
-                GD.PushError("_on_quit_button_pressed(): sanity check failed.");
-                return;
+                _gameContainer.RemoveChild(_pictureGameScene);
+                _pictureGameScene.QueueFree();
             }
-            _gameContainer.RemoveChild(_pictureGameScene);
-            _pictureGameScene.QueueFree();
             Visible = false;
             _pictureGameLaunched = false;
             Player.Instance?.BackToLevel();
