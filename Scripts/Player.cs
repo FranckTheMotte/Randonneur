@@ -268,4 +268,16 @@ public partial class Player : CharacterBody2D
     {
         _actionsPanel = ActionsPanel;
     }
+
+    /// <summary>
+    /// Reactivate player in the current level.
+    /// </summary>
+    public void BackToLevel()
+    {
+        Move = true;
+        // Re-activated the player to let collide with next waypoint collision shape
+        ForceJunction = true;
+        // hide possible minigame
+        Level?.MGVisible(false);
+    }
 }

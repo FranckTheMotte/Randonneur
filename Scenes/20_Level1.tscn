@@ -9,7 +9,6 @@
 [ext_resource type="Script" uid="uid://dget2th477uv" path="res://Scripts/PolygonWithBorder.cs" id="6_by584"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="Texture2D" uid="uid://c2o8w52yybufe" path="res://Art/Background/solherbesmall.png" id="7_s5sg5"]
-[ext_resource type="PackedScene" uid="uid://bdb4x1dslt7l6" path="res://Scenes/minigameMenu.tscn" id="10_s5sg5"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_by584"]
 shader = ExtResource("2_mcm6m")
@@ -151,9 +150,6 @@ min_value = -10.0
 max_value = 10.0
 value = 3.0
 alignment = 1
-
-[node name="MiniMenu" parent="." unique_id=2071026586 instance=ExtResource("10_s5sg5")]
-visible = false
 
 [connection signal="toggled" from="Actions/PlayerSettings/Walk" to="Actions" method="_on_check_button_toggled"]
 [connection signal="value_changed" from="Actions/PlayerSettings/Speed" to="Actions" method="_on_speed_value_changed"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bdb4x1dslt7l6"]
+[gd_scene format=3 uid="uid://bdb4x1dslt7l6"]
 
 [ext_resource type="Script" uid="uid://cm2ski616aitr" path="res://Scripts/UI/MinigameMenu.cs" id="1_xqn7j"]
 [ext_resource type="Texture2D" uid="uid://b158v0os365ch" path="res://Art/UI/ui.png" id="2_eypy8"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://dqohhuijbii2n" path="res://Art/UI/MiniGameWiseButton.png" id="3_fb5q8"]
 [ext_resource type="Texture2D" uid="uid://lhls0cpaqqt3" path="res://Art/UI/MiniGameNormalButton.png" id="4_eypy8"]
 [ext_resource type="Texture2D" uid="uid://bci06qg1r2msm" path="res://Art/UI/MiniGameFastlyButton.png" id="5_fb5q8"]
-[ext_resource type="PackedScene" uid="uid://b2t6vdwgg7v53" path="res://Scenes/picture_game_box.tscn" id="7_8dnpt"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_xqn7j"]
 atlas = ExtResource("3_fb5q8")
@@ -59,29 +58,29 @@ region = Rect2(0, 92, 63, 46)
 atlas = ExtResource("2_fb5q8")
 region = Rect2(0, 46, 63, 46)
 
-[node name="MiniMenu" type="Control"]
+[node name="MiniMenu" type="Control" unique_id=2096573770]
 z_index = 2
 layout_mode = 3
 anchors_preset = 0
 mouse_force_pass_scroll_events = false
 script = ExtResource("1_xqn7j")
 
-[node name="BgMargin" type="MarginContainer" parent="."]
+[node name="BgMargin" type="MarginContainer" parent="." unique_id=647960145]
 custom_minimum_size = Vector2(1200, 800)
 layout_mode = 0
-offset_right = 300.0
-offset_bottom = 200.0
+offset_right = 1200.0
+offset_bottom = 800.0
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="BgNinePathRect" type="NinePatchRect" parent="BgMargin"]
+[node name="BgNinePathRect" type="NinePatchRect" parent="BgMargin" unique_id=769994075]
 layout_mode = 2
 texture = ExtResource("2_eypy8")
 region_rect = Rect2(0, 133, 782, 268)
 
-[node name="MapMargin" type="MarginContainer" parent="BgMargin/BgNinePathRect"]
+[node name="MapMargin" type="MarginContainer" parent="BgMargin/BgNinePathRect" unique_id=757665583]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -95,76 +94,91 @@ theme_override_constants/margin_top = 30
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 30
 
-[node name="MapRect" type="ColorRect" parent="BgMargin/BgNinePathRect/MapMargin"]
+[node name="MapRect" type="ColorRect" parent="BgMargin/BgNinePathRect/MapMargin" unique_id=2134994068]
 layout_mode = 2
 color = Color(1, 1, 1, 0)
 
-[node name="GridContainer" type="GridContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect"]
+[node name="GridContainer" type="GridContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect" unique_id=1813520203]
 layout_mode = 0
 offset_right = 1100.0
 offset_bottom = 700.0
 theme_override_constants/h_separation = 30
 columns = 2
 
-[node name="ChoiceContainer" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer"]
+[node name="ChoiceContainer" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer" unique_id=2033065458]
 layout_mode = 2
 
-[node name="VBoxChoice" type="VBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer"]
+[node name="VBoxChoice" type="VBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer" unique_id=76963675]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice"]
+[node name="HBoxContainer" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice" unique_id=507350422]
 layout_mode = 2
 
-[node name="HBoxWise" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer"]
+[node name="HBoxWise" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer" unique_id=969014161]
 layout_mode = 2
 
-[node name="WiseButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxWise"]
+[node name="WiseButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxWise" unique_id=2051721977]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_xqn7j")
 texture_pressed = SubResource("AtlasTexture_8dnpt")
 texture_hover = SubResource("AtlasTexture_u1vk8")
 
-[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxWise"]
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxWise" unique_id=1105360058]
 layout_mode = 2
 text = "Stress--  Time+++"
 label_settings = SubResource("LabelSettings_fb5q8")
 
-[node name="HBoxNormal" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer"]
+[node name="HBoxNormal" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer" unique_id=403891042]
 layout_mode = 2
 
-[node name="NormalButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxNormal"]
+[node name="NormalButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxNormal" unique_id=960523918]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_fb5q8")
 texture_pressed = SubResource("AtlasTexture_uex2n")
 texture_hover = SubResource("AtlasTexture_fdo2t")
 
-[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxNormal"]
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxNormal" unique_id=715899843]
 layout_mode = 2
 text = "Stress-    Time++"
 label_settings = SubResource("LabelSettings_fb5q8")
 
-[node name="HBoxFastly" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer"]
+[node name="HBoxFastly" type="HBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer" unique_id=841182754]
 layout_mode = 2
 
-[node name="FastlyButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxFastly"]
+[node name="FastlyButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxFastly" unique_id=1944222695]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_m4mml")
 texture_pressed = SubResource("AtlasTexture_0dk68")
 texture_hover = SubResource("AtlasTexture_e8pi7")
 
-[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxFastly"]
+[node name="Description" type="Label" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/HBoxContainer/HBoxFastly" unique_id=1928650044]
 layout_mode = 2
 text = "Stress++ Time+"
 label_settings = SubResource("LabelSettings_fb5q8")
 
-[node name="PictureGame" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice" instance=ExtResource("7_8dnpt")]
-visible = false
-position = Vector2(957, 446)
+[node name="Control" type="Control" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice" unique_id=597391406]
+custom_minimum_size = Vector2(1000, 475)
+layout_mode = 2
+metadata/_edit_use_anchors_ = true
 
-[node name="ExitContainer" type="VBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/Control" unique_id=1836264792]
+custom_minimum_size = Vector2(1000, 475)
+layout_mode = 0
+offset_right = 1000.0
+offset_bottom = 475.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/Control/SubViewportContainer" unique_id=920825445]
+handle_input_locally = false
+size = Vector2i(1000, 475)
+render_target_update_mode = 4
+
+[node name="ExitContainer" type="VBoxContainer" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer" unique_id=1818609868]
 layout_mode = 2
 
-[node name="QuitButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ExitContainer"]
+[node name="QuitButton" type="TextureButton" parent="BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ExitContainer" unique_id=1694227032]
 layout_mode = 2
 texture_normal = SubResource("AtlasTexture_kh01s")
 texture_pressed = SubResource("AtlasTexture_lhho7")

@@ -1,34 +1,40 @@
-[gd_scene load_steps=4 format=3 uid="uid://b2t6vdwgg7v53"]
+[gd_scene format=3 uid="uid://b2t6vdwgg7v53"]
 
 [ext_resource type="Script" uid="uid://cx0fty6ls33lk" path="res://Scripts/Minigames/PictureGame.cs" id="1_c1qhv"]
 [ext_resource type="PackedScene" uid="uid://bepjjtcitx8u1" path="res://Scenes/picture_game_hill.tscn" id="3_hftw5"]
 [ext_resource type="PackedScene" uid="uid://bp8ggf3oxvqnu" path="res://Scenes/camera_hud.tscn" id="4_m613v"]
 
-[node name="PictureGame" type="Node2D"]
+[node name="PictureGame" type="Node2D" unique_id=1925836353]
 z_index = 2
 script = ExtResource("1_c1qhv")
 
-[node name="CameraContainer" type="SubViewportContainer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -960.0
-offset_top = -365.0
-offset_right = -160.0
-offset_bottom = 135.0
+[node name="Picture" type="Sprite2D" parent="." unique_id=524666813]
+position = Vector2(816, 0)
+
+[node name="CameraContainer" type="SubViewportContainer" parent="." unique_id=851941973]
+custom_minimum_size = Vector2(800, 475)
+offset_right = 800.0
+offset_bottom = 475.0
 grow_horizontal = 2
 grow_vertical = 2
+stretch = true
 
-[node name="CameraViewport" type="SubViewport" parent="CameraContainer"]
+[node name="CameraViewport" type="SubViewport" parent="CameraContainer" unique_id=2061153980]
 handle_input_locally = false
 size = Vector2i(800, 475)
 render_target_update_mode = 4
 
-[node name="PictureGame" parent="CameraContainer/CameraViewport" instance=ExtResource("3_hftw5")]
+[node name="PictureGame" parent="CameraContainer/CameraViewport" unique_id=2043773638 instance=ExtResource("3_hftw5")]
 
-[node name="Picture" type="Sprite2D" parent="."]
-position = Vector2(-128, -360)
+[node name="CanvasLayer" type="CanvasLayer" parent="CameraContainer/CameraViewport" unique_id=1482852000]
 
-[node name="CameraHUD" parent="." instance=ExtResource("4_m613v")]
-position = Vector2(-362, -88)
-metadata/_edit_lock_ = true
+[node name="CenterContainer" type="CenterContainer" parent="CameraContainer/CameraViewport/CanvasLayer" unique_id=870295866]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CameraHUD" parent="CameraContainer/CameraViewport/CanvasLayer/CenterContainer" unique_id=1302632568 instance=ExtResource("4_m613v")]

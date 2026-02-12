@@ -23,19 +23,22 @@ namespace Randonneur
         /// </summary>
         internal PictureGame? _pictureGameScene;
 
-        Camera2D? _camera;
+        /// <summary>
+        /// State of game launch.
+        /// </summary>
+        Boolean _pictureGameLaunched = false;
+
+        /// <summary>
+        /// Where to display the game.
+        /// </summary>
+        private SubViewport? _gameContainer;
 
         public override void _Ready()
         {
-            _pictureGameScene =
-                GetNode<PictureGame>(
-                    "BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/PictureGame"
-                ) ?? throw new InvalidOperationException("Failed to find Picture Game scene.");
-
-            // desactivate the camera otherwise, it could conflict with others.
-            Node2D cameraHUD = _pictureGameScene.GetNode<Node2D>("CameraHUD");
-            _camera = cameraHUD.GetNode<Camera2D>("Camera2D");
-            _camera.Enabled = false;
+            _gameContainer =
+                GetNode<SubViewport>(
+                    "BgMargin/BgNinePathRect/MapMargin/MapRect/GridContainer/ChoiceContainer/VBoxChoice/Control/SubViewportContainer/SubViewport"
+                ) ?? throw new InvalidOperationException("Failed to find Game container.");
         }
 
         /// <summary>
@@ -43,36 +46,41 @@ namespace Randonneur
         /// </summary>
         public void _on_normal_button_pressed()
         {
-            if (_pictureGameScene == null || _camera == null)
+            if (_gameContainer == null)
             {
-                GD.PushError("_on_normal_button_pressed(): failure on ressources.");
+                GD.PushError("_on_normal_button_pressed(): sanity check failed.");
                 return;
             }
 
-            _pictureGameScene.Visible = true;
-            _camera.Enabled = true;
+            // already launched?
+            if (_pictureGameLaunched)
+            {
+                return;
+            }
+
+            // Load scene here (can take time)
+            PackedScene aPackedScene = GD.Load<PackedScene>("res://Scenes/picture_game_box.tscn");
+            _pictureGameScene = aPackedScene.Instantiate<PictureGame>();
+            _gameContainer.AddChild(_pictureGameScene);
+            _pictureGameLaunched = true;
         }
 
         /// <summary>
-        /// Quit button.
+        /// Quit button. Hide the window, release sub ressources and re-enable player to
+        /// the current level.
         /// </summary>
         public void _on_quit_button_pressed()
         {
-            if (_pictureGameScene == null || _camera == null)
+            if (_gameContainer == null || _pictureGameScene == null)
             {
-                GD.PushError("_on_quit_button_pressed(): failure on ressources.");
+                GD.PushError("_on_quit_button_pressed(): sanity check failed.");
                 return;
             }
-
-            _pictureGameScene.Visible = false;
-            _camera.Enabled = false;
+            _gameContainer.RemoveChild(_pictureGameScene);
+            _pictureGameScene.QueueFree();
             Visible = false;
-            // Re-activated the player to let collide with next waypoint collision shape
-            if (Player.Instance != null)
-            {
-                Player.Instance.Move = true;
-                Player.Instance.ForceJunction = true;
-            }
+            _pictureGameLaunched = false;
+            Player.Instance?.BackToLevel();
         }
     }
 }

@@ -1,11 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://bp8ggf3oxvqnu"]
+[gd_scene format=3 uid="uid://bp8ggf3oxvqnu"]
 
 [ext_resource type="Texture2D" uid="uid://cwwllrokato5l" path="res://Art/Minigame/Picture/objectif.png" id="1_57b8a"]
 
-[node name="CameraHUD" type="Node2D"]
+[node name="CameraHUD" type="Node2D" unique_id=1576874010]
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1372061669]
 
-[node name="HUD" type="Sprite2D" parent="."]
+[node name="HUD" type="Sprite2D" parent="." unique_id=602359474]
+visible = false
 position = Vector2(-196, -39)
+texture = ExtResource("1_57b8a")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=326006963]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("1_57b8a")

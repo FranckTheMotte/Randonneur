@@ -38,7 +38,7 @@ public partial class TemplateLevel : Node2D
     /// <summary>
     /// Reference to the Mini Game box.
     /// </summary>
-    internal MinigameMenu? MinigameBox;
+    internal Control? MinigameBox;
 
     /// <summary>
     /// Shortcut to player camera.
@@ -132,19 +132,11 @@ public partial class TemplateLevel : Node2D
         MouseCursor customCursor = customCursorCanvas.GetNode<MouseCursor>("MouseCursor");
         AddChild(customCursorCanvas);
 
-        MinigameBox = GetNode<MinigameMenu>("MiniMenu");
-        if (MinigameBox is null)
-        {
-            GD.PushError($"${nameof(_Ready)}: fail to find mini game box");
-            return;
-        }
-
         /* Scene transition */
         FadeIn();
 
         // Boxes are not visible at start
         MapVisible(false);
-        MGVisible(false);
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -261,13 +253,21 @@ public partial class TemplateLevel : Node2D
     /// <param name="Waypoint">optional, indicate the player location.</param>
     public void MGVisible(bool Visible, MGType Type = MGType.None, Waypoint? Waypoint = null)
     {
-        if (MinigameBox == null)
+        if (Visible)
         {
-            GD.PushWarning($"${nameof(MGVisible)}: sanity checks failed");
-            return;
+            PackedScene miniGameMenuScene = GD.Load<PackedScene>("res://Scenes/minigameMenu.tscn");
+            MinigameBox = miniGameMenuScene.Instantiate<Control>();
+            AddChild(MinigameBox);
+            BoxPositionUpdate(MinigameBox);
         }
-
-        MinigameBox.Visible = Visible;
+        else
+        {
+            if (MinigameBox != null)
+            {
+                RemoveChild(MinigameBox);
+                MinigameBox.QueueFree();
+            }
+        }
     }
 
     public void TrailSignVisible(bool Visible)
@@ -337,7 +337,7 @@ public partial class TemplateLevel : Node2D
         waypoint = waypoints.GetWaypoint(WaypointName);
 
         // sanity checks
-        if (waypoint == null || Map == null || MinigameBox == null || Player.Instance == null)
+        if (waypoint == null || Map == null || Player.Instance == null)
         {
             GD.PushWarning($"${nameof(JunctionChoice)}: sanity checks failed");
             return;
@@ -356,7 +356,6 @@ public partial class TemplateLevel : Node2D
         }
         else if (baseObject is PoV)
         {
-            BoxPositionUpdate(MinigameBox);
             MGVisible(true, MGType.Picture, waypoint);
         }
 
