@@ -15,6 +15,18 @@ public partial class TemplateLevel : Node2D
     [Export]
     string? pathToMap;
 
+    /// <summary>
+    /// Ref to grumble status bar.
+    /// </summary>
+    [Export]
+    public GrumbleStatus? GrumbleStatusBar;
+
+    /// <summary>
+    /// Signal to update player grumbling level.
+    /// </summary>
+    [Signal]
+    public delegate void UpdateGrumblingLevelEventHandler(double value);
+
     private AnimationPlayer? _fadeAnimation;
 
     public Dictionary<string, Gpx>? Trails { get; private set; }
@@ -131,6 +143,12 @@ public partial class TemplateLevel : Node2D
             .Instantiate();
         MouseCursor customCursor = customCursorCanvas.GetNode<MouseCursor>("MouseCursor");
         AddChild(customCursorCanvas);
+
+        // update the ui progress bars
+        GrumbleStatusBar?.Update();
+
+        // progress bar signals connection
+        UpdateGrumblingLevel += OnUpdateGrumblingLevel;
 
         /* Scene transition */
         FadeIn();
@@ -388,5 +406,29 @@ public partial class TemplateLevel : Node2D
         Player.Instance.LevelLimitX = new Vector2(LimitX, 0);
         Player.Instance.Level = this;
         Player.Instance.Reparent(this);
+    }
+
+    /// <summary>
+    /// Signal to update grumbling level progress bar.
+    /// </summary>
+    /// <param name="value">Added to current grumbling player level</param>
+    private void OnUpdateGrumblingLevel(double value)
+    {
+        Player? player = Player.Instance;
+
+        if (player == null || GrumbleStatusBar == null)
+        {
+            GD.PushError("UpdateGrumbling(): sanity checks failed.");
+            return;
+        }
+
+        // stay between 0 and max
+        player.CurrentGrumblingLevel += value;
+        if (player.CurrentGrumblingLevel < 0)
+            player.CurrentGrumblingLevel = 0;
+        else if (player.CurrentGrumblingLevel > player.MaxGrumblingLevel)
+            player.CurrentGrumblingLevel = player.MaxGrumblingLevel;
+
+        GrumbleStatusBar.Update();
     }
 }

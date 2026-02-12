@@ -64,6 +64,12 @@ public partial class Player : CharacterBody2D
         Backward,
     }
 
+    /// <summary>
+    /// Grumbling stats.
+    /// </summary>
+    public double CurrentGrumblingLevel { get; set; } = 100;
+    public double MaxGrumblingLevel { get; private set; } = 100;
+
     public override void _EnterTree()
     {
         if (_instance != null && _instance != this)

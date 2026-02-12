@@ -1,5 +1,6 @@
 using System.Numerics;
 using Godot;
+using Randonneur.Scripts;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
 
@@ -117,6 +118,10 @@ public partial class PictureGame : Node2D
                         PICTURE_SCALE,
                         PICTURE_MOVE_DURATION
                     );
+
+                    // For test purpose
+                    TemplateLevel level = GetNode<TemplateLevel>("/root/20_Level1");
+                    level?.EmitSignal(TemplateLevel.SignalName.UpdateGrumblingLevel, -10);
                     break;
             }
         }
