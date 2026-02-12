@@ -25,7 +25,7 @@ light_angular_distance = 40.0
 [node name="Camera" type="Camera3D" parent="PlayerPosition" unique_id=1071590743 node_paths=PackedStringArray("PNJ")]
 keep_aspect = 0
 script = ExtResource("1_758ga")
-MaxFov = 175.0
+MinFov = 2.0
 PNJ = NodePath("../../RobinNotifier3D/Robin")
 
 [node name="HillLandscape" parent="." unique_id=717052088 instance=ExtResource("2_ptm37")]
