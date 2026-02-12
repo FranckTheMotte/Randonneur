@@ -2,9 +2,9 @@ using System.Security;
 using Godot;
 
 /// <summary>
-/// Actions panel to display and modify player's properties.
+/// Debug actions panel to display and modify player's properties.
 /// </summary>
-public partial class Actions : CanvasLayer
+public partial class DebugTools : CanvasLayer
 {
     private SpinBox? _speed;
 

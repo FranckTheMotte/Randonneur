@@ -32,9 +32,9 @@ public partial class Player : CharacterBody2D
     private float _traveledDistance = 0.0f;
 
     /// <summary>
-    /// Reference to actions panel
+    /// Reference to debug actions panel
     /// </summary>
-    private Actions? _actionsPanel = null;
+    private DebugTools? _actionsPanel = null;
 
     /// <summary>
     /// Force next waypoint to act as a junction.
@@ -264,7 +264,7 @@ public partial class Player : CharacterBody2D
     /// Give access to actions panel.
     /// </summary>
     /// <param name="ActionsPanel">Canvas to control actions.</param>
-    public void SetActionsPanel(Actions ActionsPanel)
+    public void SetActionsPanel(DebugTools ActionsPanel)
     {
         _actionsPanel = ActionsPanel;
     }

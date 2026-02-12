@@ -5,10 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://c3rwa616btokb" path="res://Art/Background/ciel.png" id="2_vytwu"]
 [ext_resource type="Script" uid="uid://cysc5mc3t3ajk" path="res://Scripts/Sol.cs" id="3_uowpc"]
 [ext_resource type="Script" uid="uid://k4a2b63xm4vn" path="res://Scripts/Level/Underground.cs" id="5_mcm6m"]
-[ext_resource type="Script" uid="uid://dkmqx0q07t5vd" path="res://Scripts/UI/Actions.cs" id="6_8bbqd"]
 [ext_resource type="Script" uid="uid://dget2th477uv" path="res://Scripts/PolygonWithBorder.cs" id="6_by584"]
 [ext_resource type="PackedScene" uid="uid://deieheltm64c3" path="res://Scenes/in_game_ui.tscn" id="7_fx2fa"]
 [ext_resource type="Texture2D" uid="uid://c2o8w52yybufe" path="res://Art/Background/solherbesmall.png" id="7_s5sg5"]
+[ext_resource type="Script" uid="uid://co4vou62ph6iw" path="res://Scripts/UI/DebugTools.cs" id="8_i2ji0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_by584"]
 shader = ExtResource("2_mcm6m")
@@ -87,19 +87,54 @@ script = ExtResource("6_by584")
 Surface = NodePath("../Underground")
 BorderTexture = ExtResource("7_s5sg5")
 
-[node name="Debug" type="CanvasLayer" parent="." unique_id=2133054722]
+[node name="DebugTools" type="CanvasLayer" parent="." unique_id=2133054722]
 layer = 0
+script = ExtResource("8_i2ji0")
 
-[node name="Control" type="Control" parent="Debug" unique_id=1819254042]
+[node name="PlayerSettings" type="Control" parent="DebugTools" unique_id=1410126204]
+z_index = 2
 layout_mode = 3
-anchors_preset = 15
+anchors_preset = 1
+anchor_left = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -3.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = -181.0
+offset_top = 12.0
+offset_right = -141.0
+offset_bottom = 52.0
+grow_horizontal = 0
 
-[node name="DebugLabel" type="Label" parent="Debug/Control" unique_id=128370205]
+[node name="Walk" type="CheckButton" parent="DebugTools/PlayerSettings" unique_id=396441231]
+layout_mode = 0
+offset_left = 6.0
+offset_top = -8.0
+offset_right = 93.0
+offset_bottom = 23.0
+button_pressed = true
+text = "Walk"
+
+[node name="Speed" type="SpinBox" parent="DebugTools/PlayerSettings" unique_id=1711286014]
+layout_mode = 0
+offset_left = 88.0
+offset_top = -7.0
+offset_right = 174.5625
+offset_bottom = 24.0
+min_value = -10.0
+max_value = 10.0
+value = 3.0
+alignment = 1
+
+[node name="PlayerInfos" type="Control" parent="DebugTools" unique_id=1819254042]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = -34.0
+offset_right = 3.0
+offset_bottom = -34.0
+grow_vertical = 0
+
+[node name="DebugLabel" type="Label" parent="DebugTools/PlayerInfos" unique_id=128370205]
 layout_mode = 0
 offset_right = 270.0
 offset_bottom = 50.0
@@ -120,36 +155,3 @@ offset_top = -2140.0
 offset_right = -4030.0
 offset_bottom = -2140.0
 scale = Vector2(10, 10)
-
-[node name="Actions" type="CanvasLayer" parent="." unique_id=503853304]
-script = ExtResource("6_8bbqd")
-
-[node name="PlayerSettings" type="Control" parent="Actions" unique_id=1410126204]
-z_index = 2
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Walk" type="CheckButton" parent="Actions/PlayerSettings" unique_id=396441231]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 61.0
-offset_right = 68.0
-offset_bottom = 85.0
-button_pressed = true
-text = "Walk"
-
-[node name="Speed" type="SpinBox" parent="Actions/PlayerSettings" unique_id=1711286014]
-layout_mode = 0
-offset_left = 106.0
-offset_top = 62.0
-offset_right = 192.5625
-offset_bottom = 93.0
-min_value = -10.0
-max_value = 10.0
-value = 3.0
-alignment = 1
-
-[connection signal="toggled" from="Actions/PlayerSettings/Walk" to="Actions" method="_on_check_button_toggled"]
-[connection signal="value_changed" from="Actions/PlayerSettings/Speed" to="Actions" method="_on_speed_value_changed"]

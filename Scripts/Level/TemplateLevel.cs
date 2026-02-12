@@ -148,7 +148,7 @@ public partial class TemplateLevel : Node2D
             return;
         }
         // Display the X,Y of the player in the label
-        Label label = GetNode<Label>("Debug/Control/DebugLabel");
+        Label label = GetNode<Label>("DebugTools/PlayerInfos/DebugLabel");
         label.Text =
             $"X {player.Position.X.ToString("N3")} Y {player.Position.Y.ToString("N3")} MAX: {player.LevelLimitX.X}";
     }
@@ -380,8 +380,7 @@ public partial class TemplateLevel : Node2D
             GD.Print("Player infos already updated.");
             return;
         }
-        Actions actions = GetNode<Actions>("Actions");
-        Player.Instance.SetActionsPanel(actions);
+        Player.Instance.SetActionsPanel(GetNode<DebugTools>("DebugTools"));
         Player.Instance.MoveTo(CurrentWaypoint.LevelCoord[CurrentTraceName]);
         Player.Instance.LastWaypointName = CurrentWaypoint.Name;
         Player.Instance.Move = true;
