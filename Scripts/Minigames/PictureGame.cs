@@ -35,6 +35,11 @@ public partial class PictureGame : Node2D
     private SubViewport? _cameraViewPort = null;
 
     /// <summary>
+    /// Link to HUD canvas layer.
+    /// </summary>
+    private CanvasLayer? _HUDLayer = null;
+
+    /// <summary>
     /// Node destination of last picture.
     /// </summary>
     private Sprite2D? _picture = null;
@@ -65,11 +70,17 @@ public partial class PictureGame : Node2D
         _cameraViewPort = GetNode<SubViewport>("CameraContainer/CameraViewport");
         _cameraViewPort.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
         _picture = GetNode<Sprite2D>("Picture");
+        _HUDLayer = GetNode<CanvasLayer>("CameraContainer/CameraViewport/HUDLayer");
     }
 
-    public override void _Input(InputEvent @event)
+    public override async void _Input(InputEvent @event)
     {
-        if (_cameraViewPort == null || _picture == null || _cameraViewPortContainer == null)
+        if (
+            _cameraViewPort == null
+            || _picture == null
+            || _cameraViewPortContainer == null
+            || _HUDLayer == null
+        )
         {
             GD.PushError("_Input(): Sanity check failed.");
             return;
@@ -91,8 +102,25 @@ public partial class PictureGame : Node2D
                         return;
                     _moveMutex.WaitOne();
                     _moveFinished = false;
+
+                    // hide HUD to no put in screenshot
+                    // it's required to wait the next processed frame and
+                    // next post frame for subviewport
+                    _HUDLayer.Visible = false;
+                    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+                    _ = await ToSignal(
+                        RenderingServer.Singleton,
+                        RenderingServer.SignalName.FramePostDraw
+                    );
+
+                    // prepare for screenshot
                     TextureRect t;
                     Image screenshot = _cameraViewPort.GetTexture().GetImage();
+
+                    // HUD can be displayed now (will be processed at next frame)
+                    _HUDLayer.Visible = true;
+
+                    // Save texture in target node
                     ImageTexture imageTexture = new();
                     imageTexture.SetImage(screenshot);
                     if (_pictureTexture.GetParent() == null)
@@ -110,6 +138,7 @@ public partial class PictureGame : Node2D
                         AddChild(_pictureTexture2);
                     }
 
+                    // smooth screenshot move
                     _moveMutex.ReleaseMutex();
                     ImageSmoothMove(
                         t,
