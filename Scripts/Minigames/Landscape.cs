@@ -191,40 +191,40 @@ namespace Randonneur
         }
 
         /// <summary>
-        /// Place randomly a PNJ.
+        /// Place randomly a NPC.
         /// </summary>
-        public void InitHiddenPNJ(VisibleOnScreenNotifier3D pnjNotifier)
+        public void InitHiddenNPC(VisibleOnScreenNotifier3D npcNotifier)
         {
             // sanity checks
             if (_plane == null || _mainScene == null)
             {
-                GD.PushError("InitHiddenPNJ() sanity check failed.");
+                GD.PushError("InitHiddenNPC() sanity check failed.");
                 return;
             }
 
             // inside a lower square
-            float x = _planeStartPosition.X + _rand.Next(100, 900);
-            float z = _planeStartPosition.Z + _rand.Next(100, 900);
+            float x = _planeStartPosition.X + _rand.Next(400, 650);
+            float z = _planeStartPosition.Z + _rand.Next(500, 800);
             float landscapeY = GetYOnLandscape(x, z);
             if (landscapeY == OFFLANDSCAPE)
             {
-                GD.PushError("Failed to place the PNJ.");
+                GD.PushError("Failed to place the NPC.");
                 return;
             }
 
             // Only the robin can be placed for the moment
-            Sprite3D pnj = pnjNotifier.GetNode<Sprite3D>("Robin");
-            pnjNotifier.Position = new Vector3(
+            Sprite3D npc = npcNotifier.GetNode<Sprite3D>("HiddenNPC");
+            npcNotifier.Position = new Vector3(
                 x,
-                landscapeY + (pnj.Texture.GetSize().Y / _plane.Scale.Y) + 1,
+                landscapeY + (npc.Texture.GetSize().Y / _plane.Scale.Y) + 1,
                 z
             );
 
             // Debug: add a flower over the robin to easily find him.
             Sprite3D tips = _mainScene.GetNode<Sprite3D>("Tips");
-            tips.Position = pnjNotifier.Position + new Vector3(0.0f, 100.0f, 0.0f);
+            tips.Position = npcNotifier.Position + new Vector3(0.0f, 100.0f, 0.0f);
 
-            GD.Print($"robin visible {pnjNotifier.IsVisibleInTree()}");
+            GD.Print($"robin visible {npcNotifier.IsVisibleInTree()}");
         }
 
         /// <summary>

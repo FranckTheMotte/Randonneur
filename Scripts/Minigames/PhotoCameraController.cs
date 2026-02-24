@@ -99,35 +99,63 @@ public partial class PhotoCameraController : Camera3D
 
     [ExportGroup("Object")]
     /// <summary>
-    /// Reference to PNJ to find.
+    /// Reference to hidden NPC.
     /// </summary>
     [Export]
-    public Sprite3D? PNJ;
+    public HiddenNPC? HiddenNPC;
+
+    [ExportGroup("Debug")]
+    /// <summary>
+    /// Debug activation flag.
+    /// </summary>
+    [Export]
+    public bool DebugActivated = false;
 
     /// <summary>
-    /// Last found state of PNJ.
+    /// Logs on screen.
     /// </summary>
-    private bool _isPNJFound = false;
+    [Export]
+    public Label? LogScreenLabel;
 
     /// <summary>
-    /// Robin's textures.
+    /// Last found state of NPC.
     /// </summary>
-    Texture2D robinTexture = GD.Load<Texture2D>("res://Art/Minigame/Picture/robin.png");
-    Texture2D outlinedRobinTexture = GD.Load<Texture2D>(
-        "res://Art/Minigame/Picture/OutlinedRobin.png"
-    );
+    private bool _isNPCFound = false;
 
     /* -----------------------------
-     * State
+     * States
      * ----------------------------- */
 
-    private float yaw;
-    private float pitch;
+    private float _yaw;
+    private float _pitch;
 
-    private float targetYaw;
-    private float targetPitch;
+    private float _targetYaw;
+    private float _targetPitch;
 
-    private float targetFov;
+    private float _targetFov;
+
+    /// <summary>
+    /// Cached screenSize.
+    /// </summary>
+    Vector2 _screenSize;
+
+    /// <summary>
+    /// the middle of the current viewport.
+    /// </summary>
+    Vector2 _viewportCenter;
+
+    /// <summary>
+    /// To skip useless process() calls.
+    /// </summary>
+    private Vector2 _lastCameraMove = Vector2.Zero;
+    private Vector2 _currentCameraMove = Vector2.Right;
+    private float _lastFov;
+
+    /// <summary>
+    /// Debug stuffs.
+    /// </summary>
+    private String _debuglog = "";
+    private DebugOverlay? _debugOverlay;
 
     /* -----------------------------
      * Lifecycle
@@ -135,12 +163,25 @@ public partial class PhotoCameraController : Camera3D
 
     public override void _Ready()
     {
+        if (HiddenNPC == null)
+        {
+            GD.PushError("_Ready(): sanity check failed.");
+            return;
+        }
+
         Vector3 euler = GlobalTransform.Basis.GetEuler();
 
-        yaw = targetYaw = euler.Y;
-        pitch = targetPitch = euler.X;
+        _yaw = _targetYaw = euler.Y;
+        _pitch = _targetPitch = euler.X;
 
-        targetFov = Fov;
+        _targetFov = Fov;
+
+        _screenSize = GetViewport().GetVisibleRect().Size;
+
+        // get the middle of the current viewport
+        _viewportCenter = GetViewport().GetVisibleRect().Size * 0.5f;
+
+        _debugOverlay = GetNode<DebugOverlay>("DebugOverlay");
     }
 
     /* -----------------------------
@@ -155,14 +196,16 @@ public partial class PhotoCameraController : Camera3D
             float sensitivity = GetScaledSensitivity();
 
             // The higher the zoom, the slower the rotation
-            targetYaw -= motion.Relative.X * sensitivity;
-            targetPitch -= motion.Relative.Y * sensitivity;
+            _targetYaw -= motion.Relative.X * sensitivity;
+            _targetPitch -= motion.Relative.Y * sensitivity;
 
-            targetPitch = Mathf.Clamp(
-                targetPitch,
+            _targetPitch = Mathf.Clamp(
+                _targetPitch,
                 Mathf.DegToRad(MinPitch),
                 Mathf.DegToRad(MaxPitch)
             );
+
+            _currentCameraMove = new Vector2(_targetYaw, _targetPitch);
         }
     }
 
@@ -172,9 +215,10 @@ public partial class PhotoCameraController : Camera3D
         if (e is InputEventMouseButton mb && mb.Pressed)
         {
             if (mb.ButtonIndex == MouseButton.WheelUp)
-                targetFov = Mathf.Clamp(targetFov - ZoomStep, MinFov, MaxFov);
+                _targetFov = Mathf.Clamp(_targetFov - ZoomStep, MinFov, MaxFov);
             else if (mb.ButtonIndex == MouseButton.WheelDown)
-                targetFov = Mathf.Clamp(targetFov + ZoomStep, MinFov, MaxFov);
+                _targetFov = Mathf.Clamp(_targetFov + ZoomStep, MinFov, MaxFov);
+            _currentCameraMove = new Vector2(_targetFov, _targetFov);
         }
     }
 
@@ -184,139 +228,98 @@ public partial class PhotoCameraController : Camera3D
 
     public override void _Process(double delta)
     {
-        float dt = (float)delta;
+        float roundedDelta = (float)delta;
+
+        // nothing to process
+        if (_currentCameraMove == _lastCameraMove && Fov == _lastFov)
+        {
+            return;
+        }
+        _currentCameraMove = _lastCameraMove;
+        _lastFov = Fov;
 
         // Smooth rotation
         if (UseRotationDamping)
         {
-            yaw = Mathf.Lerp(yaw, targetYaw, dt * RotationDampingSpeed);
-            pitch = Mathf.Lerp(pitch, targetPitch, dt * RotationDampingSpeed);
+            _yaw = Mathf.Lerp(_yaw, _targetYaw, roundedDelta * RotationDampingSpeed);
+            _pitch = Mathf.Lerp(_pitch, _targetPitch, roundedDelta * RotationDampingSpeed);
         }
         else
         {
-            yaw = targetYaw;
-            pitch = targetPitch;
+            _yaw = _targetYaw;
+            _pitch = _targetPitch;
         }
 
         // Smooth zoom (lens-like)
-        Fov = Mathf.Lerp(Fov, targetFov, dt * ZoomDamping);
+        Fov = Mathf.Lerp(Fov, _targetFov, roundedDelta * ZoomDamping);
 
         ApplyRotation();
-        IsPNJFound();
+        IsHiddenNPCFound();
     }
 
     /// <summary>
-    /// Check if PNJ is close and inside the camera HUD.
+    /// Check if NPC is close and inside the camera HUD.
     /// </summary>
-    private void IsPNJFound()
+    private void IsHiddenNPCFound()
     {
-        if (PNJ == null)
+        if (HiddenNPC == null)
             return;
 
-        if (IsPositionBehind(PNJ.GlobalPosition))
+        if (IsPositionBehind(HiddenNPC.GlobalPosition))
         {
             return;
         }
-
-        // 3D -> screen 2D projection
-        Vector2 screenPos = UnprojectPosition(PNJ.GlobalPosition);
-        Vector2 viewportCenter = GetViewport().GetVisibleRect().Size * 0.5f;
-
-        Vector3 toSprite = PNJ.GlobalPosition - GlobalPosition;
-
-        // Camera forward direction (negative Z in camera space)
-        float depth = toSprite.Dot(-GlobalTransform.Basis.Z);
-        float normalizedDepth = Mathf.Clamp((depth - Near) / (Far - Near), 0f, 1f);
 
         // to assess whether the NPC is sufficiently visible
-        Vector2 spriteScreenSize = GetSpriteScreenSize(PNJ, this);
+        float NPCDistanceFromCenter = HiddenNPC.DistanceFromCenter(this, _viewportCenter);
 
-        GD.Print($"normalizedDepth {normalizedDepth}");
-        GD.Print($"distance {screenPos.DistanceTo(viewportCenter)} an depth {depth}");
-        GD.Print($"Sprite screen size: {spriteScreenSize}");
+        // evaluate picture quality
+        int note = 0;
+        (float NPCVisiblePercent, bool NPCFullyVisible) = HiddenNPC.GetVisibilityStatus(
+            this,
+            _screenSize,
+            DebugActivated ? _debuglog : null,
+            DebugActivated ? _debugOverlay : null
+        );
 
-        _isPNJFound = screenPos.DistanceTo(viewportCenter) <= 50.0f && spriteScreenSize.X > 90.0f;
+        if (NPCFullyVisible)
+            note += 3;
 
-        HighlightPNJ(_isPNJFound);
-    }
+        // NPC overscreen size
+        if (NPCVisiblePercent >= 50 && NPCVisiblePercent < 125)
+            note += 3;
+        else if (NPCVisiblePercent >= 25 && NPCVisiblePercent < 50)
+            note += 2;
+        else if (NPCVisiblePercent >= 5 && NPCVisiblePercent < 25)
+            note += 1;
 
-    /// <summary>
-    /// Calculates the actual size on screen (pixels) of a Sprite3D,
-    /// by projecting its 3D volume through Camera3D.
-    /// The results takes into account the FOV, distance, orientation
-    /// and scale of the sprite.
-    /// </summary>
-    /// <param name="sprite">Sprite to measure</param>
-    /// <param name="camera"></param>
-    /// <returns>Sprite's size on screen (pixels)</returns>
-    private static Vector2 GetSpriteScreenSize(Sprite3D sprite, Camera3D camera)
-    {
-        // Bounding box of Sprite3D
-        Aabb localAabb = sprite.GetAabb();
-        Transform3D globalTransform = sprite.GlobalTransform;
-
-        // Describe a 2D bounding rect (screen min/max)
-        Vector2 min = new(float.MaxValue, float.MaxValue);
-        Vector2 max = new(float.MinValue, float.MinValue);
-
-        // 8 bouding box corners
-        Vector3 pos = localAabb.Position;
-        Vector3 size = localAabb.Size;
-        Vector3[] corners =
+        if (note > 0)
         {
-            pos,
-            pos + new Vector3(size.X, 0, 0),
-            pos + new Vector3(0, size.Y, 0),
-            pos + new Vector3(size.X, size.Y, 0),
-            pos + new Vector3(0, 0, size.Z),
-            pos + new Vector3(size.X, 0, size.Z),
-            pos + new Vector3(0, size.Y, size.Z),
-            pos + size,
-        };
-
-        // Unproject every corner of AABB to 2D screen
-        foreach (Vector3 corner in corners)
-        {
-            Vector3 worldPoint = globalTransform * corner;
-
-            // Ignore point behind camera
-            if (camera.IsPositionBehind(worldPoint))
-                continue;
-
-            // 3D -> screen 2D projection
-            Vector2 screenPoint = camera.UnprojectPosition(worldPoint);
-
-            // Update bounding 2D rect
-            min = min.Min(screenPoint);
-            max = max.Max(screenPoint);
+            // NPC centered
+            if (NPCDistanceFromCenter >= 0 && NPCDistanceFromCenter < 70)
+                note += 4;
+            else if (NPCDistanceFromCenter >= 70 && NPCDistanceFromCenter < 100)
+                note += 3;
+            else if (NPCDistanceFromCenter >= 100 && NPCDistanceFromCenter < 200)
+                note += 2;
+            else if (NPCDistanceFromCenter >= 200 && NPCDistanceFromCenter < 300)
+                note += 1;
         }
 
-        // if unprojection fails for all points, the sprite is not in
-        // camera field
-        if (min.X == float.MaxValue)
-            return Vector2.Zero;
-
-        // Size used in screen
-        return max - min;
-    }
-
-    /// <summary>
-    /// Visually indicate whether the NPC is detected.
-    /// </summary>
-    /// <param name="detected"></param>
-    private void HighlightPNJ(bool detected)
-    {
-        if (PNJ == null)
-            return;
-
-        if (detected)
+        // debug ?
+        if (DebugActivated && LogScreenLabel != null)
         {
-            PNJ.Texture = outlinedRobinTexture;
+            LogScreenLabel.Text =
+                $"Note : {note}\n"
+                + $"NPC VisiblePercent {NPCVisiblePercent}\n"
+                + $"NPC DistanceFromCenter {NPCDistanceFromCenter}\n"
+                + $"_screenSize {_screenSize}\n"
+                + _debuglog;
         }
-        else
-        {
-            PNJ.Texture = robinTexture;
-        }
+
+        _isNPCFound = NPCDistanceFromCenter < 100.0f && NPCVisiblePercent > 5.0f;
+
+        HiddenNPC.Focus(_isNPCFound);
     }
 
     /* -----------------------------
@@ -329,13 +332,13 @@ public partial class PhotoCameraController : Camera3D
     private void ApplyRotation()
     {
         // Yaw around vertical world axis
-        Basis yawBasis = Basis.Identity.Rotated(Vector3.Up, yaw);
+        Basis yawBasis = Basis.Identity.Rotated(Vector3.Up, _yaw);
 
         // Real hozontal axis (yaw)
         Vector3 right = yawBasis.X;
 
         // Pitch around this axis
-        Basis pitchBasis = Basis.Identity.Rotated(right, pitch);
+        Basis pitchBasis = Basis.Identity.Rotated(right, _pitch);
 
         Basis finalBasis = pitchBasis * yawBasis;
 

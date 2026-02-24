@@ -56,16 +56,16 @@ public partial class PictureGameHill : Node3D
         }
 
         _landscape.InitTrees(TreeDensity, TreeSize);
-        _landscape.InitHiddenPNJ(GetNode<VisibleOnScreenNotifier3D>("RobinNotifier3D"));
+        _landscape.InitHiddenNPC(GetNode<VisibleOnScreenNotifier3D>("HiddenNPCNotifier3D"));
     }
 
-    void _on_robin_notifier_3d_screen_entered()
+    void _on_hidden_npc_notifier_3d_screen_entered()
     {
-        GD.Print("Robin visible");
+        GD.Print("Hidden NPC visible");
     }
 
-    void _on_robin_notifier_3d_screen_exited()
+    void _on_hidden_npc_notifier_3d_screen_exited()
     {
-        GD.Print("Robin hidden");
+        GD.Print("Hidden NPC hidden");
     }
 }
