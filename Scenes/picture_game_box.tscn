@@ -9,7 +9,9 @@ z_index = 2
 script = ExtResource("1_c1qhv")
 
 [node name="Picture" type="Sprite2D" parent="." unique_id=524666813]
-position = Vector2(816, 0)
+position = Vector2(808, 0)
+
+[node name="PictureValidator" type="Node2D" parent="." unique_id=1706765875]
 
 [node name="CameraContainer" type="SubViewportContainer" parent="." unique_id=851941973]
 custom_minimum_size = Vector2(800, 475)
