@@ -27,8 +27,9 @@ light_angular_distance = 40.0
 [node name="Camera" type="Camera3D" parent="PlayerPosition" unique_id=1071590743 node_paths=PackedStringArray("HiddenNPC", "LogScreenLabel")]
 keep_aspect = 0
 script = ExtResource("1_758ga")
-MinFov = 2.0
-ZoomStep = 2.0
+MinFov = 1.0
+ZoomStep = 3.0
+ZoomDamping = 5.0
 HiddenNPC = NodePath("../../HiddenNPCNotifier3D/HiddenNPC")
 DebugActivated = true
 LogScreenLabel = NodePath("../../Debug/Control/Log")

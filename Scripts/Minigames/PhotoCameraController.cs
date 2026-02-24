@@ -352,7 +352,9 @@ public partial class PhotoCameraController : Camera3D
     /// <returns></returns>
     private float GetScaledSensitivity()
     {
-        float fovFactor = Mathf.DegToRad(Fov) / Mathf.DegToRad(90f);
-        return BaseSensitivity * fovFactor;
+        float t = Mathf.InverseLerp(MaxFov, MinFov, Fov);
+        t = Mathf.SmoothStep(0f, 1f, t);
+        float multiplier = Mathf.Lerp(1f, 1.4f, t);
+        return BaseSensitivity * multiplier;
     }
 }
