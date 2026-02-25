@@ -167,13 +167,6 @@ public partial class PhotoCameraController : Camera3D
     Vector2 _viewportCenter;
 
     /// <summary>
-    /// To skip useless process() calls.
-    /// </summary>
-    private Vector2 _lastCameraMove = Vector2.Zero;
-    private Vector2 _currentCameraMove = Vector2.Right;
-    private float _lastFov;
-
-    /// <summary>
     /// Debug stuffs.
     /// </summary>
     private String _debuglog = "";
@@ -235,8 +228,6 @@ public partial class PhotoCameraController : Camera3D
                 Mathf.DegToRad(MinPitch),
                 Mathf.DegToRad(MaxPitch)
             );
-
-            _currentCameraMove = new Vector2(_targetYaw, _targetPitch);
         }
     }
 
@@ -249,7 +240,6 @@ public partial class PhotoCameraController : Camera3D
                 _targetFov = Mathf.Clamp(_targetFov - ZoomStep, MinFov, MaxFov);
             else if (mb.ButtonIndex == MouseButton.WheelDown)
                 _targetFov = Mathf.Clamp(_targetFov + ZoomStep, MinFov, MaxFov);
-            _currentCameraMove = new Vector2(_targetFov, _targetFov);
         }
     }
 
@@ -260,14 +250,6 @@ public partial class PhotoCameraController : Camera3D
     public override void _Process(double delta)
     {
         float roundedDelta = (float)delta;
-
-        // nothing to process
-        /*if (_currentCameraMove == _lastCameraMove && Fov == _lastFov)
-        {
-            return;
-        }
-        _currentCameraMove = _lastCameraMove;
-        _lastFov = Fov;*/
 
         // Smooth rotation
         if (UseRotationDamping)
