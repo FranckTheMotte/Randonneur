@@ -97,6 +97,28 @@ public partial class PhotoCameraController : Camera3D
     [Export]
     public float RotationDampingSpeed = 12f;
 
+    [ExportGroup("Hand Shake")]
+    [Export]
+    public bool EnableHandShake = true;
+
+    /// <summary>
+    /// Base angular amplitude in degrees at wide FOV.
+    /// </summary>
+    [Export]
+    public float ShakeAmplitude = 0.05f;
+
+    /// <summary>
+    /// How fast the shake evolves over time. Will be impacted with stress.
+    /// </summary>
+    [Export]
+    public float ShakeFrequency = 1.5f;
+
+    /// <summary>
+    /// How much zoom amplifies the shake.
+    /// </summary>
+    [Export]
+    public float ZoomShakeMultiplier = 2.0f;
+
     [ExportGroup("Object")]
     /// <summary>
     /// Reference to hidden NPC.
@@ -157,6 +179,13 @@ public partial class PhotoCameraController : Camera3D
     private String _debuglog = "";
     private DebugOverlay? _debugOverlay;
 
+    private FastNoiseLite? _shakeNoise;
+
+    /// <summary>
+    /// Shake time reference
+    /// </summary>
+    private float _shakeTime = 0f;
+
     /* -----------------------------
      * Lifecycle
      * ----------------------------- */
@@ -180,6 +209,8 @@ public partial class PhotoCameraController : Camera3D
 
         // get the middle of the current viewport
         _viewportCenter = GetViewport().GetVisibleRect().Size * 0.5f;
+
+        _shakeNoise = new() { NoiseType = FastNoiseLite.NoiseTypeEnum.Perlin, Frequency = 1.0f };
 
         _debugOverlay = GetNode<DebugOverlay>("DebugOverlay");
     }
@@ -231,12 +262,12 @@ public partial class PhotoCameraController : Camera3D
         float roundedDelta = (float)delta;
 
         // nothing to process
-        if (_currentCameraMove == _lastCameraMove && Fov == _lastFov)
+        /*if (_currentCameraMove == _lastCameraMove && Fov == _lastFov)
         {
             return;
         }
         _currentCameraMove = _lastCameraMove;
-        _lastFov = Fov;
+        _lastFov = Fov;*/
 
         // Smooth rotation
         if (UseRotationDamping)
@@ -248,6 +279,28 @@ public partial class PhotoCameraController : Camera3D
         {
             _yaw = _targetYaw;
             _pitch = _targetPitch;
+        }
+
+        // Handshaking
+        if (EnableHandShake && _shakeNoise != null)
+        {
+            _shakeTime += roundedDelta * ShakeFrequency;
+
+            float zoomFactor = Mathf.Lerp(
+                1f,
+                ZoomShakeMultiplier,
+                Mathf.InverseLerp(MaxFov, MinFov, Fov)
+            );
+
+            float noiseYaw = _shakeNoise.GetNoise1D(_shakeTime);
+            float noisePitch = _shakeNoise.GetNoise1D(_shakeTime + 100f);
+
+            float shakeYaw = Mathf.DegToRad(ShakeAmplitude * zoomFactor) * noiseYaw;
+            float shakePitch = Mathf.DegToRad(ShakeAmplitude * zoomFactor) * noisePitch;
+
+            // apply
+            _yaw += shakeYaw;
+            _pitch += shakePitch;
         }
 
         // Smooth zoom (lens-like)
