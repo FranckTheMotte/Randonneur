@@ -47,6 +47,8 @@ public partial class PhotoCameraController : Camera3D
     [Export]
     public float ZoomStep = 5f;
 
+    public const float MinZoomStep = 3.0f;
+
     /// <summary>
     /// Damping factor for smooth zoom interpolation.
     /// Higher values result in faster, snappier zoom transitions.
@@ -178,6 +180,8 @@ public partial class PhotoCameraController : Camera3D
     /// </summary>
     private float _shakeTime = 0f;
 
+    private readonly Random _rand = new();
+
     /* -----------------------------
      * Lifecycle
      * ----------------------------- */
@@ -203,6 +207,9 @@ public partial class PhotoCameraController : Camera3D
         _viewportCenter = GetViewport().GetVisibleRect().Size * 0.5f;
 
         _shakeNoise = new() { NoiseType = FastNoiseLite.NoiseTypeEnum.Perlin, Frequency = 1.0f };
+
+        if (ZoomStep < MinZoomStep)
+            ZoomStep = MinZoomStep;
 
         _debugOverlay = GetNode<DebugOverlay>("DebugOverlay");
     }
@@ -235,10 +242,11 @@ public partial class PhotoCameraController : Camera3D
         // zoom inputs
         if (e is InputEventMouseButton mb && mb.Pressed)
         {
+            float zoomStep = (ZoomStep - 2) + 2 * (Fov / MaxFov);
             if (mb.ButtonIndex == MouseButton.WheelUp)
-                _targetFov = Mathf.Clamp(_targetFov - ZoomStep, MinFov, MaxFov);
+                _targetFov = Mathf.Clamp(_targetFov - zoomStep, MinFov, MaxFov);
             else if (mb.ButtonIndex == MouseButton.WheelDown)
-                _targetFov = Mathf.Clamp(_targetFov + ZoomStep, MinFov, MaxFov);
+                _targetFov = Mathf.Clamp(_targetFov + zoomStep, MinFov, MaxFov);
         }
     }
 
@@ -316,16 +324,16 @@ public partial class PhotoCameraController : Camera3D
         if (NPCFullyVisible)
         {
             if (NPCVisiblePercent >= 66.0f)
-                note = 3;
+                note = 5;
             else if (NPCVisiblePercent >= 33.0f && NPCVisiblePercent < 66.0f)
-                note = 2;
+                note = 3;
             else if (NPCVisiblePercent >= 10.0f && NPCVisiblePercent < 33.0f)
                 note = 1;
         }
         else
         {
             if (NPCVisiblePercent >= 90.0f)
-                note = 2;
+                note = 3;
             else if (NPCVisiblePercent >= 25.0f && NPCVisiblePercent < 90.0f)
                 note = 1;
         }
@@ -334,7 +342,7 @@ public partial class PhotoCameraController : Camera3D
         {
             // NPC centered
             if (NPCDistanceFromCenter <= 0.001)
-                note += 3;
+                note += 5;
             else if (NPCDistanceFromCenter > 0.001 && NPCDistanceFromCenter <= 0.02)
                 note += 2;
             else if (NPCDistanceFromCenter > 0.02 && NPCDistanceFromCenter <= 0.06)
@@ -348,11 +356,11 @@ public partial class PhotoCameraController : Camera3D
                 $"Note : {note}\n"
                 + $"NPC VisiblePercent {NPCVisiblePercent}\n"
                 + $"NPC DistanceFromCenter {NPCDistanceFromCenter}\n"
-                + $"_screenSize {_screenSize}\n"
+                + $"Fov {Fov}\n"
                 + debuglog;
         }
 
-        _isNPCFound = NPCDistanceFromCenter < 100.0f && NPCVisiblePercent > 5.0f;
+        _isNPCFound = NPCDistanceFromCenter < 0.001f && NPCVisiblePercent > 5.0f;
 
         HiddenNPC.Focus(_isNPCFound);
     }
@@ -389,7 +397,8 @@ public partial class PhotoCameraController : Camera3D
     {
         float t = Mathf.InverseLerp(MaxFov, MinFov, Fov);
         t = Mathf.SmoothStep(0f, 1f, t);
-        float multiplier = Mathf.Lerp(1f, 1.4f, t);
+        float to = (float)_rand.NextDouble() * 0.6f;
+        float multiplier = Mathf.Lerp(1f, 1f + to, t);
         return BaseSensitivity * multiplier;
     }
 }
