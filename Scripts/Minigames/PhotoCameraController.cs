@@ -169,7 +169,6 @@ public partial class PhotoCameraController : Camera3D
     /// <summary>
     /// Debug stuffs.
     /// </summary>
-    private String _debuglog = "";
     private DebugOverlay? _debugOverlay;
 
     private FastNoiseLite? _shakeNoise;
@@ -310,34 +309,35 @@ public partial class PhotoCameraController : Camera3D
 
         // evaluate picture quality
         int note = 0;
-        (float NPCVisiblePercent, bool NPCFullyVisible) = HiddenNPC.GetVisibilityStatus(
-            this,
-            _screenSize,
-            DebugActivated ? _debuglog : null,
-            DebugActivated ? _debugOverlay : null
-        );
-
-        if (NPCFullyVisible)
-            note += 3;
+        (float NPCVisiblePercent, bool NPCFullyVisible, String debuglog) =
+            HiddenNPC.GetVisibilityStatus(this, _screenSize, DebugActivated ? _debugOverlay : null);
 
         // NPC overscreen size
-        if (NPCVisiblePercent >= 50 && NPCVisiblePercent < 125)
-            note += 3;
-        else if (NPCVisiblePercent >= 25 && NPCVisiblePercent < 50)
-            note += 2;
-        else if (NPCVisiblePercent >= 5 && NPCVisiblePercent < 25)
-            note += 1;
+        if (NPCFullyVisible)
+        {
+            if (NPCVisiblePercent >= 66.0f)
+                note = 3;
+            else if (NPCVisiblePercent >= 33.0f && NPCVisiblePercent < 66.0f)
+                note = 2;
+            else if (NPCVisiblePercent >= 10.0f && NPCVisiblePercent < 33.0f)
+                note = 1;
+        }
+        else
+        {
+            if (NPCVisiblePercent >= 90.0f)
+                note = 2;
+            else if (NPCVisiblePercent >= 25.0f && NPCVisiblePercent < 90.0f)
+                note = 1;
+        }
 
         if (note > 0)
         {
             // NPC centered
-            if (NPCDistanceFromCenter >= 0 && NPCDistanceFromCenter < 70)
-                note += 4;
-            else if (NPCDistanceFromCenter >= 70 && NPCDistanceFromCenter < 100)
+            if (NPCDistanceFromCenter <= 0.001)
                 note += 3;
-            else if (NPCDistanceFromCenter >= 100 && NPCDistanceFromCenter < 200)
+            else if (NPCDistanceFromCenter > 0.001 && NPCDistanceFromCenter <= 0.02)
                 note += 2;
-            else if (NPCDistanceFromCenter >= 200 && NPCDistanceFromCenter < 300)
+            else if (NPCDistanceFromCenter > 0.02 && NPCDistanceFromCenter <= 0.06)
                 note += 1;
         }
 
@@ -349,7 +349,7 @@ public partial class PhotoCameraController : Camera3D
                 + $"NPC VisiblePercent {NPCVisiblePercent}\n"
                 + $"NPC DistanceFromCenter {NPCDistanceFromCenter}\n"
                 + $"_screenSize {_screenSize}\n"
-                + _debuglog;
+                + debuglog;
         }
 
         _isNPCFound = NPCDistanceFromCenter < 100.0f && NPCVisiblePercent > 5.0f;

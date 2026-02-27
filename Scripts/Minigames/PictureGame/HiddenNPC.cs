@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Godot;
 
 public partial class HiddenNPC : Sprite3D
@@ -13,7 +14,7 @@ public partial class HiddenNPC : Sprite3D
     /// <summary>
     /// Area of origin NPC sprite (number of pixels).
     /// </summary>
-    public float OriginArea { get; private set; } = 0.0f;
+    public float _originArea { get; private set; } = 0.0f;
 
     /// <summary>
     /// Cached bounds value.
@@ -38,11 +39,16 @@ public partial class HiddenNPC : Sprite3D
     /// <returns>A distance in pixels.</returns>
     public float DistanceFromCenter(Camera3D camera, Vector2 viewportCenter)
     {
-        // 3D -> screen 2D projection of the NPC
-        Vector2 projection2D = camera.UnprojectPosition(GlobalPosition);
+        Vector3 worldPos = GlobalTransform.Origin;
 
-        // to assess whether the NPC is sufficiently visible
-        return projection2D.DistanceTo(viewportCenter);
+        // Convert to view space
+        Transform3D viewInv = camera.GetCameraTransform().AffineInverse();
+        Vector3 viewPos = viewInv * worldPos;
+
+        // FOV-neutral relative offset
+        Vector2 relative = new(viewPos.X / -viewPos.Z, viewPos.Y / -viewPos.Z);
+
+        return relative.DistanceTo(Vector2.Zero) / camera.Fov;
     }
 
     /// <summary>
@@ -78,7 +84,7 @@ public partial class HiddenNPC : Sprite3D
         ];
 
         // area
-        OriginArea = Texture.GetWidth() * Scale.X * Texture.GetHeight() * Scale.Y;
+        _originArea = (Texture.GetWidth() * Scale.X) * (Texture.GetHeight() * Scale.Y);
 
         _focused = enable;
     }
@@ -94,23 +100,24 @@ public partial class HiddenNPC : Sprite3D
     /// </remarks>
     /// <param name="camera">3D camera used to display the scene integrating the sprite.</param>
     /// <param name="viewportSize">Size of the viewport used to display the sprite.</param>
-    /// <param name="debugLog">Optional out debug logs.</param>
     /// <param name="debugOverlay">Optional debug overlay on screen.</param>
     /// <returns>
     /// - percent is the percent between displayed NPC sprite and the original size.
     /// - fullyVisible is a flag to tell if the sprite is fully displayed in the current viewport.
+    /// - debugLog debug logs.
     /// </returns>
-    public (float percent, bool fullyVisible) GetVisibilityStatus(
+    public (float percent, bool fullyVisible, String debugLog) GetVisibilityStatus(
         Camera3D camera,
         Vector2 viewportSize,
-        String? debugLog = null,
         DebugOverlay? debugOverlay = null
     )
     {
+        String debugLog = "";
+
         if (!Centered && Billboard != BaseMaterial3D.BillboardModeEnum.Enabled)
         {
             GD.PushError("GetVisibilityStatus(): Only works with centered and billboarded sprite.");
-            return (0.0f, false);
+            return (0.0f, false, debugLog);
         }
 
         Vector2 spriteSize = new();
@@ -172,14 +179,11 @@ public partial class HiddenNPC : Sprite3D
         spriteSize.X = Math.Max(visibleTopRight2DX2 - visibleTopLeft2DX2, 0.0f);
         spriteSize.Y = Math.Max(visibleBottomLeft2DY2 - visibleTopLeft2DY2, 0.0f);
 
-        if (debugLog != null)
-        {
-            debugLog =
-                $"topLeft2D {upLeft} spriteSize {spriteSize}\n"
-                + $"topRight2D {upRight}\n"
-                + $"bottomLeft2D {downLeft}\n"
-                + $"fullyVisible {fullyVisible}\n";
-        }
+        debugLog =
+            $"topLeft2D {upLeft} spriteSize {spriteSize}\n"
+            + $"topRight2D {upRight}\n"
+            + $"bottomLeft2D {downLeft}\n"
+            + $"fullyVisible {fullyVisible}\n";
 
         if (debugOverlay != null)
         {
@@ -191,8 +195,8 @@ public partial class HiddenNPC : Sprite3D
 
         // Evaluate percent of displayed NPC
         float currentArea = (spriteSize.X * spriteSize.Y);
-        float percent = (currentArea / OriginArea) * 100.0f;
+        float percent = Mathf.Sqrt(currentArea / _originArea) * 100.0f;
 
-        return (percent, fullyVisible);
+        return (percent, fullyVisible, debugLog);
     }
 }
