@@ -1,5 +1,7 @@
 using System.Numerics;
 using Godot;
+using NUnit.Framework.Constraints;
+using Randonneur;
 using Randonneur.Scripts;
 /* Because of System.Numerics */
 using Vector2 = Godot.Vector2;
@@ -45,6 +47,11 @@ public partial class PictureGame : Node2D
     private Sprite2D? _picture = null;
 
     /// <summary>
+    /// Link to HUD canvas layer.
+    /// </summary>
+    private PhotoCameraController? _gameCamera = null;
+
+    /// <summary>
     /// Texture rects to contain the picture.
     /// Two rects are required to keep last displayed when a new picture
     /// is shot.
@@ -64,6 +71,24 @@ public partial class PictureGame : Node2D
     bool _moveFinished = true;
     private static System.Threading.Mutex _moveMutex = new();
 
+    /// <summary>
+    /// last picture note;
+    /// </summary>
+    private int _pictureNote = 0;
+
+    /// <summary>
+    /// Star textures.
+    /// </summary>
+    private Texture2D _starOnTexture = GD.Load<Texture2D>("res://Art/UI/starOn.png");
+    private Texture2D _starOffTexture = GD.Load<Texture2D>("res://Art/UI/starOff.png");
+    private TextureRect?[] _starTextures = new TextureRect[Global.PictureGameMaxStars];
+
+    /// <summary>
+    /// Const.
+    /// </summary>
+    private const float _starScale = 0.25f;
+    private const float _starSpacing = 10.0f;
+
     public override void _Ready()
     {
         _cameraViewPortContainer = GetNode<SubViewportContainer>("CameraContainer");
@@ -71,6 +96,28 @@ public partial class PictureGame : Node2D
         _cameraViewPort.RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
         _picture = GetNode<Sprite2D>("Picture");
         _HUDLayer = GetNode<CanvasLayer>("CameraContainer/CameraViewport/HUDLayer");
+        _gameCamera = _cameraViewPort.GetNode<PhotoCameraController>(
+            "PictureGameHill/PlayerPosition/Camera"
+        );
+
+        // Gap width between stars
+        float starWidthGap = _starOnTexture.GetWidth() * _starScale + _starSpacing;
+        // Height position of top left corner of a star, here just under the picture
+        float startHeightPosition = _cameraViewPort.Size.Y * PICTURE_SCALE + 4;
+
+        // allocate stars without texture
+        for (int i = 0; i < _starTextures.Length; i++)
+        {
+            // display the note with stars
+            TextureRect starTrect = new()
+            {
+                Scale = new Vector2(_starScale, _starScale),
+                ZIndex = Global.ZIndexUILayer1, // over the picture
+                Position = new Vector2(i * starWidthGap, startHeightPosition),
+            };
+            _starTextures[i] = starTrect;
+            _picture.AddChild(starTrect);
+        }
     }
 
     public override async void _Input(InputEvent @event)
@@ -80,6 +127,7 @@ public partial class PictureGame : Node2D
             || _picture == null
             || _cameraViewPortContainer == null
             || _HUDLayer == null
+            || _gameCamera == null
         )
         {
             GD.PushError("_Input(): Sanity check failed.");
@@ -112,6 +160,12 @@ public partial class PictureGame : Node2D
                         RenderingServer.Singleton,
                         RenderingServer.SignalName.FramePostDraw
                     );
+
+                    // clear previous stars
+                    RemoveStars();
+
+                    // Retrieve picture note
+                    _pictureNote = _gameCamera.Note;
 
                     // prepare for screenshot
                     TextureRect t;
@@ -183,10 +237,13 @@ public partial class PictureGame : Node2D
             .SetTrans(Tween.TransitionType.Cubic)
             .SetEase(Tween.EaseType.In);
 
-        tween.Finished += MoveFinished;
+        tween.Finished += ImageAnimationFinished;
     }
 
-    private void MoveFinished()
+    /// <summary>
+    /// Called when image animation (tween) is finished.
+    /// </summary>
+    private void ImageAnimationFinished()
     {
         // nothing to do
         if (_unusedPicture == null)
@@ -199,8 +256,42 @@ public partial class PictureGame : Node2D
             RemoveChild(_unusedPicture);
         }
 
+        AddStars(_pictureNote);
+
         _moveMutex.WaitOne();
         _moveFinished = true;
         _moveMutex.ReleaseMutex();
+    }
+
+    /// <summary>
+    /// Add stars over the picture depending of the note.
+    /// </summary>
+    /// <param name="note">note from 0 to 10.</param>
+    private void AddStars(int note)
+    {
+        // 0 to 10 allowed
+        note = Mathf.Clamp(note, 0, Global.PictureGameMaxNote);
+
+        int nbStars = note * Global.PictureGameMaxStars / Global.PictureGameMaxNote;;
+
+        for (int i = 0; i < _starTextures.Length; i++)
+        {
+            if (_starTextures[i] is TextureRect star)
+                star.Texture = i < nbStars ? _starOnTexture : _starOffTexture;
+        }
+    }
+
+    /// <summary>
+    /// Remove previous stars (remove texture).
+    /// </summary>
+    private void RemoveStars()
+    {
+        for (int i = 0; i < _starTextures.Length; i++)
+        {
+            if (_starTextures[i] is TextureRect star)
+            {
+                star.Texture = null;
+            }
+        }
     }
 }

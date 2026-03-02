@@ -183,6 +183,12 @@ public partial class PhotoCameraController : Camera3D
     private readonly Random _rand = new();
 
     /* -----------------------------
+     * Public properties
+     * ----------------------------- */
+
+    public int Note { get; private set; } = 0;
+
+    /* -----------------------------
      * Lifecycle
      * ----------------------------- */
 
@@ -316,7 +322,7 @@ public partial class PhotoCameraController : Camera3D
         float NPCDistanceFromCenter = HiddenNPC.DistanceFromCenter(this, _viewportCenter);
 
         // evaluate picture quality
-        int note = 0;
+        Note = 0;
         (float NPCVisiblePercent, bool NPCFullyVisible, String debuglog) =
             HiddenNPC.GetVisibilityStatus(this, _screenSize, DebugActivated ? _debugOverlay : null);
 
@@ -324,36 +330,36 @@ public partial class PhotoCameraController : Camera3D
         if (NPCFullyVisible)
         {
             if (NPCVisiblePercent >= 66.0f)
-                note = 5;
+                Note = 5;
             else if (NPCVisiblePercent >= 33.0f && NPCVisiblePercent < 66.0f)
-                note = 3;
+                Note = 3;
             else if (NPCVisiblePercent >= 10.0f && NPCVisiblePercent < 33.0f)
-                note = 1;
+                Note = 1;
         }
         else
         {
             if (NPCVisiblePercent >= 90.0f)
-                note = 3;
+                Note = 3;
             else if (NPCVisiblePercent >= 25.0f && NPCVisiblePercent < 90.0f)
-                note = 1;
+                Note = 1;
         }
 
-        if (note > 0)
+        if (Note > 0)
         {
             // NPC centered
             if (NPCDistanceFromCenter <= 0.001)
-                note += 5;
+                Note += 5;
             else if (NPCDistanceFromCenter > 0.001 && NPCDistanceFromCenter <= 0.02)
-                note += 2;
+                Note += 2;
             else if (NPCDistanceFromCenter > 0.02 && NPCDistanceFromCenter <= 0.06)
-                note += 1;
+                Note += 1;
         }
 
         // debug ?
         if (DebugActivated && LogScreenLabel != null)
         {
             LogScreenLabel.Text =
-                $"Note : {note}\n"
+                $"Note : {Note}\n"
                 + $"NPC VisiblePercent {NPCVisiblePercent}\n"
                 + $"NPC DistanceFromCenter {NPCDistanceFromCenter}\n"
                 + $"Fov {Fov}\n"

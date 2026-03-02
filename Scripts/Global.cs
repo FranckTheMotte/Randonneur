@@ -20,6 +20,14 @@ namespace Randonneur
 
         public const float JunctionCollisionShapeSize = 20.0f;
 
+        public const int PictureGameMaxStars = 4;
+
+        public const int PictureGameMaxNote = 10;
+
+        // Zindex
+        // TODO define layers
+        public const int ZIndexUILayer1 = 1;
+
         // Errors
         public const int SANITY_CHECK_ERROR = -1000;
     }
