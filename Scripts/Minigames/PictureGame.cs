@@ -74,20 +74,9 @@ public partial class PictureGame : Node2D
     /// <summary>
     /// last picture note;
     /// </summary>
-    private int _pictureNote = 0;
+    private uint _nbStars = 0;
 
-    /// <summary>
-    /// Star textures.
-    /// </summary>
-    private Texture2D _starOnTexture = GD.Load<Texture2D>("res://Art/UI/starOn.png");
-    private Texture2D _starOffTexture = GD.Load<Texture2D>("res://Art/UI/starOff.png");
-    private TextureRect?[] _starTextures = new TextureRect[Global.PictureGameMaxStars];
-
-    /// <summary>
-    /// Const.
-    /// </summary>
-    private const float _starScale = 0.25f;
-    private const float _starSpacing = 10.0f;
+    private NotationStar? _stars = null;
 
     public override void _Ready()
     {
@@ -100,24 +89,11 @@ public partial class PictureGame : Node2D
             "PictureGameHill/PlayerPosition/Camera"
         );
 
-        // Gap width between stars
-        float starWidthGap = _starOnTexture.GetWidth() * _starScale + _starSpacing;
-        // Height position of top left corner of a star, here just under the picture
-        float startHeightPosition = _cameraViewPort.Size.Y * PICTURE_SCALE + 4;
-
-        // allocate stars without texture
-        for (int i = 0; i < _starTextures.Length; i++)
-        {
-            // display the note with stars
-            TextureRect starTrect = new()
-            {
-                Scale = new Vector2(_starScale, _starScale),
-                ZIndex = Global.ZIndexUILayer1, // over the picture
-                Position = new Vector2(i * starWidthGap, startHeightPosition),
-            };
-            _starTextures[i] = starTrect;
-            _picture.AddChild(starTrect);
-        }
+        _stars = new NotationStar(
+            _picture,
+            Global.PictureGameMaxStars,
+            _cameraViewPort.Size.Y * PICTURE_SCALE
+        );
     }
 
     public override async void _Input(InputEvent @event)
@@ -128,6 +104,7 @@ public partial class PictureGame : Node2D
             || _cameraViewPortContainer == null
             || _HUDLayer == null
             || _gameCamera == null
+            || _stars == null
         )
         {
             GD.PushError("_Input(): Sanity check failed.");
@@ -162,10 +139,13 @@ public partial class PictureGame : Node2D
                     );
 
                     // clear previous stars
-                    RemoveStars();
+                    _stars.Remove();
 
-                    // Retrieve picture note
-                    _pictureNote = _gameCamera.Note;
+                    // Retrieve picture note, 0 to 10 range is allowed
+                    uint note = (uint)Mathf.Clamp(_gameCamera.Note, 0, Global.PictureGameMaxNote);
+
+                    // convert to stars
+                    _nbStars = note * Global.PictureGameMaxStars / Global.PictureGameMaxNote;
 
                     // prepare for screenshot
                     TextureRect t;
@@ -246,7 +226,7 @@ public partial class PictureGame : Node2D
     private void ImageAnimationFinished()
     {
         // nothing to do
-        if (_unusedPicture == null)
+        if (_unusedPicture == null || _stars == null)
             return;
 
         if (_unusedPicture.GetParent() != null)
@@ -256,42 +236,10 @@ public partial class PictureGame : Node2D
             RemoveChild(_unusedPicture);
         }
 
-        AddStars(_pictureNote);
+        _stars.Add(_nbStars);
 
         _moveMutex.WaitOne();
         _moveFinished = true;
         _moveMutex.ReleaseMutex();
-    }
-
-    /// <summary>
-    /// Add stars over the picture depending of the note.
-    /// </summary>
-    /// <param name="note">note from 0 to 10.</param>
-    private void AddStars(int note)
-    {
-        // 0 to 10 allowed
-        note = Mathf.Clamp(note, 0, Global.PictureGameMaxNote);
-
-        int nbStars = note * Global.PictureGameMaxStars / Global.PictureGameMaxNote;;
-
-        for (int i = 0; i < _starTextures.Length; i++)
-        {
-            if (_starTextures[i] is TextureRect star)
-                star.Texture = i < nbStars ? _starOnTexture : _starOffTexture;
-        }
-    }
-
-    /// <summary>
-    /// Remove previous stars (remove texture).
-    /// </summary>
-    private void RemoveStars()
-    {
-        for (int i = 0; i < _starTextures.Length; i++)
-        {
-            if (_starTextures[i] is TextureRect star)
-            {
-                star.Texture = null;
-            }
-        }
     }
 }
