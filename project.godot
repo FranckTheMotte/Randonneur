@@ -25,6 +25,7 @@ WorldMap="res://Scenes/world_map.tscn"
 SceneManager="*res://Scripts/Main/SceneManager.cs"
 GameMaster="*res://Scripts/Main/GameMaster.cs"
 ScreenFader="*res://Scenes/ScreenFader.tscn"
+GameTime="*uid://caloau8shau2d"
 
 [display]
 

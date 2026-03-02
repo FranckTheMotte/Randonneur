@@ -14,6 +14,8 @@ public enum eSceneNames
 
 public partial class SceneManager : Node
 {
+    private const string _LEVEL_PLAYER_INFO_TOP_RIGHT =
+        "PlayerInfoLayer/UpperGrid/TopRightContainer";
     private readonly Dictionary<string, Level> Scenes = [];
     public Node? CurrentScene { get; set; }
     public static SceneManager? Instance;
@@ -130,7 +132,7 @@ public partial class SceneManager : Node
     public void DefferedChangeLevel(string GpxFile, string waypointName)
     {
         // if there is no current scene, there is nothing to change
-        if (CurrentScene == null)
+        if (CurrentScene == null || GameTime.Instance == null)
         {
             GD.Print("No current scene to change.");
             return;
@@ -152,6 +154,19 @@ public partial class SceneManager : Node
                 nextLevel.CurrentWaypoint = Waypoints.Instance.GetWaypoint(waypointName);
                 nextLevel.LimitX = level.LimitX;
                 nextLevel.UpdatePlayerInfos();
+
+                // Game time go on new scene
+                Node playerInfoLayer = CurrentScene.GetNodeOrNull<Node>(
+                    _LEVEL_PLAYER_INFO_TOP_RIGHT
+                );
+                // Not found? game is starting, retrieving it from root node
+                playerInfoLayer ??= root;
+                GameTime.Instance.Visible = true;
+                playerInfoLayer.RemoveChild(GameTime.Instance);
+                playerInfoLayer = nextLevel.GetNode<Node>(_LEVEL_PLAYER_INFO_TOP_RIGHT);
+                playerInfoLayer.AddChild(GameTime.Instance);
+
+                // scene switch
                 root.RemoveChild(CurrentScene);
                 root.AddChild(nextLevel);
                 CurrentScene = nextLevel;
