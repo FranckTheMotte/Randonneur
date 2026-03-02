@@ -26,7 +26,7 @@ handle_input_locally = false
 size = Vector2i(800, 475)
 render_target_update_mode = 4
 
-[node name="PictureGame" parent="CameraContainer/CameraViewport" unique_id=2043773638 instance=ExtResource("3_hftw5")]
+[node name="PictureGameHill" parent="CameraContainer/CameraViewport" unique_id=2043773638 instance=ExtResource("3_hftw5")]
 
 [node name="HUDLayer" type="CanvasLayer" parent="CameraContainer/CameraViewport" unique_id=1482852000]
 
