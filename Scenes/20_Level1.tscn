@@ -98,30 +98,31 @@ script = ExtResource("8_i2ji0")
 [node name="PlayerSettings" type="Control" parent="DebugTools" unique_id=1410126204]
 z_index = 2
 layout_mode = 3
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -181.0
-offset_top = 12.0
-offset_right = -141.0
-offset_bottom = 52.0
+anchor_left = 0.527
+anchor_top = 0.46500003
+anchor_right = 0.527
+anchor_bottom = 0.46500003
+offset_left = -677.56
+offset_top = 269.19998
+offset_right = -637.56
+offset_bottom = 309.19998
 grow_horizontal = 0
 
 [node name="Walk" type="CheckButton" parent="DebugTools/PlayerSettings" unique_id=396441231]
 layout_mode = 0
-offset_left = 6.0
-offset_top = -8.0
-offset_right = 93.0
-offset_bottom = 23.0
+offset_left = 9.0
+offset_top = 4.0
+offset_right = 96.0
+offset_bottom = 35.0
 button_pressed = true
 text = "Walk"
 
 [node name="Speed" type="SpinBox" parent="DebugTools/PlayerSettings" unique_id=1711286014]
 layout_mode = 0
-offset_left = 88.0
-offset_top = -7.0
-offset_right = 174.5625
-offset_bottom = 24.0
+offset_left = 9.0
+offset_top = 44.0
+offset_right = 95.5625
+offset_bottom = 75.0
 min_value = -10.0
 max_value = 10.0
 value = 3.0
