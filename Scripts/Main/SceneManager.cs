@@ -16,8 +16,21 @@ public partial class SceneManager : Node
 {
     private const string _LEVEL_PLAYER_INFO_TOP_RIGHT =
         "PlayerInfoLayer/UpperGrid/TopRightContainer";
-    private readonly Dictionary<string, Level> Scenes = [];
+
+    /// <summary>
+    /// Store all the Scenes (trails) with gpx file name as the key and the level
+    /// as the value.
+    /// </summary>
+    private readonly Dictionary<string, Level> TrailScenes = [];
+
+    /// <summary>
+    /// Current scene where player is located.
+    /// </summary>
     public Node? CurrentScene { get; set; }
+
+    /// <summary>
+    /// Singleton
+    /// </summary>
     public static SceneManager? Instance;
 
     //Update this Dictionary whenever you add or change a scene you want included in the Scene Manager.
@@ -39,19 +52,19 @@ public partial class SceneManager : Node
         // Using a negative index counts from the end, so this gets the last child node of `root`.
         CurrentScene = root.GetChild(-1);
 
-        //This will tell us that SceneManager object was included in autoload.
+        // This will tell us that SceneManager object was included in autoload.
         GD.Print("(SceneManager) SceneManager Ready");
     }
 
     /// <summary>
-    /// Load all scenes (gpx files) from disk and populate the Scenes dictionary.
-    /// Scenes are loaded from the gpx file and connected traces are used to preload other scenes.
+    /// Load a scene (gpx file) from disk and populate the Scenes dictionary.
+    /// Scenes are loaded from the gpx file and the connected traces are preloaded other scenes.
     /// </summary>
     /// <param name="gpxFile">Full path to the gpx file.</param>
     public void LoadScenes(string gpxFile)
     {
         // sanity checks
-        if (Scenes.ContainsKey(gpxFile))
+        if (TrailScenes.ContainsKey(gpxFile))
         {
             GD.PushWarning($"Scenes {gpxFile} is already loaded");
             return;
@@ -73,13 +86,13 @@ public partial class SceneManager : Node
         }
 
         GD.Print($"Add {gpxFile} to Scenes");
-        Scenes.Add(gpxFile, level);
+        TrailScenes.Add(gpxFile, level);
 
         // iterate over connected traces and preload the scenes.
         foreach (KeyValuePair<string, string> item in connectedTraceFiles)
         {
             // if it was already loaded, nothing to do
-            if (Scenes.ContainsKey(item.Key) == true)
+            if (TrailScenes.ContainsKey(item.Key) == true)
                 continue;
 
             level = new(item.Key);
@@ -94,7 +107,7 @@ public partial class SceneManager : Node
                 return;
             }
             GD.Print($"Add {item.Key} to Scenes");
-            Scenes.Add(item.Key, level);
+            TrailScenes.Add(item.Key, level);
         }
     }
 
@@ -114,7 +127,7 @@ public partial class SceneManager : Node
     public void ChangeLevel(string GpxFile, string waypointName)
     {
         // try to find the level in the dictionary (preload)
-        if (!Scenes.ContainsKey(GpxFile))
+        if (!TrailScenes.ContainsKey(GpxFile))
         {
             // load new level
             LoadScenes(GpxFile);
@@ -141,7 +154,7 @@ public partial class SceneManager : Node
         GD.Print($"ChangeLevel {GpxFile}");
 
         // try to find the level in the dictionary (preload)
-        if (Scenes.TryGetValue(GpxFile, out Level? level))
+        if (TrailScenes.TryGetValue(GpxFile, out Level? level))
         {
             GD.Print($"Preload level {GpxFile} found!");
 
