@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b2t6vdwgg7v53"]
 
-[ext_resource type="Script" uid="uid://cx0fty6ls33lk" path="res://Scripts/Minigames/PictureGame.cs" id="1_c1qhv"]
+[ext_resource type="Script" uid="uid://cx0fty6ls33lk" path="res://Scripts/Minigames/PictureGame/PictureGame.cs" id="1_c1qhv"]
 [ext_resource type="PackedScene" uid="uid://bepjjtcitx8u1" path="res://Scenes/picture_game_hill.tscn" id="3_hftw5"]
 [ext_resource type="PackedScene" uid="uid://bp8ggf3oxvqnu" path="res://Scenes/camera_hud.tscn" id="4_m613v"]
 

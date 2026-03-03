@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://bepjjtcitx8u1"]
 
-[ext_resource type="Script" uid="uid://crukrfapnsd12" path="res://Scripts/Minigames/PictureGameHill.cs" id="1_5n52s"]
-[ext_resource type="Script" uid="uid://buaeg4job471i" path="res://Scripts/Minigames/PhotoCameraController.cs" id="1_758ga"]
+[ext_resource type="Script" uid="uid://crukrfapnsd12" path="res://Scripts/Minigames/PictureGame/PictureGameHill.cs" id="1_5n52s"]
+[ext_resource type="Script" uid="uid://buaeg4job471i" path="res://Scripts/Minigames/PictureGame/PhotoCameraController.cs" id="1_758ga"]
 [ext_resource type="PackedScene" uid="uid://08lvem081xs2" path="res://Art/Minigame/HillLandscape.glb" id="2_ptm37"]
 [ext_resource type="Texture2D" uid="uid://xfl54qjsl3qx" path="res://Art/Minigame/Picture/robin.png" id="3_av8rq"]
-[ext_resource type="Script" uid="uid://fa8tb0pgu2ik" path="res://Scripts/Minigames/DebugOverlay.cs" id="3_j1uei"]
+[ext_resource type="Script" uid="uid://fa8tb0pgu2ik" path="res://Scripts/Minigames/PictureGame/DebugOverlay.cs" id="3_j1uei"]
 [ext_resource type="Texture2D" uid="uid://bx8ln1ijmi51s" path="res://Art/Background/fleur1.png" id="5_5n52s"]
 [ext_resource type="Script" uid="uid://w67gotod1qvv" path="res://Scripts/Minigames/PictureGame/HiddenNPC.cs" id="6_g05ey"]
 
