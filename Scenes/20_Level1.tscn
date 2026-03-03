@@ -184,3 +184,6 @@ script = ExtResource("12_djpn0")
 [node name="TopRightContainer" type="HBoxContainer" parent="PlayerInfoLayer/UpperGrid" unique_id=1787699096]
 layout_mode = 2
 size_flags_horizontal = 8
+
+[connection signal="toggled" from="DebugTools/PlayerSettings/Walk" to="DebugTools" method="_on_walk_toggled"]
+[connection signal="value_changed" from="DebugTools/PlayerSettings/Speed" to="DebugTools" method="_on_speed_value_changed"]
