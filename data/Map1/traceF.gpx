@@ -30,6 +30,7 @@
       <extensions>
           <type>junction</type>
           <junctions>
+            <gpxfile>traceI.gpx</gpxfile>
           </junctions>
           <start>true</start>
       </extensions>

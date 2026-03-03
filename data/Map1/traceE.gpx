@@ -14,6 +14,7 @@
     <extensions>
         <type>junction</type>
         <junctions>
+			    <gpxfile>traceH.gpx</gpxfile>
         </junctions>
         <start>false</start>
     </extensions>

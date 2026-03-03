@@ -18,12 +18,13 @@
       <extensions>
          <type>junction</type>
          <junctions>
+			   <gpxfile>traceE.gpx</gpxfile>
          </junctions>
          <start>false</start>
       </extensions>
    </wpt>
    <wpt lat="42.754298" lon="1.503475">
-      <ele>737</ele>
+      <ele>1093.2</ele>
       <name>Goulier</name>
       <cmt></cmt>
       <desc></desc>
@@ -32,6 +33,7 @@
       <extensions>
          <type>junction</type>
          <junctions>
+			<gpxfile>traceI.gpx</gpxfile>
          </junctions>
          <start>false</start>
       </extensions>
