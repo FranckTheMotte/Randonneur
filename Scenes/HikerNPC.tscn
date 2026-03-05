@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://dxq1gy7f2eiab"]
+
+[ext_resource type="Script" uid="uid://bb6ylbkadk7s2" path="res://Scripts/NPC/HikerNpc.cs" id="1_p6k08"]
+[ext_resource type="Texture2D" uid="uid://b43onoqrh0diw" path="res://Art/NPCs/HappyHikerYellow.png" id="2_p6k08"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_h4iuc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_p6k08")
+}],
+"loop": true,
+"name": &"Walk",
+"speed": 9.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wf6w2"]
+radius = 25.0
+height = 156.0
+
+[node name="HikerNPC" type="CharacterBody2D" unique_id=2113575653]
+floor_max_angle = 1.2217305
+script = ExtResource("1_p6k08")
+
+[node name="TheSprite" type="AnimatedSprite2D" parent="." unique_id=593743251]
+position = Vector2(-7.0000033, 3.999999)
+scale = Vector2(0.3623188, 0.40102825)
+sprite_frames = SubResource("SpriteFrames_h4iuc")
+animation = &"Walk"
+autoplay = "Walk"
+frame_progress = 0.6238637
+
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=2032058730]
+position = Vector2(-7, 4)
+shape = SubResource("CapsuleShape2D_wf6w2")

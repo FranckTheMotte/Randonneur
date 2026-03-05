@@ -7,9 +7,9 @@ namespace Randonneur.Scripts
     /// Class <c>Level</c> models a single trail and store the starting point.
     /// </summary>
     /// <param name="GpxFile">Full godot path to the gpx file.</param>
-    public partial class Level(string GpxFile)
+    public class Level(string GpxFile)
     {
-        public const string LevelTextScene = "res://Scenes/20_Level1.tscn";
+        public const string REFERENCE_LEVEL_SCENE = "res://Scenes/20_Level1.tscn";
 
         /// <value>
         /// Property <c>Scene</c> the godot scene.
@@ -21,6 +21,8 @@ namespace Randonneur.Scripts
         /// </value>
         private readonly string _gpxFile = GpxFile;
 
+        public string TraceName = Path.GetFileName(GpxFile);
+
         /// <value>
         /// Field <c>_startpoint</c> stores a junction included in gpx file which defines the startpoint.
         /// </value>
@@ -29,7 +31,6 @@ namespace Randonneur.Scripts
         /// <summary>
         /// The maximum distance from the origin in the level the player can go.
         /// </summary>
-        [Export]
         public float LimitX { get; set; } = 10000.0f;
 
         private readonly Random _rand = new();
@@ -103,7 +104,7 @@ namespace Randonneur.Scripts
             Dictionary<string, string> connectedTraces = [];
 
             // create the scene to store the level
-            PackedScene aPackedScene = GD.Load<PackedScene>(LevelTextScene);
+            PackedScene aPackedScene = GD.Load<PackedScene>(REFERENCE_LEVEL_SCENE);
             Scene = aPackedScene.Instantiate();
 
             TemplateLevel level1 = (TemplateLevel)Scene;
