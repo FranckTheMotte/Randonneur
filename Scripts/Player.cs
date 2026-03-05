@@ -9,7 +9,9 @@ public partial class Player : CharacterBody2D
     /// </summary>
     public bool Move { get; set; } = false;
 
-    // MoveSpeed
+    /// <summary>
+    /// Walking speed, negative: go to the left, positive: go to the right.
+    /// </summary>
     [Export]
     public int HikerSpeed { get; set; } = Global.PlayerSpeed;
 

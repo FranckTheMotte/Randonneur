@@ -21,7 +21,7 @@ public partial class SceneManager : Node
     /// Store all the Scenes (trails) with gpx file name as the key and the level
     /// as the value.
     /// </summary>
-    private readonly Dictionary<string, Level> TrailScenes = [];
+    public readonly Dictionary<string, Level> TrailScenes = [];
 
     /// <summary>
     /// Current scene where player is located.
