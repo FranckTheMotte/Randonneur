@@ -30,6 +30,11 @@ namespace Randonneur
         /// </summary>
         private System.Timers.Timer _updateHikerTimer = new(_TIMER_INTERVAL);
 
+        /// <summary>
+        /// Last level used by player.
+        /// </summary>
+        private TemplateLevel _lastPlayerLevel = new();
+
         public HikerNPCScheduler(Dictionary<string, Level> trailScenes)
         {
             _trailScenes = trailScenes;
@@ -75,8 +80,6 @@ namespace Randonneur
             _updateHikerTimer.Enabled = true;
         }
 
-        private string _lastPlayerLevel = "";
-
         /// <summary>
         /// Called every _TIMER_INTERVAL seconds to update the current game time and
         /// to display ingame.
@@ -91,7 +94,7 @@ namespace Randonneur
 
             Player player = Player.Instance;
 
-            string currentPlayerTraceName = player.Level.CurrentTraceName!;
+            TemplateLevel currentPlayerLevel = player.Level;
 
             for (int i = 0; i < 1; i++)
             {
@@ -99,26 +102,26 @@ namespace Randonneur
                     continue;
 
                 GD.Print(
-                    $"_lastPlayerLevel {_lastPlayerLevel} player.CurrentWaypoint.TraceName {currentPlayerTraceName}"
+                    $"_lastPlayerLevel {_lastPlayerLevel} player.CurrentWaypoint.TraceName {currentPlayerLevel.CurrentTraceName}"
                 );
                 // player level change
-                if (_lastPlayerLevel != currentPlayerTraceName)
+                if (_lastPlayerLevel != currentPlayerLevel)
                 {
                     Level hikerLevel = _hikerNpcs[i].CurrentLevel!;
                     GD.Print(
-                        $"player.CurrentWaypoint.TraceName {currentPlayerTraceName} hikerLevel.GpxFile {hikerLevel.TraceName}"
+                        $"player.CurrentWaypoint.TraceName {currentPlayerLevel.CurrentTraceName} hikerLevel.GpxFile {hikerLevel.TraceName}"
                     );
-                    if (currentPlayerTraceName == hikerLevel.TraceName)
+                    if (currentPlayerLevel.CurrentTraceName == hikerLevel.TraceName)
                     {
                         _hikerNpcs[i].AddToLevel(player.Level);
                     }
                     else if (_hikerNpcs[i].InPlayerLevel)
                     {
-                        _hikerNpcs[i].RemoveFromLevel(player.Level);
+                        _hikerNpcs[i].RemoveFromLevel(_lastPlayerLevel);
                     }
                 }
             }
-            _lastPlayerLevel = currentPlayerTraceName;
+            _lastPlayerLevel = currentPlayerLevel;
         }
     }
 }
