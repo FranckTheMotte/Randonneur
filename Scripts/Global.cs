@@ -10,10 +10,22 @@ namespace Randonneur
         // Name for nodes which describes the trail in the map
         public const string TrailLineName = "TrailLine2D";
 
+        /// <summary>
+        /// Collisions layer.
+        /// </summary>
+        public const int PlayerLayer = 1;
+
+        public const int GroundLayer = 2;
+
+        public const int NPCLayer = 3;
+
         public const int MapLayer = 4;
 
-        public const int SolJunctionLayer = 5;
+        public const int TrailJunctionLayer = 5;
 
+        /// <summary>
+        /// Player properties.
+        /// </summary>
         public const int PlayerSpeed = 3;
 
         public const string PlayerGroup = "player";

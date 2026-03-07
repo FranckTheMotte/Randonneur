@@ -61,9 +61,9 @@ public partial class MapJunctionArea : Area2D
     public void SetupCollision(bool state)
     {
         // Collision with mouse cursor
-        SetCollisionLayerValue(1, false);
+        SetCollisionLayerValue(Global.PlayerLayer, false);
         SetCollisionLayerValue(Global.MapLayer, state);
-        SetCollisionMaskValue(1, false);
+        SetCollisionMaskValue(Global.PlayerLayer, false);
         SetCollisionMaskValue(Global.MapLayer, state);
     }
 

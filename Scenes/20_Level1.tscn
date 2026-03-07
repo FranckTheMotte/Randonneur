@@ -72,6 +72,7 @@ texture = ExtResource("2_vytwu")
 z_index = 1
 
 [node name="Sol" type="StaticBody2D" parent="Ground" unique_id=650671281]
+collision_layer = 2
 script = ExtResource("3_uowpc")
 
 [node name="WalkingSurface" type="MultiMeshInstance2D" parent="Ground/Sol" unique_id=1797564732]

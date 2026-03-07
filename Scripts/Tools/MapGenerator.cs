@@ -172,8 +172,8 @@ public partial class MapGenerator(float width, float height) : Node
                 mapTracearea.Name = traceFileName;
                 mapTracearea.SetMeta(Global.MetaWaypointName, traceFileName);
                 mapTracearea.AddChild(trailLine);
-                mapTracearea.SetCollisionLayerValue(1, false);
-                mapTracearea.SetCollisionLayerValue(4, true);
+                mapTracearea.SetCollisionLayerValue(Global.PlayerLayer, false);
+                mapTracearea.SetCollisionLayerValue(Global.MapLayer, true);
                 mapTracearea.ZIndex = 2;
 
                 // Add collisions
