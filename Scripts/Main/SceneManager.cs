@@ -183,6 +183,7 @@ public partial class SceneManager : Node
                 root.RemoveChild(CurrentScene);
                 root.AddChild(nextLevel);
                 CurrentScene = nextLevel;
+                nextLevel.FadeIn();
             }
         }
     }
