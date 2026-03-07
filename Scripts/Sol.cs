@@ -135,10 +135,10 @@ public partial class Sol : StaticBody2D
 
                     Area2D junctionArea = new() { Position = ground[gi], Name = traceName };
                     // Use the junction collision layer
-                    junctionArea.SetCollisionLayerValue(1, false);
-                    junctionArea.SetCollisionLayerValue(Global.SolJunctionLayer, true);
-                    junctionArea.SetCollisionMaskValue(1, false);
-                    junctionArea.SetCollisionMaskValue(Global.SolJunctionLayer, true);
+                    junctionArea.SetCollisionLayerValue(Global.PlayerLayer, false);
+                    junctionArea.SetCollisionLayerValue(Global.TrailJunctionLayer, true);
+                    junctionArea.SetCollisionMaskValue(Global.PlayerLayer, false);
+                    junctionArea.SetCollisionMaskValue(Global.TrailJunctionLayer, true);
                     RectangleShape2D rectangle = new()
                     {
                         Size = new Vector2(

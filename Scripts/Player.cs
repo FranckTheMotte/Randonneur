@@ -127,8 +127,8 @@ public partial class Player : CharacterBody2D
         // from last junction
         if (_traveledDistance > Global.JunctionCollisionShapeSize || ForceJunction)
         {
-            SetCollisionLayerValue(Global.SolJunctionLayer, true);
-            SetCollisionMaskValue(Global.SolJunctionLayer, true);
+            SetCollisionLayerValue(Global.TrailJunctionLayer, true);
+            SetCollisionMaskValue(Global.TrailJunctionLayer, true);
         }
 
         Velocity = velocity;
@@ -238,8 +238,8 @@ public partial class Player : CharacterBody2D
         if (waypointName != LastWaypointName)
         {
             Move = false;
-            SetCollisionLayerValue(Global.SolJunctionLayer, false);
-            SetCollisionMaskValue(Global.SolJunctionLayer, false);
+            SetCollisionLayerValue(Global.TrailJunctionLayer, false);
+            SetCollisionMaskValue(Global.TrailJunctionLayer, false);
             Level.JunctionChoice(trace, waypointName);
             _traveledDistance = 0;
             LastWaypointName = waypointName;
