@@ -150,9 +150,6 @@ public partial class TemplateLevel : Node2D
         // progress bar signals connection
         UpdateGrumblingLevel += OnUpdateGrumblingLevel;
 
-        /* Scene transition */
-        FadeIn();
-
         // Boxes are not visible at start
         MapVisible(false);
     }
@@ -294,7 +291,7 @@ public partial class TemplateLevel : Node2D
         sign.Visible = Visible;
     }
 
-    public static async void FadeIn()
+    public async void FadeIn()
     {
         if (ScreenFader.Instance == null)
             return;
@@ -302,7 +299,7 @@ public partial class TemplateLevel : Node2D
         await ScreenFader.Instance.FadeIn();
     }
 
-    public static async void FadeOut()
+    public async void FadeOut()
     {
         if (ScreenFader.Instance == null)
             return;
