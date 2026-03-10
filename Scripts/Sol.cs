@@ -108,7 +108,7 @@ public partial class Sol : StaticBody2D
 
             // set a start
             ground[0].X = -1000;
-            ground[0].Y = CurrentTrack.TrackPoints[0].Elevation.Y;
+            ground[0].Y = CurrentTrack.TrackPoints[0].LevelCoord.Y;
             string traceName = Path.GetFileName(gpxFile);
 
             int solLength = CurrentTrack.TrackPoints.Length;
@@ -116,7 +116,7 @@ public partial class Sol : StaticBody2D
             for (int i = 0; i < solLength; i++, gi++)
             {
                 // Put the display coord
-                ground[gi] = CurrentTrack.TrackPoints[i].Elevation;
+                ground[gi] = CurrentTrack.TrackPoints[i].LevelCoord;
                 // Display a waypoint
                 Waypoint? waypoint = CurrentTrack.TrackPoints[i].Waypoint;
                 if (waypoint != null)
