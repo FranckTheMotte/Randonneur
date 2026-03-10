@@ -215,13 +215,30 @@ namespace Randonneur
         NOWHERE,
     }
 
+    /// <summary>
+    /// Properties for a gpx point.
+    /// </summary>
     public struct GpxProperties
     {
-        public Vector2 Coord { get; set; }
-        public float DistanceToNext; // distance to next gps point (meter)
-        public Vector2 Elevation { get; set; }
-        public int TrailJunctionIndex;
-        public Waypoint? Waypoint; // waypoint linked to this coordinate (can be null)
+        /// <summary>
+        /// Lattitude and longitude
+        /// </summary>
+        public Vector2 GeographicalCoord { get; set; }
+
+        /// <summary>
+        /// distance to next gps point (meter)
+        /// </summary>
+        public float DistanceToNext;
+
+        /// <summary>
+        /// Coordinates in level (Y is elevation).
+        /// </summary>
+        public Vector2 LevelCoord { get; set; }
+
+        /// <summary>
+        /// Optional waypoint linked to this coordinate (can be null)
+        /// </summary>
+        public Waypoint? Waypoint;
     }
 
     public struct GpxDestination
@@ -247,7 +264,7 @@ namespace Randonneur
         internal float MaxX; // length of the track (meters)
 
         // Number of pixels by meter
-        public const float PixelMeter  = 5.0f;
+        public const float PixelMeter = 5.0f;
 
         // Max elevation in meters
         public const float ElevationMax = 10000.0f;
@@ -476,7 +493,6 @@ namespace Randonneur
                     );
                     continue;
                 }
-                TrackPoints[i].TrailJunctionIndex = -1;
                 float longitude = UnitializedCoord;
                 float latitude = 0.00f;
 
@@ -497,8 +513,8 @@ namespace Randonneur
                     continue;
                 }
 
-                TrackPoints[i].Coord = new Vector2(latitude, longitude);
-                TrackPoints[i].Waypoint = links.GetWaypoint(TrackPoints[i].Coord);
+                TrackPoints[i].GeographicalCoord = new Vector2(latitude, longitude);
+                TrackPoints[i].Waypoint = links.GetWaypoint(TrackPoints[i].GeographicalCoord);
 
                 y_ele =
                     (
@@ -511,10 +527,13 @@ namespace Randonneur
                 if (i > 0)
                 {
                     TrackPoints[i - 1].DistanceToNext =
-                        GetDistance(TrackPoints[i - 1].Coord, TrackPoints[i].Coord) * PixelMeter;
+                        GetDistance(
+                            TrackPoints[i - 1].GeographicalCoord,
+                            TrackPoints[i].GeographicalCoord
+                        ) * PixelMeter;
                     //GD.Print($"distance {m_trackPoints[i-1].distanceToNext} maxX {maxX}");
-                    TrackPoints[i].Elevation = new Vector2(
-                        TrackPoints[i - 1].Elevation.X + TrackPoints[i - 1].DistanceToNext,
+                    TrackPoints[i].LevelCoord = new Vector2(
+                        TrackPoints[i - 1].LevelCoord.X + TrackPoints[i - 1].DistanceToNext,
                         y_ele
                     );
                     MaxX += TrackPoints[i - 1].DistanceToNext;
@@ -522,7 +541,7 @@ namespace Randonneur
                 else
                 {
                     // First coord, no distance to evaluate
-                    TrackPoints[i].Elevation = new Vector2(0, y_ele);
+                    TrackPoints[i].LevelCoord = new Vector2(0, y_ele);
                 }
                 i++;
             }

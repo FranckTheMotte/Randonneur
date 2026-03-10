@@ -90,14 +90,14 @@ public partial class MapGenerator(float width, float height) : Node
             {
                 foreach (GpxProperties gpxPoint in trail.TrackPoints)
                 {
-                    if (minLatitude > gpxPoint.Coord.X)
-                        minLatitude = gpxPoint.Coord.X;
-                    if (minLongitude > gpxPoint.Coord.Y)
-                        minLongitude = gpxPoint.Coord.Y;
-                    if (maxLatitude < gpxPoint.Coord.X)
-                        maxLatitude = gpxPoint.Coord.X;
-                    if (maxLongitude < gpxPoint.Coord.Y)
-                        maxLongitude = gpxPoint.Coord.Y;
+                    if (minLatitude > gpxPoint.GeographicalCoord.X)
+                        minLatitude = gpxPoint.GeographicalCoord.X;
+                    if (minLongitude > gpxPoint.GeographicalCoord.Y)
+                        minLongitude = gpxPoint.GeographicalCoord.Y;
+                    if (maxLatitude < gpxPoint.GeographicalCoord.X)
+                        maxLatitude = gpxPoint.GeographicalCoord.X;
+                    if (maxLongitude < gpxPoint.GeographicalCoord.Y)
+                        maxLongitude = gpxPoint.GeographicalCoord.Y;
                 }
             }
             else
@@ -128,7 +128,10 @@ public partial class MapGenerator(float width, float height) : Node
 
                 foreach (GpxProperties gpxPoint in trail.TrackPoints)
                 {
-                    GpsPoint gpsPoint = new(gpxPoint.Coord.X, gpxPoint.Coord.Y);
+                    GpsPoint gpsPoint = new(
+                        gpxPoint.GeographicalCoord.X,
+                        gpxPoint.GeographicalCoord.Y
+                    );
                     trace[i] = GpsToScreenLinear(gpsPoint, mapBounds, DisplaySize);
                     Waypoint? waypoint = gpxPoint.Waypoint;
                     if (waypoint != null)
