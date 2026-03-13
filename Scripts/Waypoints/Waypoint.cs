@@ -26,7 +26,9 @@ namespace Randonneur
         public Vector2 GeographicCoord { get; set; }
 
         /// <summary>
-        /// Level coordinates (x, y)
+        /// Level coordinates (x, y) linked with a trace.
+        /// Key: trace name
+        /// Value: level coords
         /// </summary>
         public Dictionary<string, Vector2> LevelCoord { get; set; } = [];
 
@@ -107,6 +109,8 @@ namespace Randonneur
     {
         /// <summary>
         /// Store all possible connections between waypoints.
+        /// Key: waypoint name
+        /// Value: Linked waypoints
         /// </summary>
         public Dictionary<string, WaypointsLinks>? Links { get; set; } = [];
 
@@ -154,6 +158,23 @@ namespace Randonneur
             new Waypoints()
         );
         public static IWaypoints Instance => _instance.Value;
+
+        /// <summary>
+        /// Get the waypoint connected to another waypoint on the same trace.
+        /// </summary>
+        /// <param name="waypointName">The name of the waypoint to retrieve.</param>
+        /// <returns>The Waypoint if found, null otherwise.</returns>
+        public ConnectedWaypoint? GetConnectedWaypoint(string from, string to)
+        {
+            if (Links == null)
+                return null;
+
+            if (Links.TryGetValue(from, out WaypointsLinks? link))
+            {
+                return link.ConnectedWaypoints[to];
+            }
+            return null;
+        }
 
         /// <summary>
         /// Get a Waypoint from WaypointsLinks with a waypoint name.
