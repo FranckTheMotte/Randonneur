@@ -33,6 +33,11 @@ namespace Randonneur.Scripts
         /// </summary>
         public float LimitX { get; set; } = 10000.0f;
 
+        /// <summary>
+        /// Ref to sol.
+        /// </summary>
+        private Sol? _sol;
+
         private readonly Random _rand = new();
 
         /// <summary>
@@ -109,20 +114,19 @@ namespace Randonneur.Scripts
 
             TemplateLevel level1 = (TemplateLevel)Scene;
 
-            Sol land =
+            _sol =
                 Scene.GetNodeOrNull<Sol>("Ground/Sol")
                 ?? throw new System.NullReferenceException("Sol node was not found");
-
-            land.GenerateGround(_gpxFile);
+            _sol.GenerateGround(_gpxFile);
             GenerateBackground();
 
             // TODO define start point in gpx file
             _startpoint = null;
 
-            LimitX = land.LevelLimitX;
+            LimitX = _sol.LevelLimitX;
 
             // get unique connected traces to this gpx file
-            List<Junction>? junctions = land.CurrentTrack?.TrailJunctions;
+            List<Junction>? junctions = _sol.CurrentTrack?.TrailJunctions;
             if (junctions != null)
             {
                 foreach (var junction in junctions)
