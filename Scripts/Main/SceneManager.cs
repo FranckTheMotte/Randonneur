@@ -18,8 +18,9 @@ public partial class SceneManager : Node
         "PlayerInfoLayer/UpperGrid/TopRightContainer";
 
     /// <summary>
-    /// Store all the Scenes (trails) with gpx file name as the key and the level
-    /// as the value.
+    /// Store all the Scenes (trails).
+    /// Key: gpx full path
+    /// Value: level.
     /// </summary>
     public readonly Dictionary<string, Level> TrailScenes = [];
 
