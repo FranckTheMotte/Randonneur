@@ -40,6 +40,9 @@ namespace Randonneur
         // TODO define layers
         public const int ZIndexUILayer1 = 1;
 
+        // Time
+        public const int MS_IN_SECOND = 1000;
+
         // Errors
         public const int SANITY_CHECK_ERROR = -1000;
     }
