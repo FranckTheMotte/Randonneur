@@ -23,7 +23,12 @@ namespace Randonneur
         /// <summary>
         /// In ms.
         /// </summary>
-        private const double _TIMER_INTERVAL = 1000;
+        private const double _TIMER_INTERVAL = 100;
+
+        /// <summary>
+        /// Maximum number of hikers.
+        /// </summary>
+        private const uint _NB_HIKERS = 1;
 
         /// <summary>
         /// Update timer that advances hiker activity.
@@ -35,25 +40,39 @@ namespace Randonneur
         /// </summary>
         private TemplateLevel _lastPlayerLevel = new();
 
+        /// <summary>
+        /// POC: An arbitrary route.
+        /// </summary>
+        private readonly string[] _routeOne =
+        [
+            "Mantet",
+            "Port du C++",
+            "Col de l'embarqué",
+            "Col du sanglier",
+            "Port du C++",
+        ];
+
         public HikerNPCScheduler(Dictionary<string, Level> trailScenes)
         {
             _trailScenes = trailScenes;
 
             Random random = new(DateTime.Now.Millisecond);
+            Waypoints waypoints = (Waypoints)Waypoints.Instance;
 
-            int numberNPC = 1;
-            Dictionary<string, Level>.KeyCollection gpxKeyList = trailScenes.Keys;
-            for (int i = 0; i < numberNPC; i++)
+            if (waypoints == null)
             {
-                // Place randomly the Hiker NPCS
-                String gpx = gpxKeyList.ElementAt(random.Next(0, gpxKeyList.Count));
+                throw new InvalidOperationException("Failed to get Waypoints.");
+            }
 
+            // POC: it's a predefined trace.
+            String gpx = "traceE.gpx";
+
+            Dictionary<string, Level>.KeyCollection gpxKeyList = trailScenes.Keys;
+            for (int i = 0; i < _NB_HIKERS; i++)
+            {
                 PackedScene hikerScene = GD.Load<PackedScene>("res://Scenes/HikerNPC.tscn");
                 _hikerNpcs[i] = hikerScene.Instantiate<HikerNpc>();
-                _hikerNpcs[i].CurrentLevel = _trailScenes[gpx];
-                _hikerNpcs[i].Position = new Vector2(0, 44000);
-
-                GD.Print($"Hiker {i} is placed in {gpx}");
+                _hikerNpcs[i].Init(_trailScenes, gpx, _routeOne);
             }
 
             // - define the route
@@ -81,8 +100,7 @@ namespace Randonneur
         }
 
         /// <summary>
-        /// Called every _TIMER_INTERVAL seconds to update the current game time and
-        /// to display ingame.
+        /// Called every _TIMER_INTERVAL seconds to update the NPC position.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -91,34 +109,26 @@ namespace Randonneur
             // get current player level
             if (Player.Instance == null || Player.Instance.Level == null)
                 return;
-
             Player player = Player.Instance;
-
             TemplateLevel currentPlayerLevel = player.Level;
 
-            for (int i = 0; i < 1; i++)
+            // handle every hikers
+            for (int i = 0; i < _NB_HIKERS; i++)
             {
                 if (_hikerNpcs[i].CurrentLevel == null)
                     continue;
 
-                GD.Print(
-                    $"_lastPlayerLevel {_lastPlayerLevel} player.CurrentWaypoint.TraceName {currentPlayerLevel.CurrentTraceName}"
-                );
-                // player level change
-                if (_lastPlayerLevel != currentPlayerLevel)
+                Level hikerLevel = _hikerNpcs[i].CurrentLevel!;
+
+                bool sameScene = currentPlayerLevel.CurrentTraceName == hikerLevel.TraceName;
+                if (!_hikerNpcs[i].InPlayerLevel && sameScene)
                 {
-                    Level hikerLevel = _hikerNpcs[i].CurrentLevel!;
-                    GD.Print(
-                        $"player.CurrentWaypoint.TraceName {currentPlayerLevel.CurrentTraceName} hikerLevel.GpxFile {hikerLevel.TraceName}"
-                    );
-                    if (currentPlayerLevel.CurrentTraceName == hikerLevel.TraceName)
-                    {
-                        _hikerNpcs[i].AddToLevel(player.Level);
-                    }
-                    else if (_hikerNpcs[i].InPlayerLevel)
-                    {
-                        _hikerNpcs[i].RemoveFromLevel(_lastPlayerLevel);
-                    }
+                    GD.Print($"Hiker {i} and PLAYER are now in the same scene");
+                    _hikerNpcs[i].AddToLevel(currentPlayerLevel);
+                }
+                else if (!sameScene)
+                {
+                    _hikerNpcs[i].UpdatePosition(_TIMER_INTERVAL, true);
                 }
             }
             _lastPlayerLevel = currentPlayerLevel;
