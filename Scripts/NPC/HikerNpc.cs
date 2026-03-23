@@ -34,6 +34,13 @@ namespace Randonneur
         /// </summary>
         private Waypoints? _waypoints;
 
+        private float _spriteHeight;
+
+        /// <summary>
+        /// Link to player instance.
+        /// </summary>
+        private Player? _player;
+
         /// <summary>
         /// Link to all the Scenes (trails) with gpx file name as the key and the level
         /// as the value.
@@ -82,46 +89,71 @@ namespace Randonneur
         /// <summary>
         /// Initialize the NPC path and put it at start.
         /// </summary>
-        /// <param name="trailScenes"></param>
-        /// <param name="gpx"></param>
-        /// <param name="route"></param>
-        public void Init(Dictionary<string, Level> trailScenes, string gpx, string[] route)
+        /// <param name="trailScenes">Available trail scenes</param>
+        /// <param name="traceName"></param>
+        /// <param name="route">Route is an array of waypoint names (min 2 waypoints).</param>
+        public void Init(Dictionary<string, Level> trailScenes, string traceName, string[] route)
         {
+            // get current player level
+            if (Player.Instance == null || Player.Instance.Level == null)
+            {
+                GD.PushError("Init(): a player instance is mandatory.");
+                return;
+            }
+            _player = Player.Instance;
+
+            if (route.Length < 2)
+            {
+                GD.PushError("Init(): Invalid route length.");
+                return;
+            }
+
+            if (trailScenes.Count < 1)
+            {
+                GD.PushError("Init(): Invalid trail scenes length.");
+                return;
+            }
+
             _trailScenes = trailScenes;
-            CurrentLevel = _trailScenes[Global.DefautlMapDirectory + gpx];
+            CurrentLevel = _trailScenes[Global.DefautlMapDirectory + traceName];
             _route = route;
-            _nextWaypointIndex = 0;
+            _nextWaypointIndex = 1;
             _hikerCollisionShape = GetNode<CollisionShape2D>("Collision");
+            _spriteHeight = _hikerCollisionShape.Shape.GetRect().Size.Y;
             _waypoints = (Waypoints)Waypoints.Instance;
-            ChangeLevel(gpx, _nextWaypointIndex);
+            CurrentWaypoint = _waypoints.GetWaypoint(_route[0]);
+            if (CurrentWaypoint != null)
+                MoveTo(CurrentWaypoint.LevelCoord[traceName], traceName);
+            ChangeLevel(traceName, _nextWaypointIndex);
         }
 
         /// <summary>
         /// Change level by positioning NPC to the waypoint on the next trace.
         /// Use without parameters to reach the next destination on the route
         /// </summary>
-        /// <param name="traceName">Optional - Destination trace.</param>
+        /// <param name="destTraceName">Optional - Destination trace.</param>
         /// <param name="routeIndex">Optional - Index of the next waypoint name.</param>
-        private void ChangeLevel(string traceName = "", uint routeIndex = 0)
+        private void ChangeLevel(string destTraceName = "", uint routeIndex = 0)
         {
-            if (_waypoints == null)
+            if (_waypoints == null || CurrentLevel == null)
             {
                 GD.PushError("ChangeLevel(): sanity check failed");
                 return;
             }
 
             // if level is not specified, get the next
-            if (traceName == "")
+            if (destTraceName == "" && CurrentWaypoint != null)
             {
                 // loop indefinitively
-                if (_nextWaypointIndex + 1 >= _route.Length)
+                if (_nextWaypointIndex >= _route.Length)
                 {
-                    _nextWaypointIndex = 0;
+                    _nextWaypointIndex = 1;
+                    CurrentWaypoint = _waypoints.GetWaypoint(_route[0])!;
                 }
 
                 ConnectedWaypoint? destWaypoint = _waypoints.GetConnectedWaypoint(
-                    _route[_nextWaypointIndex],
-                    _route[_nextWaypointIndex + 1]
+                    CurrentWaypoint.Name,
+                    _route[_nextWaypointIndex]
                 );
 
                 if (destWaypoint is null)
@@ -129,10 +161,19 @@ namespace Randonneur
                     GD.PushError("ChangeLevel(): failed to retrieve destination");
                     return;
                 }
-                traceName = destWaypoint.TraceName;
+
+                destTraceName = destWaypoint.TraceName;
                 routeIndex = _nextWaypointIndex;
+
+                // if NPC is at start of his trip and now the destination
+                // is known, it's possible to move the NPC.
+                if (_nextWaypointIndex == 1)
+                {
+                    MoveTo(CurrentWaypoint.LevelCoord[destTraceName], destTraceName);
+                }
             }
 
+            // another sanity checks ...
             Waypoint? targetWaypoint = _waypoints.GetWaypoint(_route[routeIndex]);
             if (targetWaypoint == null)
             {
@@ -140,35 +181,53 @@ namespace Randonneur
                 return;
             }
 
+            if (CurrentWaypoint == null)
+            {
+                GD.PushError($"Failed to retrieve current waypoint");
+                return;
+            }
+
             // get direction
             HikerSpeed = Global.PlayerSpeed;
-            if (targetWaypoint.LevelCoord[traceName].X != 0)
+            if (
+                CurrentWaypoint.LevelCoord[destTraceName].X
+                > targetWaypoint.LevelCoord[destTraceName].X
+            )
             {
                 HikerSpeed = -Global.PlayerSpeed;
             }
 
-            // put NPC at start
-            MoveTo(targetWaypoint.LevelCoord[traceName]);
-
             // settings for next level
-            CurrentLevel = _trailScenes[Global.DefautlMapDirectory + traceName];
-            CurrentWaypoint = targetWaypoint;
-            _distanceToNextSteps = GetDistanceToNextStep(routeIndex);
+            Move = true;
+            string currentTraceName = CurrentLevel.TraceName;
+            CurrentLevel = _trailScenes[Global.DefautlMapDirectory + destTraceName];
+            _distanceToNextSteps = GetDistanceTo(routeIndex - 1, routeIndex);
             _nextWaypointIndex++;
 
+            // level change?
+            if (currentTraceName != destTraceName)
+            {
+                // put NPC at start
+                MoveTo(CurrentWaypoint.LevelCoord[destTraceName], destTraceName);
+
+                // In any case, it's no more handled by godot.
+                RemoveFromLevel((TemplateLevel)GetParent());
+            }
+            CurrentWaypoint = targetWaypoint;
+
             GD.Print(
-                $"Hiker NPC starts at {targetWaypoint.Name} in {traceName} and distance: {_distanceToNextSteps}"
+                $"Hiker NPC goes to {targetWaypoint.Name} in {destTraceName} and distance: {_distanceToNextSteps}"
             );
         }
 
         /// <summary>
-        /// Retrieve the distance (in pixel) between the a route step and the next one.
+        /// Retrieve the distance (in pixels) between the a route step and the next one.
         /// </summary>
         /// <param name="startIndex">Index of the start index.</param>
         /// <returns></returns>
-        private float GetDistanceToNextStep(uint startIndex)
+        private float GetDistanceTo(uint startIndex, uint endIndex)
         {
-            if (_waypoints == null || _route == null || startIndex + 1 > _route.Length)
+            if (_waypoints == null || _route == null || startIndex < 0 || endIndex >= _route.Length)
             {
                 GD.PushError("GetDistanceBetweenSteps(): sanity check failed.");
                 return 0.0f;
@@ -180,7 +239,7 @@ namespace Randonneur
             Waypoint? startWaypoint = _waypoints.GetWaypoint(startWaypointName);
             ConnectedWaypoint? destWaypoint = _waypoints.GetConnectedWaypoint(
                 _route[startIndex],
-                _route[startIndex + 1]
+                _route[endIndex]
             );
 
             if (destWaypoint != null && startWaypoint != null)
@@ -233,18 +292,18 @@ namespace Randonneur
 
                 _distanceToNextSteps -= ((float)(delta / Global.MS_IN_SECOND) * velocity.X);
 
-                //GD.Print($"HikerSPeed {HikerSpeed} distance {_distanceToNextSteps} move {Move}");
+                //  GD.Print($"HikerSPeed {HikerSpeed} distance {_distanceToNextSteps} move {Move}");
 
                 // check with -1.0f because hiker starts at position 0.0f, unlike player that starts at front of
                 // waypoint (to avoid the waypoint's collision box).
-                if (Position.X >= CurrentLevel.LimitX || Position.X <= -1.0f)
+                if (
+                    (HikerSpeed > 0 && Position.X > CurrentLevel.LimitX)
+                    || (HikerSpeed < 0 && Position.X <= -1.0f)
+                )
                 {
                     // Don't fall
                     Move = false;
                     ChangeLevel();
-
-                    // No more handled by godot.
-                    RemoveFromLevel((TemplateLevel)GetParent());
                 }
             }
             else
@@ -253,7 +312,6 @@ namespace Randonneur
                 {
                     float deltaX = (float)(delta / Global.MS_IN_SECOND) * PixelBySecond;
                     _distanceToNextSteps -= deltaX;
-                    Position = new Vector2((float)(Position.X + deltaX), Position.Y);
                 }
             }
 
@@ -283,8 +341,20 @@ namespace Randonneur
         /// </summary>
         private void AddToLevelAsync(TemplateLevel level)
         {
+            if (GetParent() != null)
+                return;
+
             level?.AddChild(this);
             InPlayerLevel = true;
+
+            // update position to match the ground
+            if (CurrentLevel != null && CurrentLevel.SolBody != null)
+            {
+                Vector2 position = CurrentLevel.SolBody.GetSolYAtX(
+                    CurrentLevel.LimitX - _distanceToNextSteps
+                );
+                Position = new Vector2(position.X, position.Y - (_spriteHeight / 2 * Scale.Y));
+            }
         }
 
         /// <summary>
@@ -303,6 +373,9 @@ namespace Randonneur
         /// </summary>
         private void RemoveFromLevelAsync(TemplateLevel level)
         {
+            if (GetParent() == null)
+                return;
+
             level?.RemoveChild(this);
             InPlayerLevel = false;
         }
@@ -311,19 +384,24 @@ namespace Randonneur
         /// Move the hiker to a specific position. Y will be adapted to make the hiker
         /// bottom to the ground.
         /// </summary>
-        /// <param name="position">Level coordinates.</param>
-        public void MoveTo(Vector2 position)
+        /// <param name="position">Level's coordinates.</param>
+        /// <param name="traceName">Level's trace name.</param>
+        public void MoveTo(Vector2 position, string traceName)
         {
-            if (_hikerCollisionShape == null)
-            {
-                GD.PushError("MoveTo(): sanity check failed");
+            // get current player level
+            if (_player == null || _player.Level == null)
                 return;
-            }
 
-            Position = new Vector2(
-                position.X,
-                position.Y - (_hikerCollisionShape.Shape.GetRect().Size.Y / 2 * Scale.Y)
-            );
+            TemplateLevel currentPlayerLevel = _player.Level;
+
+            bool sameScene = currentPlayerLevel.CurrentTraceName == traceName;
+            if (sameScene)
+            {
+                GD.Print($"Hiker and PLAYER are now in the same scene");
+                AddToLevel(currentPlayerLevel);
+
+                Position = new Vector2(position.X, position.Y - (_spriteHeight / 2 * Scale.Y));
+            }
 
             GD.Print($"Hiker Moved to {Position}");
 

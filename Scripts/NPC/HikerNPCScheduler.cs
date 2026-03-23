@@ -45,11 +45,12 @@ namespace Randonneur
         /// </summary>
         private readonly string[] _routeOne =
         [
-            "Mantet",
-            "Port du C++",
+            "Col du sanglier",
             "Col de l'embarqué",
             "Col du sanglier",
-            "Port du C++",
+            "Col de l'embarqué",
+            "Col du sanglier",
+            "Prat d'Albi",
         ];
 
         public HikerNPCScheduler(Dictionary<string, Level> trailScenes)
@@ -65,7 +66,7 @@ namespace Randonneur
             }
 
             // POC: it's a predefined trace.
-            String gpx = "traceE.gpx";
+            String gpx = "traceB.gpx";
 
             Dictionary<string, Level>.KeyCollection gpxKeyList = trailScenes.Keys;
             for (int i = 0; i < _NB_HIKERS; i++)
@@ -119,7 +120,6 @@ namespace Randonneur
                     continue;
 
                 Level hikerLevel = _hikerNpcs[i].CurrentLevel!;
-
                 bool sameScene = currentPlayerLevel.CurrentTraceName == hikerLevel.TraceName;
                 if (!_hikerNpcs[i].InPlayerLevel && sameScene)
                 {
