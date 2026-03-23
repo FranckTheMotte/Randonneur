@@ -402,6 +402,7 @@ public partial class TemplateLevel : Node2D
         Player.Instance.HikerSpeed = CurrentWaypoint.PlayerDirection;
         Player.Instance.LevelLimitX = new Vector2(LimitX, 0);
         Player.Instance.Level = this;
+        Player.Instance.InitEnvironment();
         Player.Instance.Reparent(this);
     }
 

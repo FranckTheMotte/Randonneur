@@ -191,8 +191,6 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
         // TODO: Replace waypoint name by starting point of traceB
         string startingTraceFile = Global.DefautlMapDirectory + "traceB.gpx";
         sceneManager.ChangeLevel(startingTraceFile, "Col de l'embarqué");
-
-        HikerNPCScheduler hikerNPCScheduler = new(sceneManager.TrailScenes);
     }
 
     public void _on_delete_button_up(int myInt)

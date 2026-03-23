@@ -72,6 +72,8 @@ public partial class Player : CharacterBody2D
     public double CurrentGrumblingLevel { get; set; } = 100;
     public double MaxGrumblingLevel { get; private set; } = 100;
 
+    private HikerNPCScheduler? _hikerNPCScheduler;
+
     public override void _EnterTree()
     {
         if (_instance != null && _instance != this)
@@ -287,5 +289,22 @@ public partial class Player : CharacterBody2D
         ForceJunction = true;
         // hide possible minigame
         Level?.MGVisible(false);
+    }
+
+    /// <summary>
+    /// Enable all environement (entities, ...) depending on player.
+    /// </summary>
+    public void InitEnvironment()
+    {
+        // The player initializes the NPCs scheduler once.
+        if (_hikerNPCScheduler == null)
+        {
+            if (SceneManager.Instance == null)
+            {
+                GD.PushError("No scene manager");
+                return;
+            }
+            _hikerNPCScheduler = new(SceneManager.Instance.TrailScenes);
+        }
     }
 }

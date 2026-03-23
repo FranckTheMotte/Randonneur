@@ -380,4 +380,30 @@ public partial class Sol : StaticBody2D
 
         Player.Instance?.DisplayJunction(TrackName, Name);
     }
+
+    /// <summary>
+    /// Retrieve the point colliding with the sol (defined by the CollisionPolygon2D).
+    /// </summary>
+    /// <param name="x">x-axis</param>
+    /// <returns>A valid vector if found, a Zero vector otherwise.</returns>
+    public Vector2 GetSolYAtX(float x)
+    {
+        var spaceState = GetWorld2D().DirectSpaceState;
+
+        // assuming large bound
+        Vector2 from = new(x, 0f);
+        Vector2 to   = new(x, 100000f);
+
+        var query = PhysicsRayQueryParameters2D.Create(from, to);
+
+        query.CollisionMask = Global.GroundLayer;
+
+        var result = spaceState.IntersectRay(query);
+
+        if (result.Count == 0)
+            return Vector2.Zero;
+
+        // First hit position will be the ground
+        return (Vector2)result["position"];
+    }
 }
