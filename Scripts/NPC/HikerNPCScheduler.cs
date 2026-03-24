@@ -28,7 +28,7 @@ namespace Randonneur
         /// <summary>
         /// Maximum number of hikers.
         /// </summary>
-        private const uint _NB_HIKERS = 1;
+        private const uint _NB_HIKERS = 4;
 
         /// <summary>
         /// Update timer that advances hiker activity.
@@ -43,14 +43,34 @@ namespace Randonneur
         /// <summary>
         /// POC: An arbitrary route.
         /// </summary>
-        private readonly string[] _routeOne =
+        private readonly string[][] _routes =
         [
-            "Col du sanglier",
-            "Col de l'embarqué",
-            "Col du sanglier",
-            "Col de l'embarqué",
-            "Col du sanglier",
-            "Prat d'Albi",
+            ["Port du C++", "Col du sanglier", "Col de l'embarqué", "Port du C++", "Mantet"],
+            [
+                "Col du sanglier",
+                "Col de l'embarqué",
+                "Col du sanglier",
+                "Col de l'embarqué",
+                "Col du sanglier",
+                "Prat d'Albi",
+            ],
+            [
+                "Col de l'embarqué",
+                "Col du sanglier",
+                "Col de l'embarqué",
+                "Col du sanglier",
+                "Col de l'embarqué",
+                "Port du C++",
+            ],
+            ["Port du C++", "Col de l'embarqué", "Lac du Salagou"],
+        ];
+
+        private readonly string[] _traces =
+        [
+            "traceC.gpx",
+            "traceB.gpx",
+            "traceB.gpx",
+            "traceD.gpx",
         ];
 
         public HikerNPCScheduler(Dictionary<string, Level> trailScenes)
@@ -65,15 +85,17 @@ namespace Randonneur
                 throw new InvalidOperationException("Failed to get Waypoints.");
             }
 
-            // POC: it's a predefined trace.
-            String gpx = "traceB.gpx";
-
             Dictionary<string, Level>.KeyCollection gpxKeyList = trailScenes.Keys;
             for (int i = 0; i < _NB_HIKERS; i++)
             {
                 PackedScene hikerScene = GD.Load<PackedScene>("res://Scenes/HikerNPC.tscn");
                 _hikerNpcs[i] = hikerScene.Instantiate<HikerNpc>();
-                _hikerNpcs[i].Init(_trailScenes, gpx, _routeOne);
+                _hikerNpcs[i].Init(_trailScenes, _traces[i], _routes[i]);
+                Label label = new()
+                {
+                    Text = Convert.ToString(i, new System.Globalization.NumberFormatInfo()),
+                };
+                _hikerNpcs[i].AddChild(label);
             }
 
             // - define the route

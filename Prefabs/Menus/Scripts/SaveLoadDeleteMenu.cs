@@ -189,8 +189,8 @@ public partial class SaveLoadDeleteMenu : CanvasLayer
         }
 
         // TODO: Replace waypoint name by starting point of traceB
-        string startingTraceFile = Global.DefautlMapDirectory + "traceB.gpx";
-        sceneManager.ChangeLevel(startingTraceFile, "Col de l'embarqué");
+        string startingTraceFile = Global.DefautlMapDirectory + "traceC.gpx";
+        sceneManager.ChangeLevel(startingTraceFile, "Col du sanglier");
     }
 
     public void _on_delete_button_up(int myInt)
