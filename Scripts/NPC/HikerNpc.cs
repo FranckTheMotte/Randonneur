@@ -78,7 +78,7 @@ namespace Randonneur
         /// <summary>
         /// Stores the last waypoint the NPC reached.
         /// </summary>
-        public Waypoint? CurrentWaypoint;
+        public Waypoint? LastWaypoint;
 
         public override void _Ready()
         {
@@ -121,9 +121,9 @@ namespace Randonneur
             _hikerCollisionShape = GetNode<CollisionShape2D>("Collision");
             _spriteHeight = _hikerCollisionShape.Shape.GetRect().Size.Y;
             _waypoints = (Waypoints)Waypoints.Instance;
-            CurrentWaypoint = _waypoints.GetWaypoint(_route[0]);
-            if (CurrentWaypoint != null)
-                MoveTo(CurrentWaypoint.LevelCoord[traceName], traceName);
+            LastWaypoint = _waypoints.GetWaypoint(_route[0]);
+            if (LastWaypoint != null)
+                MoveTo(LastWaypoint.LevelCoord[traceName], traceName);
             ChangeLevel(traceName, _nextWaypointIndex);
         }
 
@@ -135,24 +135,27 @@ namespace Randonneur
         /// <param name="routeIndex">Optional - Index of the next waypoint name.</param>
         private void ChangeLevel(string destTraceName = "", uint routeIndex = 0)
         {
-            if (_waypoints == null || CurrentLevel == null)
+            if (_waypoints == null || CurrentLevel == null || LastWaypoint == null)
             {
                 GD.PushError("ChangeLevel(): sanity check failed");
                 return;
             }
 
             // if level is not specified, get the next
-            if (destTraceName == "" && CurrentWaypoint != null)
+            if (destTraceName == "")
             {
                 // loop indefinitively
                 if (_nextWaypointIndex >= _route.Length)
                 {
                     _nextWaypointIndex = 1;
-                    CurrentWaypoint = _waypoints.GetWaypoint(_route[0])!;
                 }
+                // need to remember the previous waypoint in order to
+                // know where to place the NPC if during next level, the NPC
+                // meets the player.
+                LastWaypoint = _waypoints.GetWaypoint(_route[_nextWaypointIndex - 1])!;
 
                 ConnectedWaypoint? destWaypoint = _waypoints.GetConnectedWaypoint(
-                    CurrentWaypoint.Name,
+                    LastWaypoint.Name,
                     _route[_nextWaypointIndex]
                 );
 
@@ -169,7 +172,7 @@ namespace Randonneur
                 // is known, it's possible to move the NPC.
                 if (_nextWaypointIndex == 1)
                 {
-                    MoveTo(CurrentWaypoint.LevelCoord[destTraceName], destTraceName);
+                    MoveTo(LastWaypoint.LevelCoord[destTraceName], destTraceName);
                 }
             }
 
@@ -181,21 +184,18 @@ namespace Randonneur
                 return;
             }
 
-            if (CurrentWaypoint == null)
-            {
-                GD.PushError($"Failed to retrieve current waypoint");
-                return;
-            }
-
             // get direction
             HikerSpeed = Global.PlayerSpeed;
             if (
-                CurrentWaypoint.LevelCoord[destTraceName].X
+                LastWaypoint.LevelCoord[destTraceName].X
                 > targetWaypoint.LevelCoord[destTraceName].X
             )
             {
                 HikerSpeed = -Global.PlayerSpeed;
             }
+            GD.Print(
+                $"HikerSpeed {HikerSpeed} Test {LastWaypoint.LevelCoord[destTraceName].X} > {targetWaypoint.LevelCoord[destTraceName].X}, destTraceName {destTraceName}"
+            );
 
             // settings for next level
             Move = true;
@@ -208,12 +208,11 @@ namespace Randonneur
             if (currentTraceName != destTraceName)
             {
                 // put NPC at start
-                MoveTo(CurrentWaypoint.LevelCoord[destTraceName], destTraceName);
+                MoveTo(targetWaypoint.LevelCoord[destTraceName], destTraceName);
 
                 // In any case, it's no more handled by godot.
                 RemoveFromLevel((TemplateLevel)GetParent());
             }
-            CurrentWaypoint = targetWaypoint;
 
             GD.Print(
                 $"Hiker NPC goes to {targetWaypoint.Name} in {destTraceName} and distance: {_distanceToNextSteps}"
@@ -292,7 +291,7 @@ namespace Randonneur
 
                 _distanceToNextSteps -= ((float)(delta / Global.MS_IN_SECOND) * velocity.X);
 
-                //  GD.Print($"HikerSPeed {HikerSpeed} distance {_distanceToNextSteps} move {Move}");
+                //GD.Print($"LimitX {CurrentLevel.LimitX} X {Position.X}");
 
                 // check with -1.0f because hiker starts at position 0.0f, unlike player that starts at front of
                 // waypoint (to avoid the waypoint's collision box).
@@ -314,6 +313,7 @@ namespace Randonneur
                     _distanceToNextSteps -= deltaX;
                 }
             }
+            // GD.Print($"{manual} HikerSPeed {HikerSpeed} distance {_distanceToNextSteps} move {Move}");
 
             // destination reached
             if (_distanceToNextSteps <= 0)
@@ -348,11 +348,14 @@ namespace Randonneur
             InPlayerLevel = true;
 
             // update position to match the ground
-            if (CurrentLevel != null && CurrentLevel.SolBody != null)
+            if (CurrentLevel != null && CurrentLevel.SolBody != null && LastWaypoint != null)
             {
-                Vector2 position = CurrentLevel.SolBody.GetSolYAtX(
-                    CurrentLevel.LimitX - _distanceToNextSteps
-                );
+                float distanceFromStart = CurrentLevel.LimitX - _distanceToNextSteps;
+                float x =
+                    HikerSpeed > 0
+                        ? LastWaypoint.LevelCoord[CurrentLevel.TraceName].X + (distanceFromStart)
+                        : LastWaypoint.LevelCoord[CurrentLevel.TraceName].X - (distanceFromStart);
+                Vector2 position = CurrentLevel.SolBody.GetSolYAtX(x);
                 Position = new Vector2(position.X, position.Y - (_spriteHeight / 2 * Scale.Y));
             }
         }
